@@ -123,7 +123,7 @@ const SidebarLayout = ({ children }) => {
           </div>
 
           {/* Sidebar Links */}
-          <nav className="px-3 py-4 space-y-1">
+          <nav className="px-3 py-4 space-y-2 pe-20">
             {links.map((link) => (
               <div key={link.to}>
                 {link.submenu ? (
@@ -137,7 +137,7 @@ const SidebarLayout = ({ children }) => {
                       className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 ${
                         mastersOpen || isMastersActive
                           ? "bg-white text-black font-semibold border border-black ml-2"
-                          : "text-black hover:bg-gray-50"
+                          : "text-black hover:bg-gray-50 "
                       }`}
                     >
                       <div className="flex items-center">
@@ -157,7 +157,7 @@ const SidebarLayout = ({ children }) => {
                     className={`flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 ${
                       location.pathname === link.to
                         ? "bg-white text-gray-900 font-semibold border border-black ml-2"
-                        : "text-gray-700 hover:bg-gray-50"
+                        : "text-blackP hover:border-1 hover:border-black hover:ml-2"
                     }`}
                   >
                     <span className="mr-3 text-gray-600">{link.icon}</span>

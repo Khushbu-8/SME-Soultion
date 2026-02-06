@@ -143,13 +143,13 @@ const EditPartyDialog = ({
         <div className="flex gap-3 justify-center">
           <button
             onClick={handleSave}
-            className="bg-[#343434] text-white px-12 py-2 rounded-2xl hover:bg-gray-900 transition font-medium text-sm"
+            className="bg-black text-white px-12 py-2 rounded-xl hover:bg-gray-900 transition font-medium text-sm"
           >
             Save
           </button>
           <button
             onClick={onClose}
-            className="border border-[#343434] text-[#343434] px-12 py-2 rounded-2xl hover:bg-gray-50 transition font-medium text-sm"
+            className="border border-blabg-black text-blabg-black px-12 py-2 rounded-xl hover:bg-gray-50 transition font-medium text-sm"
           >
             Cancel
           </button>

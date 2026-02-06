@@ -242,17 +242,17 @@ const CategoryMaster = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+              <h1 className="text-3xl font-medium text-black mb-2">
                 Category Master
               </h1>
-              <p className="text-gray-600 text-md">
+              <p className="text-gray-500 text-md">
                 Organise items into categories and subcategories for structured
                 inventory management.
               </p>
             </div>
             <button
               onClick={handleAddCategory}
-              className="flex items-center gap-2 bg-white text-gray-800 border border-gray-900 px-6 py-2 rounded-lg hover:bg-gray-50 transition font-medium"
+              className="flex items-center gap-2 bg-white text-gray-800 border border-black px-6 py-2 rounded-lg hover:bg-gray-50 transition font-medium"
             >
               <Plus className="w-5 h-5" />
               Add Categories
@@ -262,16 +262,16 @@ const CategoryMaster = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className="bg-white p-3 rounded-lg border border-gray-200 h-[120px] flex flex-col justify-between">
+          <div className="bg-white px-3 py-2 rounded-lg border border-gray-200 h-[110px] flex flex-col justify-between">
             <h3 className="text-gray-500 ">Total Categories</h3>
-            <p className="text-4xl font-semibold text-gray-900">
+            <p className="text-2xl font-medium text-black">
               {stats.totalCategories}
             </p>
           </div>
 
-          <div className="bg-white p-3 rounded-lg border border-gray-200 h-[120px] flex flex-col justify-between">
+          <div className="bg-white px-3 py-2 rounded-lg border border-gray-200 h-[110px] flex flex-col justify-between">
             <h3 className="text-gray-500 ">Total Sub Categories</h3>
-            <p className="text-4xl font-semibold text-gray-900">
+            <p className="text-2xl font-medium text-black">
               {stats.totalSubCategories}
             </p>
           </div>

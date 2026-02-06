@@ -16,8 +16,7 @@ const InvoicesList = () => {
         invoice.invoiceNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
         invoice.partyName.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesType =
-        !typeFilter || invoice.invoiceType === typeFilter;
+      const matchesType = !typeFilter || invoice.invoiceType === typeFilter;
 
       return matchesSearch && matchesType;
     });
@@ -25,31 +24,35 @@ const InvoicesList = () => {
 
   return (
     <SidebarLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold text-gray-900">Invoices</h1>
-            <p className="text-gray-600 mt-1 text-md">
-              Centralised management of invoices with type, date, and download options.
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-medium text-black mb-2">Invoices</h1>
+              <p className="text-gray-500 text-md">
+                Centralised management of invoices with type, date, and download
+                options.
+              </p>
+            </div>
+
+            <button
+              onClick={() => navigate("/invoices/create")}
+              className="flex items-center gap-2 bg-white border border-gray-900 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-50 transition font-medium"
+            >
+              <Plus className="w-5 h-5" />
+              Create Invoice
+            </button>
+          </div>
+        </div>
+        {/* Stats */}
+        <div className="mb-8">
+          <div className="bg-white border border-gray-300 rounded-lg px-3 py-2 h-[110px] flex flex-col justify-between">
+            <p className="text-gray-500">Total Invoices</p>
+            <p className="text-3xl font-medium text-black">
+              {filteredInvoices.length}
             </p>
           </div>
-
-          <button
-            onClick={() => navigate("/invoices/create")}
-            className="flex items-center gap-2 bg-white border-2 border-gray-800 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-50 transition font-medium"
-          >
-            <Plus className="w-5 h-5" />
-            Create Invoice
-          </button>
-        </div>
-
-        {/* Stats */}
-        <div className="bg-white border border-gray-200 rounded-lg p-3 h-[110px] flex flex-col justify-between">
-          <p className="text-gray-600">Total Invoices</p>
-          <p className="text-3xl font-semibold text-gray-900">
-            {filteredInvoices.length}
-          </p>
         </div>
 
         {/* Search Filter */}
@@ -67,12 +70,24 @@ const InvoicesList = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="px-6 py-4 text-center text-sm font-semibold">Invoice No</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Date</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Party Name</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Invoice Type</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Get Invoices</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Action</th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Invoice No
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Date
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Party Name
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Invoice Type
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Get Invoices
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Action
+                </th>
               </tr>
             </thead>
 
@@ -128,4 +143,3 @@ const InvoicesList = () => {
 };
 
 export default InvoicesList;
-

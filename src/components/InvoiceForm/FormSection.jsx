@@ -6,7 +6,7 @@ const FormSection = ({ title, children, className = "", action }) => {
       {title && (
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-normal text-black mt-2">{title}</h1>
+            <h1 className="text-3xl font-normal text-black mt-2 ml-2">{title}</h1>
           </div>
           {action ? <div>{action}</div> : null}
         </div>

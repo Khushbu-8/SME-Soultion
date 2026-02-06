@@ -23,7 +23,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-white border-b border-gray-200 px-6 py-4 hidden md:block">
+      <nav className="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-2.5 hidden md:block">
         <div className="flex items-center justify-between">
           {/* Search Bar */}
           <div className="flex-1 max-w-md">

@@ -78,6 +78,8 @@ const ItemCard = ({
               onChange={(e) => onChange(index, e)}
               options={currencyOptions}
               defaultValue="EUR"
+              showIcon
+              iconText="€"
             />
           </div>
         </div>

@@ -191,8 +191,8 @@ const AddParty = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-semibold text-gray-900">Add New Party</h1>
-          <p className="text-md text-gray-600 mt-1">
+          <h1 className="text-3xl font-medium text-black">Add New Party</h1>
+          <p className="text-md text-gray-500">
             Add and manage customer or vendor information for smooth purchase
             and sales operations.
           </p>
@@ -330,14 +330,14 @@ const AddParty = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-12 py-2 bg-[#343434] text-white rounded-2xl hover:bg-gray-900 transition font-medium disabled:opacity-50"
+              className="px-12 py-2 bg-black text-white rounded-xl hover:bg-gray-900 transition font-medium disabled:opacity-50"
             >
               {loading ? "Saving..." : "Save"}
             </button>
             <button
               type="button"
               onClick={handleCancel}
-              className="px-12 py-2 border border-[#343434] text-[#343434] rounded-2xl hover:bg-gray-50 transition font-medium"
+              className="px-12 py-2 border border-black text-black rounded-xl hover:bg-gray-50 transition font-medium"
             >
               Cancel
             </button>

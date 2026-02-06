@@ -200,13 +200,13 @@ const EditItemDialog = ({
         <div className="flex gap-4 justify-center">
           <button
             onClick={handleSave}
-            className="bg-[#343434] text-white px-12 py-2 rounded-2xl hover:bg-gray-900 transition font-medium text-sm"
+            className="bg-black text-white px-12 py-2 rounded-xl hover:bg-gray-900 transition font-medium text-sm"
           >
             Save
           </button>
           <button
             onClick={onClose}
-            className="border border-[#343434] text-[#343434] px-12 py-2 rounded-2xl hover:bg-gray-50 transition font-medium text-sm"
+            className="border border-black text-black px-12 py-2 rounded-xl hover:bg-gray-50 transition font-medium text-sm"
           >
             Cancel
           </button>

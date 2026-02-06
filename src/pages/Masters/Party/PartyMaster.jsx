@@ -153,10 +153,10 @@ const PartyMaster = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+              <h1 className="text-3xl font-medium text-black mb-2">
                 Party Master
               </h1>
-              <p className="text-gray-600 text-md">
+              <p className="text-gray-500 text-md">
                 Centralised management of customers and vendors with GST,
                 contact, and role details.
               </p>
@@ -176,7 +176,7 @@ const PartyMaster = () => {
           {/* Card 1 */}
           <div className="bg-white px-3 py-2 rounded-lg border border-gray-300 h-[110px] flex flex-col justify-between">
             <p className=" text-gray-500">Total Customers</p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-2xl font-medium text-black">
               {stats.customers}
             </p>
           </div>
@@ -184,7 +184,7 @@ const PartyMaster = () => {
           {/* Card 2 */}
           <div className="bg-white px-3 py-2 rounded-lg border border-gray-300 h-[110px] flex flex-col justify-between">
             <p className=" text-gray-500">Total Vendors</p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-2xl font-medium text-black">
               {stats.vendors}
             </p>
           </div>
@@ -192,7 +192,7 @@ const PartyMaster = () => {
           {/* Card 3 */}
           <div className="bg-white px-3 py-2 rounded-lg border border-gray-300 h-[110px] flex flex-col justify-between">
             <p className=" text-gray-500">Total Parties</p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-2xl font-medium text-black">
               {stats.total}
             </p>
           </div>

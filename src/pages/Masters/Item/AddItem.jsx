@@ -325,11 +325,11 @@ const AddItem = () => {
 
   return (
     <SidebarLayout>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-semibold text-gray-900">Add New Item</h1>
-          <p className="text-md text-gray-600 mt-1">
+        <div className="mb-8">
+          <h1 className="text-3xl font-medium text-gray-900">Add New Item</h1>
+          <p className="text-md text-gray-500">
             Create and define item specifications including size, weight,
             category, and stock thresholds.
           </p>
@@ -625,14 +625,14 @@ const AddItem = () => {
                 <button
                 type="submit"
                 disabled={loading}
-                className="px-12 py-2 bg-[#343434] text-white rounded-2xl hover:bg-gray-800 transition font-medium disabled:opacity-50"
+                className="px-12 py-2 bg-black text-white rounded-xl hover:bg-gray-800 transition font-medium disabled:opacity-50"
               >
                 {loading ? "Saving..." : "Save"}
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-12 py-2 border border-[#343434] text-[#343434] rounded-2xl hover:bg-gray-50 transition font-medium"
+                className="px-12 py-2 border border-black text-black rounded-xl hover:bg-gray-50 transition font-medium"
               >
                 Cancel
               </button>

@@ -175,10 +175,10 @@ const ItemMaster = () => {
         {/* Header */}
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-semibold text-gray-900">
+            <h1 className="text-3xl font-medium text-black">
               Item Master
             </h1>
-            <p className="text-gray-600 mt-1 text-md">
+            <p className="text-gray-500  text-md">
               Centralised management of all items with sizes, weights,
               categories, and stock details.
             </p>
@@ -193,17 +193,17 @@ const ItemMaster = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white border border-gray-200 rounded-lg p-3 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-600 ">Total Items</p>
-            <p className="text-3xl font-semibold text-gray-900">
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 h-[110px] flex flex-col justify-between">
+            <p className="text-gray-500 ">Total Items</p>
+            <p className="text-2xl font-medium text-black">
               {stats.totalItems}
             </p>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-3 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-600 ">Total Low Stock Items</p>
-            <p className="text-3xl font-semibold text-gray-900">
+          <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 h-[110px] flex flex-col justify-between">
+            <p className="text-gray-500 ">Total Low Stock Items</p>
+            <p className="text-2xl font-medium text-black">
               {stats.lowStockItems}
             </p>
           </div>
