@@ -13,7 +13,6 @@ import InvoicesList from "./pages/Invoices/InvoicesList";
 import CreateInvoice from "./pages/Invoices/CreateInvoice";
 
 const AppRoutes = () => {
-
   return (
     <Routes>
       {/* Public Routes */}
@@ -31,76 +30,76 @@ const AppRoutes = () => {
       <Route
         path="/masters/party"
         element={
-          // <ProtectedRoute>
-          //   <PartyMaster />
-          // </ProtectedRoute>
-          <PartyMaster />
+          <ProtectedRoute>
+            <PartyMaster />
+          </ProtectedRoute>
         }
       />
       <Route
         path="/masters/party/add"
         element={
-          // <ProtectedRoute>
-          //   <AddParty />
-          // </ProtectedRoute>
-           <AddParty />
+          <ProtectedRoute>
+            <AddParty />
+          </ProtectedRoute>
         }
       />
       <Route
         path="/masters/party/edit/:id"
         element={
-          // <ProtectedRoute>
-          //   <AddParty />
-          // </ProtectedRoute>
-           <AddParty />
+          <ProtectedRoute>
+            <AddParty />
+          </ProtectedRoute>
         }
       />
       <Route
         path="/add-party"
         element={
-          // <ProtectedRoute>
-          //   <AddParty />
-          // </ProtectedRoute>
-          <AddParty />
+          <ProtectedRoute>
+            <AddParty />
+          </ProtectedRoute>
         }
       />
       <Route
         path="/masters/category"
         element={
-          // <ProtectedRoute>
+          <ProtectedRoute>
             <CategoryMaster />
-          // </ProtectedRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/masters/item"
         element={
-          // <ProtectedRoute>
+          <ProtectedRoute>
             <ItemMaster />
-          // </ProtectedRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/masters/item/add"
         element={
-          // <ProtectedRoute>
+          <ProtectedRoute>
             <AddItem />
-          // </ProtectedRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/inventory" element={<Inventory />} />
+      <Route
+        path="/invoices"
+        element={
+          <ProtectedRoute>
+            <InvoicesList />
+          </ProtectedRoute>
         }
       />
       <Route
-        path="/inventory"
-        element={ <Inventory />}
-      />
-      <Route
-        path="/invoices"
-        element={ <InvoicesList />}
-      />
-      <Route
         path="/invoices/create"
-        element={ <CreateInvoice />}
+        element={
+          <ProtectedRoute>
+            <CreateInvoice />
+          </ProtectedRoute>
+        }
       />
-
     </Routes>
   );
 };
