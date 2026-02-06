@@ -10,6 +10,7 @@ import {
   ChevronRight,
   User,
   ListTodo,
+  FileText,
 } from "lucide-react"; // icons
 
 import Navbar from "./navbar";
@@ -55,10 +56,15 @@ const SidebarLayout = ({ children }) => {
       hasArrow: true,
       submenu: masterLinks,
     },
+    // {
+    //   to: "/inventory",
+    //   label: "Inventory",
+    //   icon: <Package className="w-5 h-5" />,
+    // },
     {
-      to: "/inventory",
-      label: "Inventory",
-      icon: <Package className="w-5 h-5" />,
+      to: "/invoices",
+      label: "Invoices",
+      icon: <FileText className="w-5 h-5" />,
     },
     {
       to: "/in-house-plating",

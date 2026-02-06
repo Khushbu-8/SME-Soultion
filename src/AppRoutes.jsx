@@ -6,6 +6,9 @@ import PartyMaster from "./pages/Masters/Party/PartyMaster";
 import CategoryMaster from "./pages/Masters/Category/CategoryMaster";
 import ItemMaster from "./pages/Masters/Item/ItemMaster";
 import AddItem from "./pages/Masters/Item/AddItem";
+import Inventory from "./pages/Inventory";
+import InvoicesList from "./pages/Invoices/InvoicesList";
+import CreateInvoice from "./pages/Invoices/CreateInvoice";
 
 const AppRoutes = () => {
 
@@ -42,6 +45,18 @@ const AppRoutes = () => {
       <Route
         path="/masters/item/add"
         element={ <AddItem />}
+      />
+      <Route
+        path="/inventory"
+        element={ <Inventory />}
+      />
+      <Route
+        path="/invoices"
+        element={ <InvoicesList />}
+      />
+      <Route
+        path="/invoices/create"
+        element={ <CreateInvoice />}
       />
 
     </Routes>
