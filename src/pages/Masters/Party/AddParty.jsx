@@ -33,6 +33,11 @@ const AddParty = () => {
     isOpen: false,
     data: null,
   });
+  const PARTY_TYPES = [
+    { label: "Customer", value: "Customer" },
+    { label: "Vendor", value: "Vendor" },
+    { label: "Both", value: "Customer/Vendor" },
+  ];
 
   useEffect(() => {
     fetchParties();
@@ -279,14 +284,10 @@ const AddParty = () => {
             >
               <span
                 className={
-                  formData.partyType === ""
-                    ? "text-gray-400"
-                    : "text-gray-900"
+                  formData.partyType === "" ? "text-gray-400" : "text-gray-900"
                 }
               >
-                {formData.partyType === ""
-                  ? "Select Type"
-                  : formData.partyType}
+                {formData.partyType === "" ? "Select Type" : formData.partyType}
               </span>
 
               <svg
@@ -308,17 +309,20 @@ const AddParty = () => {
 
             {isTypeOpen && (
               <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                {["Customer", "Vendor","Both"].map((type) => (
+                {PARTY_TYPES.map((item) => (
                   <button
-                    key={type}
+                    key={item.label}
                     type="button"
                     onClick={() => {
-                      setFormData((prev) => ({ ...prev, partyType: type }));
+                      setFormData((prev) => ({
+                        ...prev,
+                        partyType: item.value, // ✅ saved value
+                      }));
                       setIsTypeOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
                   >
-                    {type}
+                    {item.label}
                   </button>
                 ))}
               </div>

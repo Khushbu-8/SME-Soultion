@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-const EditPartyDialog = ({
-  isOpen,
-  onClose,
-  onSave,
-  initialData = null,
-}) => {
+const EditPartyDialog = ({ isOpen, onClose, onSave, initialData = null }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,6 +10,11 @@ const EditPartyDialog = ({
     type: "Supplier",
   });
   const [isTypeOpen, setIsTypeOpen] = useState(false);
+  const PARTY_TYPES = [
+    { label: "Customer", value: "Customer" },
+    { label: "Vendor", value: "Vendor" },
+    { label: "Both", value: "Customer/Vendor" },
+  ];
 
   useEffect(() => {
     if (initialData) {
@@ -160,17 +160,20 @@ const EditPartyDialog = ({
 
             {isTypeOpen && (
               <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                {["Customer", "Vendor", "Both"].map((type) => (
+                {PARTY_TYPES.map((item) => (
                   <button
-                    key={type}
+                    key={item.label}
                     type="button"
                     onClick={() => {
-                      setFormData((prev) => ({ ...prev, type }));
+                      setFormData((prev) => ({
+                        ...prev,
+                        partyType: item.value, // ✅ saved value
+                      }));
                       setIsTypeOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
                   >
-                    {type}
+                    {item.label}
                   </button>
                 ))}
               </div>
