@@ -60,7 +60,7 @@ const ViewItemDialog = ({
           <h2 className="text-xl font-bold text-gray-900">Item Details</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-500"
           >
             <X className="w-6 h-6" />
           </button>
@@ -78,7 +78,7 @@ const ViewItemDialog = ({
                 type="text"
                 value={formData.sizeInch}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-500"
               />
             </div>
             <div>
@@ -89,7 +89,7 @@ const ViewItemDialog = ({
                 type="text"
                 value={formData.sizeMM}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-500"
               />
             </div>
           </div>
@@ -104,7 +104,7 @@ const ViewItemDialog = ({
                 type="text"
                 value={formData.category}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-500"
               />
             </div>
             <div>
@@ -115,7 +115,7 @@ const ViewItemDialog = ({
                 type="text"
                 value={formData.subCategory}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-500"
               />
             </div>
           </div>
@@ -130,7 +130,7 @@ const ViewItemDialog = ({
                 type="text"
                 value={formData.itemKg}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-500"
               />
             </div>
             <div>
@@ -141,7 +141,7 @@ const ViewItemDialog = ({
                 type="text"
                 value={formData.weightPerPL}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-500"
               />
             </div>
           </div>
@@ -156,7 +156,7 @@ const ViewItemDialog = ({
                 type="text"
                 value={formData.totalPL}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-500"
               />
             </div>
             <div>
@@ -167,7 +167,7 @@ const ViewItemDialog = ({
                 type="text"
                 value={formData.dozenWeight}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-500"
               />
             </div>
           </div>
@@ -181,7 +181,7 @@ const ViewItemDialog = ({
               type="text"
               value={formData.lowStockWarning}
               readOnly
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-600"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-500"
             />
           </div>
         </div>

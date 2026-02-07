@@ -52,7 +52,7 @@ const Inventory = () => {
             <h1 className="text-3xl font-semibold text-gray-900">
               Inventory
             </h1>
-            <p className="text-gray-600 mt-1 text-md">
+            <p className="text-gray-500 mt-1 text-md">
               Centralised management of all items with sizes, weights,
               categories, and stock details.
             </p>
@@ -61,19 +61,19 @@ const Inventory = () => {
 
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-white border border-gray-200 rounded-lg p-3 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-600">Total Items</p>
+            <p className="text-gray-500">Total Items</p>
             <p className="text-3xl font-semibold text-gray-900">
               {totals.total}
             </p>
           </div>
           <div className="bg-white border border-gray-200 rounded-lg p-3 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-600">Low Stock</p>
+            <p className="text-gray-500">Low Stock</p>
             <p className="text-3xl font-semibold text-gray-900">
               {totals.lowStock}
             </p>
           </div>
           <div className="bg-white border border-gray-200 rounded-lg p-3 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-600">Out of Stock</p>
+            <p className="text-gray-500">Out of Stock</p>
             <p className="text-3xl font-semibold text-gray-900">
               {totals.outOfStock}
             </p>
@@ -126,10 +126,10 @@ const Inventory = () => {
                   <td className="px-6 py-4 text-sm text-gray-900 text-center">
                     {item.itemName}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 text-center">
+                  <td className="px-6 py-4 text-sm text-gray-500 text-center">
                     {item.category}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 text-center">
+                  <td className="px-6 py-4 text-sm text-gray-500 text-center">
                     {item.stock} {item.unit}
                   </td>
                   <td className="px-6 py-4 text-sm text-center">

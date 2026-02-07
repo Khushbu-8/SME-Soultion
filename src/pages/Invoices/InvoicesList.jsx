@@ -70,22 +70,22 @@ const InvoicesList = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-medium">
                   Invoice No
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-medium">
                   Date
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-medium">
                   Party Name
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-medium">
                   Invoice Type
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-medium">
                   Get Invoices
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-medium">
                   Action
                 </th>
               </tr>
@@ -103,17 +103,17 @@ const InvoicesList = () => {
                       <td className="px-6 py-4 text-center text-sm font-medium">
                         {invoice.invoiceNo}
                       </td>
-                      <td className="px-6 py-4 text-center text-sm text-gray-600">
+                      <td className="px-6 py-4 text-center text-sm ">
                         {invoice.date}
                       </td>
-                      <td className="px-6 py-4 text-center text-sm">
+                      <td className="px-6 py-4 text-center text-sm ">
                         {invoice.partyName}
                       </td>
-                      <td className="px-6 py-4 text-center text-sm text-gray-600">
+                      <td className="px-6 py-4 text-center text-sm ">
                         {invoice.invoiceType}
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <button className="inline-flex items-center gap-2 text-gray-800 hover:text-black">
+                        <button className="inline-flex items-center gap-2 text-gray-800 hover:text-black text-sm">
                           Download
                           <Download className="w-4 h-4" />
                         </button>

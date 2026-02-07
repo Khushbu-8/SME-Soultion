@@ -50,10 +50,10 @@ const EditPartyDialog = ({
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Edit Party</h2>
+          <h2 className="text-xl font-medium text-black">Edit Party</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-500"
           >
             <X className="w-6 h-6" />
           </button>

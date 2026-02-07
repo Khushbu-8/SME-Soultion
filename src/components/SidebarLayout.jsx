@@ -31,7 +31,7 @@ const SidebarLayout = ({ children }) => {
       const rect = mastersRef.current.getBoundingClientRect();
       setPopoverPos({
         top: rect.top,
-        left: rect.right + 8,
+        left: rect.right + 15,
       });
     }
     setMastersOpen(true);
@@ -136,13 +136,13 @@ const SidebarLayout = ({ children }) => {
                     <button
                       className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 ${
                         mastersOpen || isMastersActive
-                          ? "bg-white text-black font-semibold border border-black ml-2"
-                          : "text-black hover:bg-gray-50 "
+                          ? "bg-white text-black font-normal border border-black ml-2"
+                          : "text-black hover:bg-gray-50"
                       }`}
                     >
                       <div className="flex items-center">
                         <span className="mr-3 text-black">{link.icon}</span>
-                        <span className="text-sm font-medium">{link.label}</span>
+                        <span className="text-sm font-normal">{link.label}</span>
                       </div>
                       <ChevronRight
                         className={`w-4 h-4 text-black transition-transform duration-200 ${mastersOpen ? "rotate-90" : ""}`}
@@ -157,10 +157,10 @@ const SidebarLayout = ({ children }) => {
                     className={`flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 ${
                       location.pathname === link.to
                         ? "bg-white text-gray-900 font-semibold border border-black ml-2"
-                        : "text-blackP hover:border-1 hover:border-black hover:ml-2"
+                        : "text-black hover:border-1 hover:border-black hover:ml-2"
                     }`}
                   >
-                    <span className="mr-3 text-gray-600">{link.icon}</span>
+                    <span className="mr-3 text-gray-500">{link.icon}</span>
                     <span className="text-sm font-medium">{link.label}</span>
                   </Link>
                 )}
@@ -171,7 +171,7 @@ const SidebarLayout = ({ children }) => {
 
         {/* Masters submenu popover - rendered outside sidebar to avoid overflow clipping */}
         <div
-          className={`fixed z-50 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 transition-opacity duration-150 ${
+          className={`fixed z-50 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 transition-opacity duration-150  ${
             mastersOpen
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"

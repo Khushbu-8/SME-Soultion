@@ -29,22 +29,22 @@ const PartiesTable = ({
         <table className="w-full">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
                 Party Name
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
                 Type
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
                 GSTIN
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
                 Contact
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
                 Email
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
                 Action
               </th>
             </tr>
@@ -59,16 +59,16 @@ const PartiesTable = ({
                 <td className="px-6 py-4 text-sm text-gray-900 text-center">
                   {party.name}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-600 text-center">
+                <td className="px-6 py-4 text-sm text-gray-500 text-center">
                   {party.type}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-600 text-center">
+                <td className="px-6 py-4 text-sm text-gray-500 text-center">
                   {party.gstin}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-600 text-center">
+                <td className="px-6 py-4 text-sm text-gray-500 text-center">
                   {party.contact}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-600 text-center">
+                <td className="px-6 py-4 text-sm text-gray-500 text-center">
                   {party.email}
                 </td>
                 <td className="px-6 py-4 text-sm flex items-center justify-center gap-3">

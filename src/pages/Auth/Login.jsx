@@ -80,7 +80,7 @@ const Login = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Welcome Back
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-500">
               Sign in to access your dashboard
             </p>
           </div>
@@ -148,9 +148,9 @@ const Login = () => {
                   tabIndex={-1}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-500" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-500" />
                   )}
                 </button>
               </div>
@@ -181,7 +181,7 @@ const Login = () => {
 
           {/* Footer */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-500">
               Secure login powered by JWT authentication
             </p>
           </div>
@@ -189,7 +189,7 @@ const Login = () => {
 
         {/* Additional Info */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-500">
             © 2026 SME Solution. All rights reserved.
           </p>
         </div>

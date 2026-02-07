@@ -324,7 +324,7 @@ const CategoryMaster = () => {
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">
+                  <p className="text-sm text-gray-500 mt-2">
                     {category.categoryName}
                   </p>
                 </div>
