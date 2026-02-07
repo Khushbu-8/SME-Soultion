@@ -308,7 +308,7 @@ const AddParty = () => {
 
             {isTypeOpen && (
               <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                {["Customer", "Vendor"].map((type) => (
+                {["Customer", "Vendor","Both"].map((type) => (
                   <button
                     key={type}
                     type="button"
