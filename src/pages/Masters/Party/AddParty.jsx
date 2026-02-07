@@ -56,7 +56,7 @@ const AddParty = () => {
         phone: party.contactNo,
         contact: party.contactNo,
         gstin: party.gst,
-        type: party.partyType === "CUSTOMER" ? "Customer" : "Vendor",
+        type: party.partyType,
       }));
 
       setParties(transformedParties);
@@ -94,7 +94,7 @@ const AddParty = () => {
         email: formData.email,
         contactNo: formData.phone,
         gst: formData.gstNumber,
-        partyType: formData.partyType === "Customer" ? "CUSTOMER" : "VENDOR",
+        partyType: formData.partyType,
       };
 
       await partyApi.createParty(createData);
@@ -142,7 +142,7 @@ const AddParty = () => {
         email: formData.email,
         contactNo: formData.phone,
         gst: formData.gstin,
-        partyType: formData.type === "Customer" ? "CUSTOMER" : "VENDOR",
+        partyType: formData.type,
       };
 
       await partyApi.updateParty(editDialog.data.id, updateData);
