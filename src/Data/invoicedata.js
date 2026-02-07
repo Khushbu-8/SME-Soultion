@@ -1,3 +1,77 @@
+const createDetails = ({ invoiceNo, invoiceDate, partyName }) => ({
+  formData: {
+    exporterCompanyName: "Ishita Industries",
+    exporterContactNo: "+91 98765 43210",
+    exporterAddress: "Plot 21, GIDC Phase 2, Jamnagar, Gujarat, India",
+    billToToTheOrder: "Ishita Brass",
+    billToName: partyName,
+    billToContactNo: "+45 40 55 22 11",
+    billToAddress: "Nørrebrogade 88, Copenhagen, Denmark",
+    shipToToTheOrder: "Ishita Brass",
+    shipToName: partyName,
+    shipToContactNo: "+45 40 55 22 11",
+    shipToAddress: "Nørrebrogade 88, Copenhagen, Denmark",
+    invoiceNo,
+    invoiceDate,
+    gstNo: "24AAMCC7842H1ZG",
+    iecCode: "AAGFI3929N",
+    poNo: "67937969",
+    incoterms: "F.O.B",
+    paymentTerms: "T/T Net 15 B/L",
+    preCarriage: "Jamnagar",
+    countryOfOrigin: "India",
+    countryOfFinalDestination: "Denmark",
+    portOfLoading: "Nhava Sheva",
+    portOfDischarge: "Dallas Port",
+    freightCost: "250.00",
+    insuranceCost: "75.00",
+    otherCharges: "30.00",
+    beneficiaryName: "Ishita Industries",
+    beneficiaryBank: "HDFC Bank",
+    branch: "Jamnagar",
+    beneficiaryAcNo: "50100012345678",
+    switchCode: "HDFCINBB",
+    arnNo: "LUT/ARN/2026/0001",
+    rodtep:
+      "WE INTEND TO CLAIM REWARDS UNDER THE 'REMISSION OF DUTIES AND TAXES ON EXPORTED PRODUCT (RoDTEP)' SCHEME.",
+    rexNo:
+      "Ishita Industries having REX reg n [NREXEJP]xxxxx of the products covered by this document declares that, except...",
+  },
+  items: [
+    {
+      itemNo: "01",
+      itemDescription: "FNESPBL 10-32 X 5/16 A/F E.S.P Hex Nut",
+      hsCode: "731816",
+      itemQty: "1200",
+      unitPrice: "0.35",
+      currency: "EUR",
+      currencyCurrentPrice: "91.10",
+    },
+    {
+      itemNo: "02",
+      itemDescription: "Brass Insert 1/4\" BSP",
+      hsCode: "741220",
+      itemQty: "800",
+      unitPrice: "0.55",
+      currency: "EUR",
+      currencyCurrentPrice: "91.10",
+    },
+  ],
+  packings: [
+    {
+      packingItemNo: "01",
+      packingDescription: "Cartons with brass fittings",
+      totalQtyPcs: "2000",
+      qtyInEachCarton: "100",
+      noOfCarton: "20",
+      grossWeight: "186.000kg",
+      netWeight: "136.500kg",
+      totalCartonWith: "20",
+      woodenPallet: "02",
+    },
+  ],
+});
+
 const InvoiceData = [
   {
     id: 1,
@@ -5,6 +79,11 @@ const InvoiceData = [
     date: "21/02/2026",
     partyName: "Ishita Brass",
     invoiceType: "Export",
+    details: createDetails({
+      invoiceNo: "01",
+      invoiceDate: "2026-02-21",
+      partyName: "Ishita Brass",
+    }),
   },
   {
     id: 2,
@@ -12,6 +91,11 @@ const InvoiceData = [
     date: "21/02/2026",
     partyName: "Ishita Brass",
     invoiceType: "Commercial",
+    details: createDetails({
+      invoiceNo: "01",
+      invoiceDate: "2026-02-21",
+      partyName: "Ishita Brass",
+    }),
   },
   {
     id: 3,
@@ -19,6 +103,11 @@ const InvoiceData = [
     date: "21/02/2026",
     partyName: "Ishita Brass",
     invoiceType: "Packing List",
+    details: createDetails({
+      invoiceNo: "01",
+      invoiceDate: "2026-02-21",
+      partyName: "Ishita Brass",
+    }),
   },
   {
     id: 4,
@@ -26,6 +115,11 @@ const InvoiceData = [
     date: "22/02/2026",
     partyName: "Ishita Brass",
     invoiceType: "Export",
+    details: createDetails({
+      invoiceNo: "02",
+      invoiceDate: "2026-02-22",
+      partyName: "Ishita Brass",
+    }),
   },
   {
     id: 5,
@@ -33,6 +127,11 @@ const InvoiceData = [
     date: "22/02/2026",
     partyName: "Ishita Brass",
     invoiceType: "Commercial",
+    details: createDetails({
+      invoiceNo: "02",
+      invoiceDate: "2026-02-22",
+      partyName: "Ishita Brass",
+    }),
   },
   {
     id: 6,
@@ -40,6 +139,11 @@ const InvoiceData = [
     date: "22/02/2026",
     partyName: "Ishita Brass",
     invoiceType: "Packing List",
+    details: createDetails({
+      invoiceNo: "02",
+      invoiceDate: "2026-02-22",
+      partyName: "Ishita Brass",
+    }),
   },
   {
     id: 7,
@@ -47,6 +151,11 @@ const InvoiceData = [
     date: "24/02/2026",
     partyName: "Ishita Brass",
     invoiceType: "Export",
+    details: createDetails({
+      invoiceNo: "03",
+      invoiceDate: "2026-02-24",
+      partyName: "Ishita Brass",
+    }),
   },
   {
     id: 8,
@@ -54,15 +163,24 @@ const InvoiceData = [
     date: "24/02/2026",
     partyName: "Ishita Brass",
     invoiceType: "Commercial",
+    details: createDetails({
+      invoiceNo: "03",
+      invoiceDate: "2026-02-24",
+      partyName: "Ishita Brass",
+    }),
   },
-   {
+  {
     id: 9,
     invoiceNo: "03",
     date: "22/02/2026",
     partyName: "Ishita Brass",
     invoiceType: "Packing List",
+    details: createDetails({
+      invoiceNo: "03",
+      invoiceDate: "2026-02-22",
+      partyName: "Ishita Brass",
+    }),
   },
-
 ];
 
 export default InvoiceData;

@@ -11,13 +11,14 @@ const FormSelect = ({
   colSpan = "1",
   placeholder = "Select...",
   showIcon = false,
-  iconText = "M",
+  disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedOption = options.find((opt) => opt.value === value);
 
   const handleSelect = (optionValue) => {
+    if (disabled) return;
     onChange({ target: { name, value: optionValue } });
     setIsOpen(false);
   };
@@ -31,13 +32,17 @@ const FormSelect = ({
       <div className="relative mt-8">
         {showIcon && (
           <span className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full text-lg font-normal flex items-center justify-center">
-            {iconText}
+           €
           </span>
         )}
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className={`w-full text-sm flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-black transition ${showIcon ? "pl-8" : ""}`}
+          onClick={() => {
+            if (!disabled) setIsOpen(!isOpen);
+          }}
+          className={`w-full text-sm flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-black transition ${
+            showIcon ? "pl-8" : ""
+          } ${disabled ? "bg-gray-100 text-gray-600 cursor-not-allowed" : ""}`}
         >
           <span className={selectedOption ? "text-black" : "text-gray-400"}>
             {selectedOption ? selectedOption.label : placeholder}

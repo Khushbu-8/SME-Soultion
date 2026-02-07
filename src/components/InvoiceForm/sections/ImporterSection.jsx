@@ -6,6 +6,7 @@ const ImporterSection = ({
   prefix,
   formData,
   onChange,
+  readOnly = false,
   toTheOrderOptions = [
     { value: "USA", label: "USA" },
     { value: "UK", label: "UK" },
@@ -27,6 +28,7 @@ const ImporterSection = ({
             value={formData[`${prefix}ToTheOrder`]}
             onChange={onChange}
             placeholder="Select Country"
+            disabled={readOnly}
           />
         </div>
         <FormInput
@@ -36,6 +38,7 @@ const ImporterSection = ({
           onChange={onChange}
           placeholder="Enter Party Name"
           required
+          disabled={readOnly}
         />
         <FormInput
           label="Contact No."
@@ -43,6 +46,7 @@ const ImporterSection = ({
           value={formData[`${prefix}ContactNo`]}
           onChange={onChange}
           placeholder="+44 6785 6975"
+          disabled={readOnly}
         />
         <div className="col-span-2">
           <FormInput
@@ -51,6 +55,7 @@ const ImporterSection = ({
             value={formData[`${prefix}Address`]}
             onChange={onChange}
             placeholder="Enter Address"
+            disabled={readOnly}
           />
         </div>
       </div>

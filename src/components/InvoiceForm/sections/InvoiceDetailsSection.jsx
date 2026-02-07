@@ -1,7 +1,7 @@
 import React from "react";
 import FormInput from "../FormInput";
 
-const InvoiceDetailsSection = ({ formData, onChange }) => {
+const InvoiceDetailsSection = ({ formData, onChange, readOnly = false }) => {
   return (
     <>
       <div className="grid grid-cols-3 gap-4">
@@ -11,6 +11,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.invoiceNo}
           onChange={onChange}
           placeholder="01"
+          disabled={readOnly}
         />
         <FormInput
           label="Invoice Date"
@@ -18,6 +19,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           type="date"
           value={formData.invoiceDate}
           onChange={onChange}
+          disabled={readOnly}
         />
         <FormInput
           label="GST No"
@@ -25,6 +27,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.gstNo}
           onChange={onChange}
           placeholder="24AAMCC7842H1ZG"
+          disabled={readOnly}
         />
         <FormInput
           label="IEC Code"
@@ -32,6 +35,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.iecCode}
           onChange={onChange}
           placeholder="AAGFI3929N"
+          disabled={readOnly}
         />
         <FormInput
           label="P/O No."
@@ -39,6 +43,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.poNo}
           onChange={onChange}
           placeholder="67937969"
+          disabled={readOnly}
         />
         <FormInput
           label="Incoterms"
@@ -46,6 +51,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.incoterms}
           onChange={onChange}
           placeholder="F.O.B"
+          disabled={readOnly}
         />
         <FormInput
           label="Payment Terms"
@@ -53,6 +59,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.paymentTerms}
           onChange={onChange}
           placeholder="T/T Net 15 B/L"
+          disabled={readOnly}
         />
         <FormInput
           label="Pre Carriage"
@@ -60,6 +67,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.preCarriage}
           onChange={onChange}
           placeholder="Jamnagar"
+          disabled={readOnly}
         />
         <FormInput
           label="Country of Origin"
@@ -67,6 +75,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.countryOfOrigin}
           onChange={onChange}
           placeholder="India"
+          disabled={readOnly}
         />
         <FormInput
           label="Country of Final Destination"
@@ -74,6 +83,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.countryOfFinalDestination}
           onChange={onChange}
           placeholder="Denmark"
+          disabled={readOnly}
         />
         <FormInput
           label="Port of Loading"
@@ -81,6 +91,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.portOfLoading}
           onChange={onChange}
           placeholder="Nhava Sheva"
+          disabled={readOnly}
         />
         <FormInput
           label="Port of Discharge"
@@ -88,6 +99,7 @@ const InvoiceDetailsSection = ({ formData, onChange }) => {
           value={formData.portOfDischarge}
           onChange={onChange}
           placeholder="Dallas Port"
+          disabled={readOnly}
         />
       </div>
     </>

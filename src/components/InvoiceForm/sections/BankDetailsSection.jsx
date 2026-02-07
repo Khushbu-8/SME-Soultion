@@ -1,7 +1,7 @@
 import React from "react";
 import FormInput from "../FormInput";
 
-const BankDetailsSection = ({ formData, onChange }) => {
+const BankDetailsSection = ({ formData, onChange, readOnly = false }) => {
   return (
     <>
       <div className="grid grid-cols-3 gap-4">
@@ -11,6 +11,7 @@ const BankDetailsSection = ({ formData, onChange }) => {
           value={formData.beneficiaryName}
           onChange={onChange}
           placeholder="Ishita Industries"
+          disabled={readOnly}
         />
         <FormInput
           label="Beneficiary Bank"
@@ -18,6 +19,7 @@ const BankDetailsSection = ({ formData, onChange }) => {
           value={formData.beneficiaryBank}
           onChange={onChange}
           placeholder="HDFC Bank"
+          disabled={readOnly}
         />
         <FormInput
           label="Branch"
@@ -25,6 +27,7 @@ const BankDetailsSection = ({ formData, onChange }) => {
           value={formData.branch}
           onChange={onChange}
           placeholder="Dared"
+          disabled={readOnly}
         />
         <div className="col-span-2">
           <FormInput
@@ -33,6 +36,7 @@ const BankDetailsSection = ({ formData, onChange }) => {
           value={formData.beneficiaryAcNo}
           onChange={onChange}
           placeholder="50100469121007"
+          disabled={readOnly}
           />
         </div>
         <FormInput
@@ -41,6 +45,7 @@ const BankDetailsSection = ({ formData, onChange }) => {
           value={formData.switchCode}
           onChange={onChange}
           placeholder="HDFCINBB"
+          disabled={readOnly}
         />
       </div>
     </>

@@ -1,7 +1,7 @@
 import React from "react";
 import FormInput from "../FormInput";
 
-const ExporterSection = ({ formData, onChange }) => {
+const ExporterSection = ({ formData, onChange, readOnly = false }) => {
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
@@ -12,6 +12,7 @@ const ExporterSection = ({ formData, onChange }) => {
           onChange={onChange}
           placeholder="Enter Party Name"
           required
+          disabled={readOnly}
         />
         <FormInput
           label="Contact No."
@@ -19,6 +20,7 @@ const ExporterSection = ({ formData, onChange }) => {
           value={formData.exporterContactNo}
           onChange={onChange}
           placeholder="+44 6785 5679"
+          disabled={readOnly}
         />
         <div className="col-span-2">
           <FormInput
@@ -27,6 +29,7 @@ const ExporterSection = ({ formData, onChange }) => {
             value={formData.exporterAddress}
             onChange={onChange}
             placeholder="Enter Address"
+            disabled={readOnly}
           />
         </div>
       </div>

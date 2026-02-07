@@ -140,10 +140,164 @@ const CreateInvoice = () => {
   };
 
   const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    console.log("Items:", items);
-    console.log("Packings:", packings);
-    // Add your submit logic here
+    const formattedDate = formatDateForList(formData.invoiceDate);
+    const partyName =
+      formData.billToName || formData.exporterCompanyName || "Unknown Party";
+    const invoiceNo = formData.invoiceNo || "NA";
+
+    const invoiceTypes = ["Export", "Commercial", "Packing List"];
+    const newInvoices = invoiceTypes.map((invoiceType, index) => ({
+      id: `local-${Date.now()}-${index}`,
+      invoiceNo,
+      date: formattedDate,
+      partyName,
+      invoiceType,
+      details: {
+        formData: { ...formData },
+        items: items.map((item) => ({ ...item })),
+        packings: packings.map((packing) => ({ ...packing })),
+      },
+    }));
+
+    const existingInvoices = getStoredInvoices();
+    localStorage.setItem(
+      "invoices",
+      JSON.stringify([...existingInvoices, ...newInvoices])
+    );
+
+    downloadInvoicePdf({
+      formData,
+      items,
+      packings,
+      partyName,
+      invoiceNo,
+      formattedDate,
+    });
+
+    navigate("/invoices");
+  };
+
+  const getStoredInvoices = () => {
+    try {
+      const raw = localStorage.getItem("invoices");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const formatDateForList = (dateValue) => {
+    if (!dateValue) return "";
+    const [year, month, day] = dateValue.split("-");
+    if (!year || !month || !day) return dateValue;
+    return `${day}/${month}/${year}`;
+  };
+
+  const downloadInvoicePdf = ({
+    formData: invoiceForm,
+    items: invoiceItems,
+    packings: invoicePackings,
+    partyName,
+    invoiceNo,
+    formattedDate,
+  }) => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    const itemsRows = invoiceItems
+      .map(
+        (item, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${item.itemDescription || "-"}</td>
+            <td>${item.hsCode || "-"}</td>
+            <td>${item.itemQty || "-"}</td>
+            <td>${item.unitPrice || "-"}</td>
+          </tr>
+        `
+      )
+      .join("");
+
+    const packingsRows = invoicePackings
+      .map(
+        (packing, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${packing.packingDescription || "-"}</td>
+            <td>${packing.totalQtyPcs || "-"}</td>
+            <td>${packing.noOfCarton || "-"}</td>
+            <td>${packing.grossWeight || "-"}</td>
+          </tr>
+        `
+      )
+      .join("");
+
+    printWindow.document.write(`
+      <!doctype html>
+      <html>
+        <head>
+          <title>Invoice ${invoiceNo}</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #111; padding: 32px; }
+            h1 { margin: 0 0 8px; font-size: 24px; }
+            p { margin: 4px 0; }
+            table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+            th, td { border: 1px solid #ddd; padding: 8px; font-size: 12px; }
+            th { background: #f3f4f6; text-align: left; }
+            .section { margin-top: 24px; }
+          </style>
+        </head>
+        <body>
+          <h1>Invoice ${invoiceNo}</h1>
+          <p><strong>Date:</strong> ${formattedDate || "-"}</p>
+          <p><strong>Party:</strong> ${partyName}</p>
+          <p><strong>Exporter:</strong> ${
+            invoiceForm.exporterCompanyName || "-"
+          }</p>
+          <p><strong>Bill To:</strong> ${invoiceForm.billToName || "-"}</p>
+          <p><strong>Ship To:</strong> ${invoiceForm.shipToName || "-"}</p>
+
+          <div class="section">
+            <h2>Items</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Description</th>
+                  <th>HS Code</th>
+                  <th>Qty</th>
+                  <th>Unit Price</th>
+                </tr>
+              </thead>
+              <tbody>${itemsRows || "<tr><td colspan='5'>No items</td></tr>"}</tbody>
+            </table>
+          </div>
+
+          <div class="section">
+            <h2>Packing</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Description</th>
+                  <th>Total Qty</th>
+                  <th>Cartons</th>
+                  <th>Gross Wt</th>
+                </tr>
+              </thead>
+              <tbody>${packingsRows || "<tr><td colspan='5'>No packing details</td></tr>"}</tbody>
+            </table>
+          </div>
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 300);
   };
 
   return (

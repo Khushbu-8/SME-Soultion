@@ -10,6 +10,7 @@ const FormInput = ({
   required = false,
   className = "",
   colSpan = "1",
+  disabled = false,
 }) => {
   return (
     <div className={colSpan}>
@@ -23,7 +24,10 @@ const FormInput = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 ${className}`}
+        disabled={disabled}
+        className={`mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 ${
+          disabled ? "bg-gray-100 text-gray-600 cursor-not-allowed" : ""
+        } ${className}`}
       />
     </div>
   );
