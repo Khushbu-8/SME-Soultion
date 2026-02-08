@@ -207,19 +207,19 @@ const InvoicesList = () => {
                       <td className="px-6 py-4 text-center text-sm font-medium">
                         {invoice.invoiceNo}
                       </td>
-                      <td className="px-6 py-4 text-center text-sm text-gray-600">
+                      <td className="px-6 py-4 text-center text-sm text-gray-500">
                         {invoice.date}
                       </td>
-                      <td className="px-6 py-4 text-center text-sm">
+                      <td className="px-6 py-4 text-center text-sm text-gray-500">
                         {invoice.partyName}
                       </td>
-                      <td className="px-6 py-4 text-center text-sm text-gray-600">
+                      <td className="px-6 py-4 text-center text-sm text-gray-500">
                         {invoice.invoiceType}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <button
                           onClick={() => handleDownload(invoice.id, invoice.invoiceType, invoice.invoiceNo)}
-                          className="inline-flex items-center gap-2 text-gray-800 hover:text-black"
+                          className="inline-flex items-center gap-2 text-gray-500 hover:text-black text-sm"
                         >
                           Download
                           <Download className="w-4 h-4" />

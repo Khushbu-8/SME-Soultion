@@ -41,7 +41,7 @@ const ImporterSection = ({ title, prefix, formData, onChange, disabled }) => {
 
       {/* 4. Contact Number */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block font-medium text-black mb-1">
           Contact No.
         </label>
         <input
@@ -51,13 +51,13 @@ const ImporterSection = ({ title, prefix, formData, onChange, disabled }) => {
           onChange={onChange}
           disabled={disabled}
           placeholder="Phone Number"
-          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100"
+          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
         />
       </div>
 
       {/* 5. Address */}
       <div className="md:col-span-2">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block font-medium text-black mb-1">
           Address
         </label>
         <textarea
@@ -67,7 +67,7 @@ const ImporterSection = ({ title, prefix, formData, onChange, disabled }) => {
           disabled={disabled}
           rows="3"
           placeholder="Full Address"
-          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100"
+          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
         />
       </div>
     </div>
