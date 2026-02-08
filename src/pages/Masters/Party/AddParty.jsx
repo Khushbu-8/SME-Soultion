@@ -295,7 +295,7 @@ const AddParty = () => {
             >
               <span
                 className={
-                  formData.partyType === "" ? "text-gray-500" : "text-black"
+                  formData.partyType === "" ? "text-gray-500 test-sm" : "text-black"
                 }
               >
                 {formData.partyType === "" ? "Select Type" : formData.partyType}

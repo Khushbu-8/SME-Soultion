@@ -14,7 +14,7 @@ const FormInput = ({
 }) => {
   return (
     <div className={colSpan}>
-      <label className="block text-black font-medium mb-2">
+      <label className="block text-black font-medium">
         {label}
         {required && <span className="text-black">*</span>}
       </label>
