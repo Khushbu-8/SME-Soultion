@@ -25,7 +25,7 @@ const FormInput = ({
         onChange={onChange}
         disabled={disabled}
         placeholder={placeholder}
-        className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 ${disabled ? 'bg-gray-50 text-gray-600' : ''} ${className}`}
+        className={`w-full border border-gray-200 rounded-lg px-4 py-2  focus:outline-none focus:ring-2 focus:ring-gray-500 placeholder:text-gray-500 placeholder:text-sm ${disabled ? 'bg-gray-50 text-gray-600' : ''} ${className}`}
       />
     </div>
   );

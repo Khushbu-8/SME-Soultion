@@ -7,7 +7,7 @@ const ImporterSection = ({ title, prefix, formData, onChange, disabled }) => {
       {/* 1. Country Field (Likely missing previously) */}
       <div className="md:col-span-2">
         <label className="block font-medium text-black mb-1">
-          Country
+        To The Order
         </label>
         <input
           type="text"
@@ -15,8 +15,8 @@ const ImporterSection = ({ title, prefix, formData, onChange, disabled }) => {
           value={formData[`${prefix}Country`] || ""}
           onChange={onChange}
           disabled={disabled}
-          placeholder="e.g. USA, India, UAE"
-          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
+          placeholder="Enter Country"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
         />
       </div>
 
@@ -26,7 +26,7 @@ const ImporterSection = ({ title, prefix, formData, onChange, disabled }) => {
       {/* 3. Company / Party Name */}
       <div>
         <label className="block font-medium text-black mb-1">
-          {title} Name
+          {title}
         </label>
         <input
           type="text"
@@ -34,8 +34,8 @@ const ImporterSection = ({ title, prefix, formData, onChange, disabled }) => {
           value={formData[`${prefix}Name`] || ""}
           onChange={onChange}
           disabled={disabled}
-          placeholder="Company Name"
-          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
+          placeholder="Enter Party Name"
+          className="w-full  px-4 py-2  border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
         />
       </div>
 
@@ -50,8 +50,8 @@ const ImporterSection = ({ title, prefix, formData, onChange, disabled }) => {
           value={formData[`${prefix}ContactNo`] || ""}
           onChange={onChange}
           disabled={disabled}
-          placeholder="Phone Number"
-          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
+          placeholder="Enter Number"
+          className="w-full  px-4 py-2  border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
         />
       </div>
 
@@ -65,9 +65,9 @@ const ImporterSection = ({ title, prefix, formData, onChange, disabled }) => {
           value={formData[`${prefix}Address`] || ""}
           onChange={onChange}
           disabled={disabled}
-          rows="3"
-          placeholder="Full Address"
-          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
+          rows="1"
+          placeholder="Enter Address"
+          className="w-full px-4 py-2  border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:bg-gray-100 placeholder:text-gray-500 placeholder:text-sm"
         />
       </div>
     </div>

@@ -165,9 +165,9 @@ const InvoicesList = () => {
         </div>
         
         <div className="mb-8">
-          <div className="bg-white border border-gray-300 rounded-lg px-3 py-2 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-500">Total Invoices</p>
-            <p className="text-3xl font-medium text-black">
+           <div className="bg-white px-3 py-2 rounded-lg border border-gray-300 h-[110px] flex flex-col justify-between">
+        <p className="text-gray-500">Total Invoices</p>
+            <p className="text-2xl font-medium text-black">
               {invoices.length}
             </p>
           </div>

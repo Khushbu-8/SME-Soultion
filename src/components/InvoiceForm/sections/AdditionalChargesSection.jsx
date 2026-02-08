@@ -10,7 +10,7 @@ const AdditionalChargesSection = ({ formData, onChange, disabled = false }) => {
           name="freightCost"
           value={formData.freightCost}
           onChange={onChange}
-          placeholder="10.400"
+          placeholder="00"
           disabled={disabled}
         />
         <FormInput

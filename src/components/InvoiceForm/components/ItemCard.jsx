@@ -38,7 +38,7 @@ const ItemCard = ({
           name={`itemNo_${index}`}
           value={item.itemNo || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="01"
+          placeholder="Enter No."
           disabled={disabled}
         />
         <FormInput
@@ -46,7 +46,7 @@ const ItemCard = ({
           name={`itemDescription_${index}`}
           value={item.itemDescription || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="FNESPBL 10-32 X 5/16 A/F E.S.P Hex Nut"
+          placeholder="Enter Item Name"
           disabled={disabled}
         />
         <FormInput
@@ -56,13 +56,14 @@ const ItemCard = ({
           onChange={(e) => onChange(index, e)}
           placeholder="1001"
           disabled={disabled}
+
         />
         <FormInput
           label="Qty (Pcs)"
           name={`itemQty_${index}`}
           value={item.itemQty || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="1232"
+          placeholder="Enter Qty."
           disabled={disabled}
         />
         <div className="flex gap-2">
@@ -72,7 +73,7 @@ const ItemCard = ({
               name={`unitPrice_${index}`}
               value={item.unitPrice || ""}
               onChange={(e) => onChange(index, e)}
-              placeholder="135.45"
+              placeholder="Enter Price"
               disabled={disabled}
             />
           </div>
@@ -95,7 +96,7 @@ const ItemCard = ({
           name={`currencyCurrentPrice_${index}`}
           value={item.currencyCurrentPrice || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="91.10"
+          placeholder="ENter Price"
           disabled={disabled}
         />
       </div>

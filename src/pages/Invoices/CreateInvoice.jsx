@@ -24,6 +24,7 @@ const CreateInvoice = () => {
 
   const [mode, setMode] = useState('create'); 
   const [invoiceId, setInvoiceId] = useState(null);
+  const [copyBillTo, setCopyBillTo] = useState(false);
 
   const [formData, setFormData] = useState({
     // Exporter
@@ -91,6 +92,20 @@ const CreateInvoice = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCopyBillToChange = (e) => {
+    const { checked } = e.target;
+    setCopyBillTo(checked);
+    if (!checked) return;
+    setFormData((prev) => ({
+      ...prev,
+      shipToCountry: prev.billToCountry,
+      shipToToTheOrder: prev.billToToTheOrder,
+      shipToName: prev.billToName,
+      shipToContactNo: prev.billToContactNo,
+      shipToAddress: prev.billToAddress,
+    }));
   };
 
   const handleItemsChange = (newItems) => setItems(newItems);
@@ -206,6 +221,34 @@ const CreateInvoice = () => {
       setPackings(mappedPackings);
     }
   }, [location]);
+
+  useEffect(() => {
+    if (!copyBillTo) return;
+    setFormData((prev) => {
+      const next = {
+        ...prev,
+        shipToCountry: prev.billToCountry,
+        shipToToTheOrder: prev.billToToTheOrder,
+        shipToName: prev.billToName,
+        shipToContactNo: prev.billToContactNo,
+        shipToAddress: prev.billToAddress,
+      };
+      const isSame =
+        prev.shipToCountry === next.shipToCountry &&
+        prev.shipToToTheOrder === next.shipToToTheOrder &&
+        prev.shipToName === next.shipToName &&
+        prev.shipToContactNo === next.shipToContactNo &&
+        prev.shipToAddress === next.shipToAddress;
+      return isSame ? prev : next;
+    });
+  }, [
+    copyBillTo,
+    formData.billToCountry,
+    formData.billToToTheOrder,
+    formData.billToName,
+    formData.billToContactNo,
+    formData.billToAddress,
+  ]);
 
   // Helper to download a specific PDF type
   // 1. Helper function to handle the download
@@ -372,13 +415,27 @@ const CreateInvoice = () => {
           />
         </FormSection>
 
-        <FormSection title="Importer (Ship To)">
+        <FormSection
+          title="Importer (Ship To)"
+          action={
+            <label className="inline-flex items-center font-medium gap-2 text-md text-black">
+              <span>Copy to Importer (Bill to)</span>
+              <input
+                type="checkbox"
+                checked={copyBillTo}
+                onChange={handleCopyBillToChange}
+                disabled={mode === 'view'}
+                className="h-4 w-4 rounded border-black text-black focus:ring-gray-900 disabled:opacity-60"
+              />
+            </label>
+          }
+        >
           <ImporterSection
             title="Ship To"
             prefix="shipTo"
             formData={formData}
             onChange={handleChange}
-            disabled={mode === 'view'}
+            disabled={mode === 'view' || copyBillTo}
           />
         </FormSection>
 
@@ -417,15 +474,15 @@ const CreateInvoice = () => {
         </FormSection>
 
         <FormSection title="ARN No">
-          <TextAreaSection title="Enter ARN No." name="arnNo" value={formData.arnNo} onChange={handleChange} placeholder="ARN..." disabled={mode === 'view'} />
+          <TextAreaSection title="Enter ARN No." name="" value={formData.arnNo} onChange={handleChange} placeholder="Enter Something.." disabled={mode === 'view'} />
         </FormSection>
 
         <FormSection title="RoDTEP">
-          <TextAreaSection title="Enter RoDTEP" name="rodtep" value={formData.rodtep} onChange={handleChange} placeholder="RoDTEP..." disabled={mode === 'view'} />
+          <TextAreaSection title="Enter RoDTEP" name="rodtep" value={formData.rodtep} onChange={handleChange} placeholder="Enter Something.." disabled={mode === 'view'} />
         </FormSection>
 
         <FormSection title="REX No.">
-          <TextAreaSection title="Enter REX No." name="rexNo" value={formData.rexNo} onChange={handleChange} placeholder="REX..." disabled={mode === 'view'} />
+          <TextAreaSection title="Enter REX No." name="rexNo" value={formData.rexNo} onChange={handleChange} placeholder="Enter Something.." disabled={mode === 'view'} />
         </FormSection>
 
         <div className="flex justify-center gap-4 pt-4">

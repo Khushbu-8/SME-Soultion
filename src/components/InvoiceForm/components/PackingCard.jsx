@@ -32,7 +32,7 @@ const PackingCard = ({
           name={`packingItemNo_${index}`}
           value={item.packingItemNo || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="01"
+          placeholder="Enter No."
           disabled={disabled}
         />
         <FormInput
@@ -40,7 +40,7 @@ const PackingCard = ({
           name={`packingDescription_${index}`}
           value={item.packingDescription || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="FNESPBL 10-32 X 5/16 A/F E.S.P Hex Nut"
+          placeholder="Enter Item Name"
           disabled={disabled}
         />
         <FormInput
@@ -48,7 +48,7 @@ const PackingCard = ({
           name={`totalQtyPcs_${index}`}
           value={item.totalQtyPcs || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="1232"
+          placeholder="Enter Qty."
           disabled={disabled}
         />
         <FormInput
@@ -56,7 +56,7 @@ const PackingCard = ({
           name={`qtyInEachCarton_${index}`}
           value={item.qtyInEachCarton || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="22"
+          placeholder="Enter Each Carton"
           disabled={disabled}
         />
         <FormInput
@@ -64,7 +64,7 @@ const PackingCard = ({
           name={`noOfCarton_${index}`}
           value={item.noOfCarton || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="56"
+          placeholder="Enter No."
           disabled={disabled}
         />
         <FormInput
@@ -72,7 +72,7 @@ const PackingCard = ({
           name={`grossWeight_${index}`}
           value={item.grossWeight || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="186.000kg"
+          placeholder="Enter Gross Weight"
           disabled={disabled}
         />
         <FormInput
@@ -80,7 +80,7 @@ const PackingCard = ({
           name={`netWeight_${index}`}
           value={item.netWeight || ""}
           onChange={(e) => onChange(index, e)}
-          placeholder="136.500kg"
+          placeholder="Enter Net Weight"
           disabled={disabled}
         />
         <div className="flex items-end gap-3">
@@ -90,7 +90,7 @@ const PackingCard = ({
               name={`totalCartonWith_${index}`}
               value={item.noOfCarton || ""}
               onChange={(e) => onChange(index, e)}
-              placeholder="56"
+              placeholder="--"
               disabled={disabled}
             />
           </div>
@@ -100,7 +100,7 @@ const PackingCard = ({
               name={`woodenPallet_${index}`}
               value={item.woodenPallet || ""}
               onChange={(e) => onChange(index, e)}
-              placeholder="02"
+              placeholder="--"
               disabled={disabled}
             />
           </div>

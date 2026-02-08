@@ -11,7 +11,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.invoiceNo}
           onChange={onChange}
           disabled={disabled}
-          placeholder="01"
+          placeholder="Enter Invoice No."
         />
         <FormInput
           label="Invoice Date"
@@ -20,6 +20,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.invoiceDate}
           onChange={onChange}
           disabled={disabled}
+          placeholder="Enter Date"
         />
         <FormInput
           label="GST No"
@@ -27,7 +28,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.gstNo}
           onChange={onChange}
           disabled={disabled}
-          placeholder="24AAMCC7842H1ZG"
+          placeholder="Enter GST No"
         />
         <FormInput
           label="IEC Code"
@@ -35,7 +36,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.iecCode}
           onChange={onChange}
           disabled={disabled}
-          placeholder="AAGFI3929N"
+          placeholder="Enter IEC Code"
         />
         <FormInput
           label="P/O No."
@@ -43,7 +44,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.poNo}
           onChange={onChange}
           disabled={disabled}
-          placeholder="67937969"
+          placeholder="Enter P/O No."
         />
         <FormInput
           label="Incoterms"
@@ -51,7 +52,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.incoterms}
           onChange={onChange}
           disabled={disabled}
-          placeholder="F.O.B"
+          placeholder="Enter Incoterms"
         />
         <FormInput
           label="Payment Terms"
@@ -59,7 +60,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.paymentTerms}
           onChange={onChange}
           disabled={disabled}
-          placeholder="T/T Net 15 B/L"
+          placeholder="Enter Payment Terms"
         />
         <FormInput
           label="Pre Carriage"
@@ -67,7 +68,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.preCarriage}
           onChange={onChange}
           disabled={disabled}
-          placeholder="Jamnagar"
+          placeholder="Enter Pre Carriage"
         />
         <FormInput
           label="Country of Origin"
@@ -75,7 +76,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.countryOfOrigin}
           onChange={onChange}
           disabled={disabled}
-          placeholder="India"
+          placeholder="Enter Country of Origin"
         />
         <FormInput
           label="Country of Final Destination"
@@ -83,7 +84,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.countryOfFinalDestination}
           onChange={onChange}
           disabled={disabled}
-          placeholder="Denmark"
+          placeholder="Enter Final Destination"
         />
         <FormInput
           label="Port of Loading"
@@ -91,7 +92,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.portOfLoading}
           onChange={onChange}
           disabled={disabled}
-          placeholder="Nhava Sheva"
+          placeholder="Enter Port of Loading"
         />
         <FormInput
           label="Port of Discharge"
@@ -99,7 +100,7 @@ const InvoiceDetailsSection = ({ formData, onChange, disabled = false }) => {
           value={formData.portOfDischarge}
           onChange={onChange}
           disabled={disabled}
-          placeholder="Dallas Port"
+          placeholder="Enter Port of Discharge"
         />
       </div>
     </>
