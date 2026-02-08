@@ -350,7 +350,7 @@ const CategoryMaster = () => {
                       {category.subCategories.map((subCat) => (
                         <div
                           key={subCat.id}
-                          className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"
+                          className="flex items-center justify-between bg-gray-50 rounded text-sm"
                         >
                           <span className="text-gray-700">{subCat.name}</span>
                           <div className="flex items-center gap-2">
