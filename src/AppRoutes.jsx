@@ -23,65 +23,65 @@ const AppRoutes = () => {
       <Route
         path="/"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <Admin />
-           </ProtectedRoute>
+          //  </ProtectedRoute>
         }
       />
       <Route
         path="/masters/party"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <PartyMaster />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         }
       />
       <Route
         path="/masters/party/add"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <AddParty />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         }
       />
       <Route
         path="/masters/party/edit/:id"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <AddParty />
-          </ProtectedRoute> 
+          // </ProtectedRoute> 
         }
       />
       <Route
         path="/add-party"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <AddParty />
-           </ProtectedRoute>
+          //  </ProtectedRoute>
         }
       />
       <Route
         path="/masters/category"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <CategoryMaster />
-           </ProtectedRoute>
+          //  </ProtectedRoute>
         }
       />
       <Route
         path="/masters/item"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <ItemMaster />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         }
       />
       <Route
         path="/masters/item/add"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <AddItem />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         }
       />
       {/* <Route

@@ -211,8 +211,8 @@ const AddParty = () => {
           <div className="grid grid-cols-2 gap-6 mb-6">
             {/* Party Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Name <span className="text-red-500">*</span>
+              <label className="block font-medium text-black mb-2">
+                Name <span className="text-black">*</span>
               </label>
               <input
                 type="text"
@@ -220,14 +220,14 @@ const AddParty = () => {
                 value={formData.partyName}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition placeholder:text-sm placeholder:text-gray-500 "
                 placeholder="Enter Party Name"
               />
             </div>
 
             {/* GSTIN */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block  font-medium text-black mb-2">
                 GSTIN
               </label>
               <input
@@ -235,14 +235,14 @@ const AddParty = () => {
                 name="gstNumber"
                 value={formData.gstNumber}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition  placeholder:text-sm placeholder:text-gray-500 "
                 placeholder="Enter GSTIN"
               />
             </div>
 
             {/* Contact Number */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-md font-medium text-black mb-2">
                 Contact Number
               </label>
               <input
@@ -250,14 +250,14 @@ const AddParty = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition  placeholder:text-sm placeholder:text-gray-500 "
                 placeholder="Enter Contact Number"
               />
             </div>
 
             {/* Email ID */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-md font-medium text-black mb-2">
                 Email ID
               </label>
               <input
@@ -265,7 +265,7 @@ const AddParty = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition  placeholder:text-sm placeholder:text-gray-500 "
                 placeholder="Enter Email ID"
               />
             </div>
@@ -273,18 +273,18 @@ const AddParty = () => {
 
           {/* Type */}
           <div className="mb-8 relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Type <span className="text-red-500">*</span>
+            <label className="block text-md font-medium text-black mb-2">
+              Type <span className="text-black">*</span>
             </label>
 
             <button
               type="button"
               onClick={() => setIsTypeOpen(!isTypeOpen)}
-              className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-gray-500 transition"
+              className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-gray-500 transition  placeholder:text-sm placeholder:text-gray-500 "
             >
               <span
                 className={
-                  formData.partyType === "" ? "text-gray-400" : "text-gray-900"
+                  formData.partyType === "" ? "text-gray-500" : "text-black"
                 }
               >
                 {formData.partyType === "" ? "Select Type" : formData.partyType}
@@ -316,11 +316,11 @@ const AddParty = () => {
                     onClick={() => {
                       setFormData((prev) => ({
                         ...prev,
-                        partyType: item.value, // ✅ saved value
+                        partyType: item.value,
                       }));
                       setIsTypeOpen(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
+                    className="w-full text-left px-4 py-2 text-md hover:bg-gray-100 transition"
                   >
                     {item.label}
                   </button>

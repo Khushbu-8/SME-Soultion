@@ -53,7 +53,8 @@ const EditPartyDialog = ({ isOpen, onClose, onSave, initialData = null }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-xl max-h-[90vh] overflow-visible">
+        <div className="max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-medium text-black">Edit Party</h2>
@@ -69,8 +70,8 @@ const EditPartyDialog = ({ isOpen, onClose, onSave, initialData = null }) => {
         <div className="space-y-4 mb-6">
           {/* Party Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Name <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-black mb-1">
+              Name <span className="text-black">*</span>
             </label>
             <input
               type="text"
@@ -78,13 +79,13 @@ const EditPartyDialog = ({ isOpen, onClose, onSave, initialData = null }) => {
               value={formData.name}
               onChange={handleChange}
               placeholder="Enter Party Name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm placeholder:tect-gray-500"
             />
           </div>
 
           {/* GSTIN */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-black mb-1">
               GSTIN
             </label>
             <input
@@ -93,13 +94,13 @@ const EditPartyDialog = ({ isOpen, onClose, onSave, initialData = null }) => {
               value={formData.gstin}
               onChange={handleChange}
               placeholder="Enter GSTIN"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm text-gray-500"
             />
           </div>
 
           {/* Contact Number */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-black mb-1">
               Contact Number
             </label>
             <input
@@ -108,13 +109,13 @@ const EditPartyDialog = ({ isOpen, onClose, onSave, initialData = null }) => {
               value={formData.phone}
               onChange={handleChange}
               placeholder="Enter Contact Number"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm text-gray-500"
             />
           </div>
 
           {/* Email ID */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-black mb-1">
               Email ID
             </label>
             <input
@@ -123,14 +124,14 @@ const EditPartyDialog = ({ isOpen, onClose, onSave, initialData = null }) => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter Email ID"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm texr-gray-500"
             />
           </div>
 
           {/* Type */}
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Type <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-black mb-1">
+              Type <span className="text-black">*</span>
             </label>
             <button
               type="button"
@@ -200,6 +201,7 @@ const EditPartyDialog = ({ isOpen, onClose, onSave, initialData = null }) => {
           >
             Cancel
           </button>
+        </div>
         </div>
       </div>
     </div>

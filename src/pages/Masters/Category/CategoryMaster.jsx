@@ -306,7 +306,7 @@ const CategoryMaster = () => {
                 {/* Category Header */}
                 <div className="p-4 border-b border-gray-200">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900">Category</h3>
+                    <h3 className="font-medium text-black">Category</h3>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleEditCategory(category)}
@@ -333,7 +333,7 @@ const CategoryMaster = () => {
                 <div className="p-4">
                   <button
                     onClick={() => toggleExpand(category.id)}
-                    className="w-full flex items-center justify-between text-sm font-semibold text-gray-900 hover:bg-gray-50 p-2 rounded transition"
+                    className="w-full flex items-center justify-between text-sm font-medium text-black hover:bg-gray-50 p-2 rounded transition"
                   >
                     <span>
                       Sub Categories ({category.subCategories.length})
@@ -410,7 +410,7 @@ const CategoryMaster = () => {
         {editSubCategoryDialog.isOpen && (
           <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
+              <h2 className="text-xl font-medium text- mb-4">black
                 Edit SubCategory
               </h2>
               <input
@@ -429,7 +429,7 @@ const CategoryMaster = () => {
                       subCategory: null,
                     })
                   }
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  className="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
                 >
                   Cancel
                 </button>
@@ -442,7 +442,7 @@ const CategoryMaster = () => {
                       handleSaveSubCategory(inputValue);
                     }
                   }}
-                  className="px-4 py-2 bg-[#343434] text-white rounded-lg hover:bg-gray-800 transition"
+                  className="px-4 py-2 bg-black text-white rounded-xl hover:bg-gray-800 transition"
                 >
                   Save
                 </button>

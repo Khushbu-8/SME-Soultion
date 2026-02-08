@@ -57,7 +57,7 @@ const ViewItemDialog = ({
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Item Details</h2>
+          <h2 className="text-xl font-medium text-black">Item Details</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-500"
@@ -71,7 +71,7 @@ const ViewItemDialog = ({
           {/* Row 1 */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Size in Inch
               </label>
               <input
@@ -82,7 +82,7 @@ const ViewItemDialog = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Size in MM
               </label>
               <input
@@ -97,7 +97,7 @@ const ViewItemDialog = ({
           {/* Row 2 */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Category
               </label>
               <input
@@ -108,7 +108,7 @@ const ViewItemDialog = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Sub Category
               </label>
               <input
@@ -123,7 +123,7 @@ const ViewItemDialog = ({
           {/* Row 3 */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Item in Kg
               </label>
               <input
@@ -134,7 +134,7 @@ const ViewItemDialog = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Weight/PL
               </label>
               <input
@@ -149,7 +149,7 @@ const ViewItemDialog = ({
           {/* Row 4 */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Total PL
               </label>
               <input
@@ -160,7 +160,7 @@ const ViewItemDialog = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Dozen Weight
               </label>
               <input
@@ -174,7 +174,7 @@ const ViewItemDialog = ({
 
           {/* Row 5 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-black mb-1">
               Low stock Warning [Pcs]
             </label>
             <input

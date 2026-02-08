@@ -81,8 +81,8 @@ const AddCategoryDialog = ({
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl max-h-[80vh] overflow-hidden px-16 py-8 ">
         
         {/* Header */}
-        <div className="flex items-center justify-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="flex items-center justify-center mb-1">
+          <h2 className="text-xl font-medium text-black">
             {isEdit ? "Edit Category" : "Add Categories"}
           </h2>
         </div>
@@ -97,21 +97,21 @@ const AddCategoryDialog = ({
         {/* Scrollable Form Section */}
         <div className="space-y-4 mb-6 overflow-y-auto max-h-[45vh] pr-2 scrollbar-custom">
           <div>
-            <label className="block text-md font-medium text-gray-700 mb-2">
-              Enter New Category<span className="text-red-500">*</span>
+            <label className="block text-md font-medium text-black mb-2">
+              Enter New Category<span className="text-black">*</span>
             </label>
             <input
               type="text"
               value={formData.categoryName}
               onChange={handleCategoryChange}
               placeholder="Enter Category"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-[#343434] outline-none transition"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-[#343434] outline-none transition placeholder:text-sm placeholder:text-gray-500 "
             />
           </div>
 
           <div>
-            <label className="block text-md font-medium text-gray-700 mb-2">
-              Enter New Sub Category<span className="text-red-500">*</span>
+            <label className="block text-md font-medium text-black mb-2">
+              Enter New Sub Category<span className="text-black">*</span>
             </label>
 
             <div className="space-y-2 max-h-[30vh] overflow-y-auto pr-1 scrollbar-thin">
@@ -124,7 +124,7 @@ const AddCategoryDialog = ({
                       handleSubCategoryChange(index, e.target.value)
                     }
                     placeholder="Enter Sub Category"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:border-[#343434] outline-none transition"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:border-[#343434] outline-none transition placeholder:text-sm placeholder:text-gray-500 "
                   />
 
                   {index === formData.subCategories.length - 1 && (

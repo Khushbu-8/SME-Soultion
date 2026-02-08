@@ -58,10 +58,10 @@ const EditItemDialog = ({
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Edit Item</h2>
+          <h2 className="text-xl font-medium text-gray-900">Edit Item</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-500"
+            className="text-gray-500 hover:text-gray-500"
           >
             <X className="w-6 h-6" />
           </button>
@@ -72,8 +72,8 @@ const EditItemDialog = ({
           {/* Row 1 */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Size in Inch<span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-black mb-1">
+                Size in Inch<span className="text-black">*</span>
               </label>
               <input
                 type="text"
@@ -84,8 +84,8 @@ const EditItemDialog = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Size in MM<span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-black mb-1">
+                Size in MM<span className="text-black">*</span>
               </label>
               <input
                 type="text"
@@ -100,8 +100,8 @@ const EditItemDialog = ({
           {/* Row 2 */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category<span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-black mb-1">
+                Category<span className="text-black">*</span>
               </label>
               <input
                 type="text"
@@ -112,7 +112,7 @@ const EditItemDialog = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Sub Category
               </label>
               <input
@@ -128,7 +128,7 @@ const EditItemDialog = ({
           {/* Row 3 */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Item in Kg
               </label>
               <input
@@ -140,8 +140,8 @@ const EditItemDialog = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Weight/Pc.<span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-black mb-1">
+                Weight/Pc.<span className="text-black">*</span>
               </label>
               <input
                 type="text"
@@ -156,7 +156,7 @@ const EditItemDialog = ({
           {/* Row 4 */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1">
                 Total Pc.
               </label>
               <input
@@ -168,8 +168,8 @@ const EditItemDialog = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Dozen Weight<span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-black mb-1">
+                Dozen Weight<span className="text-black">*</span>
               </label>
               <input
                 type="text"
@@ -183,7 +183,7 @@ const EditItemDialog = ({
 
           {/* Row 5 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-black mb-1">
               Low stock Warning [Pcs]
             </label>
             <input

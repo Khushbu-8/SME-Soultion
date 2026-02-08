@@ -344,8 +344,8 @@ const AddItem = () => {
             {/* Row 1 */}
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Size in Inch<span className="text-red-500">*</span>
+                <label className="block font-medium text-black mb-2">
+                  Size in Inch<span className="text-black">*</span>
                 </label>
                 <input
                   type="text"
@@ -353,12 +353,12 @@ const AddItem = () => {
                   value={formData.sizeInch}
                   onChange={handleChange}
                   placeholder="Enter size"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none placeholder:text-sm placeholder:text-gray-500 placeholder:text-sm placeholder:text-gray-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Size in MM<span className="text-red-500">*</span>
+                <label className="block font-medium text-black mb-2">
+                  Size in MM<span className="text-black">*</span>
                 </label>
                 <input
                   type="text"
@@ -366,7 +366,7 @@ const AddItem = () => {
                   value={formData.sizeMM}
                   onChange={handleChange}
                   placeholder="Enter size"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none placeholder:text-sm placeholder:text-gray-500"
                 />
               </div>
             </div>
@@ -374,8 +374,8 @@ const AddItem = () => {
             {/* Row 2 - Category & SubCategory from API */}
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category<span className="text-red-500">*</span>
+                <label className="block font-medium text-black mb-2">
+                  Category<span className="text-black">*</span>
                 </label>
                 <div className="relative">
                   <button
@@ -386,7 +386,7 @@ const AddItem = () => {
                     <span
                       className={
                         formData.categoryName === ""
-                          ? "text-gray-400"
+                          ? "text-gray-500 text-sm"
                           : "text-gray-900"
                       }
                     >
@@ -434,7 +434,7 @@ const AddItem = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block font-medium text-black mb-2">
                   Sub Category
                 </label>
                 <div className="relative">
@@ -447,7 +447,7 @@ const AddItem = () => {
                     <span
                       className={
                         formData.subCategoryName === ""
-                          ? "text-gray-400"
+                          ? "text-gray-500 text-sm"
                           : "text-gray-900"
                       }
                     >
@@ -499,8 +499,8 @@ const AddItem = () => {
             {/* Row 3 */}
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Item in Kg<span className="text-red-500">*</span>
+                <label className="block font-medium text-black mb-2">
+                  Item in Kg<span className="text-black">*</span>
                 </label>
                 <input
                   type="text"
@@ -508,12 +508,12 @@ const AddItem = () => {
                   value={formData.itemKg}
                   onChange={handleChange}
                   placeholder="Enter Kg"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none placeholder:text-sm placeholder:text-gray-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Weight/Pc.<span className="text-red-500">*</span>
+                <label className="block font-medium text-black mb-2">
+                  Weight/Pc.<span className="text-black">*</span>
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -522,7 +522,7 @@ const AddItem = () => {
                     value={formData.weightPerPL}
                     onChange={handleChange}
                     placeholder="Enter Weight/Pc."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none placeholder:text-sm placeholder:text-gray-500"
                   />
                   <div className="relative w-24">
                     <button
@@ -578,7 +578,7 @@ const AddItem = () => {
             {/* Row 4 */}
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block font-medium text-black mb-2">
                   Total Pc. <span className="text-gray-500 text-xs">(Auto-calculated)</span>
                 </label>
                 <input
@@ -587,11 +587,11 @@ const AddItem = () => {
                   value={formData.totalPL}
                   readOnly
                   placeholder="Auto-calculated"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-not-allowed outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-black cursor-not-allowed outline-none placeholder:text-sm placeholder:text-gray-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block font-medium text-black mb-2">
                   Dozen Weight <span className="text-gray-500 text-xs">(Auto-calculated)</span>
                 </label>
                 <input
@@ -600,14 +600,14 @@ const AddItem = () => {
                   value={formData.dozenWeight}
                   readOnly
                   placeholder="Auto-calculated"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-not-allowed outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-black cursor-not-allowed outline-none placeholder:text-sm placeholder:text-gray-500"
                 />
               </div>
             </div>
 
             {/* Row 5 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block font-medium text-black mb-2">
                 Low stock Warning [Pc.]
               </label>
               <input
@@ -616,7 +616,7 @@ const AddItem = () => {
                 value={formData.lowStockWarning}
                 onChange={handleChange}
                 placeholder="Set Low stock Warning"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none placeholder:text-sm placeholder:text-gray-500"
               />
             </div>
 
