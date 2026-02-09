@@ -139,14 +139,7 @@ const ItemCard = ({
       
 
       <div className="grid grid-cols-2 gap-4 mt-4">
-        <FormInput
-          label="Total Qty (Pcs)"
-          name={`totalQty_${index}`}
-          value={item.totalQty || ""}
-          onChange={(e) => onChange(index, e)}
-          placeholder="Enter Qty."
-          disabled={disabled}
-        />
+       
         <FormInput
           label="Qty In Each Carton"
           name={`qtyInEachCarton_${index}`}
@@ -171,10 +164,7 @@ const ItemCard = ({
           placeholder="Enter Gross Weight"
           disabled={disabled}
         />
-      </div>
-
-      <div className="grid grid-cols-3 gap-4 mt-4">
-        <FormInput
+         <FormInput
           label="Net Weight"
           name={`netWeight_${index}`}
           value={item.netWeight || ""}
@@ -182,6 +172,10 @@ const ItemCard = ({
           placeholder="Enter Net Weight"
           disabled={disabled}
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mt-4">
+       
         <FormInput
           label="Total Carton with"
           name={`totalCartonWith_${index}`}
