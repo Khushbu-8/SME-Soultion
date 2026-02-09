@@ -176,16 +176,16 @@ const ItemCard = ({
 
       <div className="grid grid-cols-2 gap-4 mt-4">
        
-        <FormInput
+        {/* <FormInput
           label="Total Carton with"
           name={`totalCartonWith_${index}`}
           value={item.totalCartonWith || ""}
           onChange={(e) => onChange(index, e)}
           placeholder="--"
           disabled={disabled}
-        />
+        /> */}
         <FormInput
-          label="Wooden pallet"
+          label="Total wooden palate"
           name={`woodenPallet_${index}`}
           value={item.woodenPallet || ""}
           onChange={(e) => onChange(index, e)}
