@@ -16,7 +16,7 @@ import PackingDetailsSection from "../../components/InvoiceForm/sections/Packing
 import AdditionalChargesSection from "../../components/InvoiceForm/sections/AdditionalChargesSection";
 import BankDetailsSection from "../../components/InvoiceForm/sections/BankDetailsSection";
 import TextAreaSection from "../../components/InvoiceForm/sections/TextAreaSection";
-import { invoiceApi } from "../../services/apiService";
+import { invoiceApi, exportApi } from "../../services/apiService";
 
 const CreateInvoice = () => {
   const navigate = useNavigate();
@@ -224,35 +224,19 @@ const CreateInvoice = () => {
         partNo: it.partNo || "",
         itemDescription: it.description || "",
         hsCode: it.hsCode || "",
-        itemQty: it.quantity != null ? String(it.quantity) : "",
+        itemQty: it.totalQuantity != null ? String(it.totalQuantity) : "",
         unitPrice: it.unitPriceUsd != null ? String(it.unitPriceUsd) : "",
         currency: it.currency || "USD",
         currencyCurrentPrice: it.currencyCurrentPrice != null ? String(it.currencyCurrentPrice) : "",
-        totalQty: it.totalQty != null ? String(it.totalQty) : "",
-        qtyInEachCarton: it.qtyInEachCarton != null ? String(it.qtyInEachCarton) : "",
-        noOfCarton: it.noOfCarton != null ? String(it.noOfCarton) : "",
-        grossWeight: it.grossWeight != null ? String(it.grossWeight) : "",
-        netWeight: it.netWeight != null ? String(it.netWeight) : "",
-        totalCartonWith: it.totalCartonWith != null ? String(it.totalCartonWith) : "",
-        woodenPallet: it.woodenPallet != null ? String(it.woodenPallet) : "",
+        inrPrice: it.inrPrice != null ? String(it.inrPrice) : "",
+        qtyInEachCarton: it.qtyPerCarton != null ? String(it.qtyPerCarton) : "",
+        noOfCarton: it.noOfCartons != null ? String(it.noOfCartons) : "",
+        grossWeight: it.grossWeightKg != null ? String(it.grossWeightKg) : "",
+        netWeight: it.netWeightKg != null ? String(it.netWeightKg) : "",
+        totalCartonWith: "",
+        woodenPallet: it.woodenPallets != null ? String(it.woodenPallets) : "",
       }));
       setItems(mappedItems);
-    }
-
-    // Map packing details
-    if (Array.isArray(invoice.packingDetails) && invoice.packingDetails.length > 0) {
-      const mappedPackings = invoice.packingDetails.map((p) => ({
-        packingItemNo: p.itemNo || "",
-        packingDescription: p.description || "",
-        totalQtyPcs: p.totalQty != null ? String(p.totalQty) : "",
-        qtyInEachCarton: p.qtyPerCarton != null ? String(p.qtyPerCarton) : "",
-        noOfCarton: p.noOfCartons != null ? String(p.noOfCartons) : "",
-        grossWeight: p.grossWeightKg != null ? String(p.grossWeightKg) : "",
-        netWeight: p.netWeightKg != null ? String(p.netWeightKg) : "",
-        totalCartonWith: "",
-        woodenPallet: p.woodenPallets != null ? String(p.woodenPallets) : "",
-      }));
-      setPackings(mappedPackings);
     }
   }, [location]);
 
@@ -288,20 +272,20 @@ const CreateInvoice = () => {
   // 1. Helper function to handle the download
   const downloadPdf = async (id, type, fileName) => {
     try {
-      const response = await invoiceApi.getInvoicePdf(id, type, { responseType: 'blob' });
-      
+      const response = await exportApi.getInvoicePdf(id, type, { responseType: 'blob' });
+
       // Create a URL for the blob
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', fileName);
-      
+
       // Append to body, click, and clean up
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       return true; // Success
     } catch (error) {
       console.error(`Failed to download ${type}:`, error);
@@ -327,6 +311,7 @@ const CreateInvoice = () => {
         unitPriceUsd: item.unitPrice ? parseFloat(item.unitPrice) : 0,
         currency: item.currency || "USD",
         currencyCurrentPrice: item.currencyCurrentPrice ? parseFloat(item.currencyCurrentPrice) : 0,
+        inrPrice: item.inrPrice ? parseFloat(item.inrPrice) : 0,
         qtyPerCarton: item.qtyInEachCarton ? parseInt(item.qtyInEachCarton) : 0,
         noOfCartons: item.noOfCarton ? parseInt(item.noOfCarton) : 0,
         grossWeightKg: item.grossWeight ? parseFloat(item.grossWeight) : 0,
@@ -334,32 +319,18 @@ const CreateInvoice = () => {
         woodenPallets: item.woodenPallet ? parseInt(item.woodenPallet) : 0,
       }));
 
-      const formattedPackings = packings.map(packing => ({
-        itemNo: packing.packingItemNo || "",
-        description: packing.packingDescription || "",
-        totalQty: packing.totalQtyPcs ? parseInt(packing.totalQtyPcs) : 0,
-        qtyPerCarton: packing.qtyInEachCarton ? parseInt(packing.qtyInEachCarton) : 0,
-        noOfCartons: packing.noOfCarton ? parseInt(packing.noOfCarton) : 0,
-        grossWeightKg: packing.grossWeight ? parseFloat(packing.grossWeight) : 0,
-        netWeightKg: packing.netWeight ? parseFloat(packing.netWeight) : 0,
-        woodenPallets: packing.woodenPallet ? parseInt(packing.woodenPallet) : 0
-      }));
-
       const invoicePayload = {
         exporterCompanyName: formData.exporterCompanyName,
         exporterContactNo: formData.exporterContactNo,
         exporterAddress: formData.exporterAddress,
         billToCountry: formData.billToCountry,
-        billToToTheOrder: formData.billToToTheOrder,
         billToName: formData.billToName,
         billToContactNo: formData.billToContactNo,
         billToAddress: formData.billToAddress,
         shipToCountry: formData.shipToCountry,
-        shipToToTheOrder: formData.shipToToTheOrder,
         shipToName: formData.shipToName,
         shipToContactNo: formData.shipToContactNo,
         shipToAddress: formData.shipToAddress,
-        currency: "USD",
         invoiceNo: formData.invoiceNo,
         invoiceDate: formData.invoiceDate || new Date().toISOString().split('T')[0],
         gstNo: formData.gstNo,
@@ -373,7 +344,6 @@ const CreateInvoice = () => {
         portOfLoading: formData.portOfLoading,
         portOfDischarge: formData.portOfDischarge,
         items: formattedItems,
-        packingDetails: formattedPackings,
         beneficiaryName: formData.beneficiaryName,
         bankName: formData.beneficiaryBank,
         branch: formData.branch,

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import SidebarLayout from "../../components/SidebarLayout";
 import SearchFilter from "../../components/SearchFilter";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
-import { invoiceApi } from "../../services/apiService";
+import { invoiceApi, exportApi } from "../../services/apiService";
 import toast from "react-hot-toast";
 
 const InvoicesList = () => {
@@ -126,7 +126,7 @@ const InvoicesList = () => {
   const handleDownload = async (id, invoiceType, invoiceNo) => {
     try {
       
-      const resp = await invoiceApi.getInvoicePdf(id, invoiceType, { responseType: 'blob' });
+      const resp = await exportApi.getInvoicePdf(id, invoiceType, { responseType: 'blob' });
       const blob = resp.data;
       const url = window.URL.createObjectURL(new Blob([blob]));
       const link = document.createElement('a');
