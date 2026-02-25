@@ -6,45 +6,127 @@ const EditItemDialog = ({
   onClose,
   onSave,
   initialData = null,
+  categories = [],
 }) => {
   const [formData, setFormData] = useState({
     sizeInch: "",
     sizeMM: "",
-    category: "",
-    subCategory: "",
+    categoryId: "",
+    categoryName: "",
+    subCategoryId: "",
+    subCategoryName: "",
     itemKg: "",
     weightPerPL: "",
+    weightUnit: "",
     totalPL: "",
     dozenWeight: "",
     lowStockWarning: "",
   });
+  const [isWeightUnitOpen, setIsWeightUnitOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isSubCategoryOpen, setIsSubCategoryOpen] = useState(false);
+  const [subCategories, setSubCategories] = useState([]);
 
   useEffect(() => {
     if (initialData) {
       setFormData({
         sizeInch: initialData.sizeInch || "",
         sizeMM: initialData.sizeMM || "",
-        category: initialData.category || "",
-        subCategory: initialData.subCategory || "",
+        categoryId: initialData.categoryId || "",
+        categoryName: initialData.category || "",
+        subCategoryId: initialData.subCategoryId || "",
+        subCategoryName: initialData.subCategory || "",
         itemKg: initialData.itemKg || "",
         weightPerPL: initialData.weightPerPL || "",
+        weightUnit: initialData.weightUnit || "",
         totalPL: initialData.totalPL || "",
         dozenWeight: initialData.dozenWeight || "",
         lowStockWarning: initialData.lowStockWarning || "",
       });
+
+      // Set subcategories for the initial category
+      const matchedCategory = categories.find(
+        (cat) => cat.id === initialData.categoryId || cat.name === initialData.category
+      );
+      setSubCategories(matchedCategory?.subCategories || []);
     }
-  }, [initialData, isOpen]);
+  }, [initialData, isOpen, categories]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData((prev) => {
+      const newFormData = {
+        ...prev,
+        [name]: value,
+      };
+
+      // Auto-calculate Total Pc when Item Kg, Weight/Pc, or Weight Unit changes
+      if (name === "itemKg" || name === "weightPerPL" || name === "weightUnit") {
+        const itemKg =
+          name === "itemKg"
+            ? parseFloat(value) || 0
+            : parseFloat(prev.itemKg) || 0;
+        const weightPerPc =
+          name === "weightPerPL"
+            ? parseFloat(value) || 0
+            : parseFloat(prev.weightPerPL) || 0;
+        const weightUnit =
+          name === "weightUnit" ? value : newFormData.weightUnit || prev.weightUnit;
+
+        const weightPerPcInKg = weightUnit === "Gram" ? weightPerPc / 1000 : weightPerPc;
+
+        if (itemKg > 0 && weightPerPcInKg > 0) {
+          newFormData.totalPL = (itemKg / weightPerPcInKg).toFixed(2);
+        } else {
+          newFormData.totalPL = "";
+        }
+      }
+
+      // Auto-calculate Dozen Weight when Weight/Pc or Weight Unit changes
+      if (name === "weightPerPL" || name === "weightUnit") {
+        const weightPerPc =
+          name === "weightPerPL"
+            ? parseFloat(value) || 0
+            : parseFloat(prev.weightPerPL) || 0;
+        const weightUnit =
+          name === "weightUnit" ? value : newFormData.weightUnit || prev.weightUnit;
+
+        const weightPerPcInKg = weightUnit === "Gram" ? weightPerPc / 1000 : weightPerPc;
+
+        if (weightPerPcInKg > 0) {
+          newFormData.dozenWeight = (weightPerPcInKg * 12).toFixed(2);
+        } else {
+          newFormData.dozenWeight = "";
+        }
+      }
+
+      return newFormData;
+    });
+  };
+
+  const handleCategorySelect = (category) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      categoryId: category.id,
+      categoryName: category.name,
+      subCategoryId: "",
+      subCategoryName: "",
     }));
+    setSubCategories(category.subCategories || []);
+    setIsCategoryOpen(false);
+  };
+
+  const handleSubCategorySelect = (subCategory) => {
+    setFormData((prev) => ({
+      ...prev,
+      subCategoryId: subCategory.id,
+      subCategoryName: subCategory.name,
+    }));
+    setIsSubCategoryOpen(false);
   };
 
   const handleSave = () => {
-    if (!formData.sizeInch.trim() || !formData.category.trim()) {
+    if (!formData.sizeInch.trim() || !formData.categoryId) {
       alert("Please fill in required fields");
       return;
     }
@@ -97,31 +179,82 @@ const EditItemDialog = ({
             </div>
           </div>
 
-          {/* Row 2 */}
+          {/* Row 2 - Category & SubCategory Dropdowns */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-black mb-1">
                 Category<span className="text-black">*</span>
               </label>
-              <input
-                type="text"
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm"
-              />
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-gray-500 transition text-sm"
+                >
+                  <span className={formData.categoryName === "" ? "text-gray-500 text-sm" : "text-gray-900"}>
+                    {formData.categoryName === "" ? "Select Category" : formData.categoryName}
+                  </span>
+                  <svg className={`w-4 h-4 text-gray-500 transition-transform ${isCategoryOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isCategoryOpen && (
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+                    {categories.length === 0 ? (
+                      <div className="px-3 py-2 text-sm text-gray-500">No categories available</div>
+                    ) : (
+                      categories.map((category) => (
+                        <button
+                          key={category.id}
+                          type="button"
+                          onClick={() => handleCategorySelect(category)}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition"
+                        >
+                          {category.name}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-black mb-1">
                 Sub Category
               </label>
-              <input
-                type="text"
-                name="subCategory"
-                value={formData.subCategory}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm"
-              />
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsSubCategoryOpen(!isSubCategoryOpen)}
+                  disabled={!formData.categoryId}
+                  className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-gray-500 transition text-sm disabled:bg-gray-50 disabled:cursor-not-allowed"
+                >
+                  <span className={formData.subCategoryName === "" ? "text-gray-500 text-sm" : "text-gray-900"}>
+                    {formData.subCategoryName === "" ? "Select Sub Category" : formData.subCategoryName}
+                  </span>
+                  <svg className={`w-4 h-4 text-gray-500 transition-transform ${isSubCategoryOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isSubCategoryOpen && (
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+                    {subCategories.length === 0 ? (
+                      <div className="px-3 py-2 text-sm text-gray-500">No sub categories available</div>
+                    ) : (
+                      subCategories.map((subCategory) => (
+                        <button
+                          key={subCategory.id}
+                          type="button"
+                          onClick={() => handleSubCategorySelect(subCategory)}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition"
+                        >
+                          {subCategory.name}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -143,13 +276,46 @@ const EditItemDialog = ({
               <label className="block text-sm font-medium text-black mb-1">
                 Weight/Pc.<span className="text-black">*</span>
               </label>
-              <input
-                type="text"
-                name="weightPerPL"
-                value={formData.weightPerPL}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  name="weightPerPL"
+                  value={formData.weightPerPL}
+                  onChange={handleChange}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm"
+                />
+                <div className="relative w-24">
+                  <button
+                    type="button"
+                    onClick={() => setIsWeightUnitOpen(!isWeightUnitOpen)}
+                    className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-gray-500 transition text-sm"
+                  >
+                    <span className={formData.weightUnit === "" ? "text-gray-500 text-sm" : "text-gray-900 font-medium"}>
+                      {formData.weightUnit === "" ? "Gm/Kg" : formData.weightUnit}
+                    </span>
+                    <svg className={`w-3 h-3 text-gray-500 transition-transform ${isWeightUnitOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isWeightUnitOpen && (
+                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                      {["Kg", "Gram"].map((unit) => (
+                        <button
+                          key={unit}
+                          type="button"
+                          onClick={() => {
+                            handleChange({ target: { name: "weightUnit", value: unit } });
+                            setIsWeightUnitOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition"
+                        >
+                          {unit}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -157,14 +323,14 @@ const EditItemDialog = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-black mb-1">
-                Total Pc.
+                Total Pc. <span className="text-gray-500 text-xs">(Auto-calculated)</span>
               </label>
               <input
                 type="text"
                 name="totalPL"
                 value={formData.totalPL}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none text-sm"
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-black cursor-not-allowed outline-none text-sm"
               />
             </div>
             <div>

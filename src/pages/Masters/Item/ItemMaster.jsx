@@ -7,7 +7,7 @@ import EditItemDialog from "../../../components/Item/EditItemDialog";
 import ViewItemDialog from "../../../components/Item/ViewItemDialog";
 import ItemsTable from "../../../components/Item/ItemsTable";
 import SearchFilter from "../../../components/SearchFilter";
-import { itemApi } from "../../../services/apiService";
+import { itemApi, categoryApi } from "../../../services/apiService";
 import toast from "react-hot-toast";
 
 const ItemMaster = () => {
@@ -33,10 +33,31 @@ const ItemMaster = () => {
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetchItems();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await categoryApi.getAllCategories();
+      const categoriesData = response.data;
+      setCategories(
+        categoriesData.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          subCategories: (cat.subCategories || []).map((sub) => ({
+            id: sub.id,
+            name: sub.name,
+          })),
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const fetchItems = async () => {
     try {
@@ -107,8 +128,8 @@ const ItemMaster = () => {
       const updateData = {
         sizeInch: formData.sizeInch,
         sizeMm: formData.sizeMM,
-        categoryId: editDialog.data.categoryId,
-        subCategoryId: editDialog.data.subCategoryId,
+        categoryId: formData.categoryId || editDialog.data.categoryId,
+        subCategoryId: formData.subCategoryId || editDialog.data.subCategoryId,
         itemKg: parseFloat(formData.itemKg) || 0,
         weightPerPc: parseFloat(formData.weightPerPL) || 0,
         totalPc: parseFloat(formData.totalPL) || 0,
@@ -239,6 +260,7 @@ const ItemMaster = () => {
         onClose={() => setEditDialog({ isOpen: false, data: null })}
         onSave={handleSaveEdit}
         initialData={editDialog.data}
+        categories={categories}
       />
 
       {/* View Item Dialog */}

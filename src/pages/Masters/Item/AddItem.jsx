@@ -141,8 +141,8 @@ const AddItem = () => {
         [name]: value,
       };
 
-      // Auto-calculate Total Pc when Item Kg or Weight/Pc changes
-      if (name === "itemKg" || name === "weightPerPL") {
+      // Auto-calculate Total Pc when Item Kg, Weight/Pc, or Weight Unit changes
+      if (name === "itemKg" || name === "weightPerPL" || name === "weightUnit") {
         const itemKg =
           name === "itemKg"
             ? parseFloat(value) || 0
@@ -151,22 +151,35 @@ const AddItem = () => {
           name === "weightPerPL"
             ? parseFloat(value) || 0
             : parseFloat(prev.weightPerPL) || 0;
+        const weightUnit =
+          name === "weightUnit" ? value : newFormData.weightUnit || prev.weightUnit;
 
-        if (itemKg > 0 && weightPerPc > 0) {
-          // Total Pc = Item Kg / Weight per Pc
-          newFormData.totalPL = (itemKg / weightPerPc).toFixed(2);
+        // Convert weight/pc to Kg if unit is Gram
+        const weightPerPcInKg = weightUnit === "Gram" ? weightPerPc / 1000 : weightPerPc;
+
+        if (itemKg > 0 && weightPerPcInKg > 0) {
+          // Total Pc = Item Kg / Weight per Pc (in Kg)
+          newFormData.totalPL = (itemKg / weightPerPcInKg).toFixed(2);
         } else {
           newFormData.totalPL = "";
         }
       }
 
-      // Auto-calculate Dozen Weight when Weight/Pc changes
-      if (name === "weightPerPL") {
-        const weightPerPc = parseFloat(value) || 0;
+      // Auto-calculate Dozen Weight when Weight/Pc or Weight Unit changes
+      if (name === "weightPerPL" || name === "weightUnit") {
+        const weightPerPc =
+          name === "weightPerPL"
+            ? parseFloat(value) || 0
+            : parseFloat(prev.weightPerPL) || 0;
+        const weightUnit =
+          name === "weightUnit" ? value : newFormData.weightUnit || prev.weightUnit;
 
-        if (weightPerPc > 0) {
-          // Dozen Weight = Weight per Pc × 12
-          newFormData.dozenWeight = (weightPerPc * 12).toFixed(2);
+        // Convert weight/pc to Kg if unit is Gram
+        const weightPerPcInKg = weightUnit === "Gram" ? weightPerPc / 1000 : weightPerPc;
+
+        if (weightPerPcInKg > 0) {
+          // Dozen Weight = Weight per Pc (in Kg) × 12
+          newFormData.dozenWeight = (weightPerPcInKg * 12).toFixed(2);
         } else {
           newFormData.dozenWeight = "";
         }
@@ -303,8 +316,8 @@ const AddItem = () => {
       const updateData = {
         sizeInch: formData.sizeInch,
         sizeMm: formData.sizeMM,
-        categoryId: editDialog.data.categoryId,
-        subCategoryId: editDialog.data.subCategoryId,
+        categoryId: formData.categoryId || editDialog.data.categoryId,
+        subCategoryId: formData.subCategoryId || editDialog.data.subCategoryId,
         itemKg: parseFloat(formData.itemKg) || 0,
         weightPerPc: parseFloat(formData.weightPerPL) || 0,
         totalPc: parseFloat(formData.totalPL) || 0,
@@ -588,10 +601,7 @@ const AddItem = () => {
                             key={unit}
                             type="button"
                             onClick={() => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                weightUnit: unit,
-                              }));
+                              handleChange({ target: { name: "weightUnit", value: unit } });
                               setIsWeightUnitOpen(false);
                             }}
                             className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
@@ -711,6 +721,7 @@ const AddItem = () => {
           onClose={() => setEditDialog({ isOpen: false, data: null })}
           onSave={handleSaveEdit}
           initialData={editDialog.data}
+          categories={categories}
         />
 
         {/* Confirmation Dialog */}
