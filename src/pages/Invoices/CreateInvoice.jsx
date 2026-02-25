@@ -320,11 +320,18 @@ const CreateInvoice = () => {
       // --- Prepare Data (Your existing mapping logic) ---
       const formattedItems = items.map(item => ({
         itemNo: item.itemNo || "",
+        partNo: item.partNo || "",
         description: item.itemDescription || "",
         hsCode: item.hsCode || "",
-        quantity: item.itemQty ? parseInt(item.itemQty) : 0,
+        totalQuantity: item.itemQty ? parseInt(item.itemQty) : 0,
         unitPriceUsd: item.unitPrice ? parseFloat(item.unitPrice) : 0,
-        currencyCurrentPrice: item.currencyCurrentPrice ? parseFloat(item.currencyCurrentPrice) : 0
+        currency: item.currency || "USD",
+        currencyCurrentPrice: item.currencyCurrentPrice ? parseFloat(item.currencyCurrentPrice) : 0,
+        qtyPerCarton: item.qtyInEachCarton ? parseInt(item.qtyInEachCarton) : 0,
+        noOfCartons: item.noOfCarton ? parseInt(item.noOfCarton) : 0,
+        grossWeightKg: item.grossWeight ? parseFloat(item.grossWeight) : 0,
+        netWeightKg: item.netWeight ? parseFloat(item.netWeight) : 0,
+        woodenPallets: item.woodenPallet ? parseInt(item.woodenPallet) : 0,
       }));
 
       const formattedPackings = packings.map(packing => ({

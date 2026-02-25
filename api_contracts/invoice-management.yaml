@@ -8,7 +8,7 @@ info:
 servers:
   - url: http://localhost:8080
     description: Local development server
-  - url: https://sme-erp-2.onrender.com
+  - url: https://sme-erp-2j8m.onrender.com
     description: Production Server
 
 tags:
@@ -147,46 +147,6 @@ paths:
           description: Invoice deleted
         '404':
           $ref: '#/components/responses/NotFoundError'
-  /api/v1/invoice/{id}/type/{invoiceType}/pdf:
-    get:
-      tags:
-        - Invoice
-      operationId: getInvoicePdf
-      summary: Get Invoice pdf
-      description: Returns Invoice pdf
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: invoiceType
-          in: path
-          required: true
-          description: The unique identifier of the invoice
-          schema:
-            $ref: '#/components/schemas/InvoiceType'
-      responses:
-        '200':
-          description: PDF generated successfully
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 components:
 
   securitySchemes:
@@ -270,8 +230,6 @@ components:
           type: string
         shipToAddress:
           type: string
-        currency:
-          type: string
 
         # Invoice Details
         invoiceNo:
@@ -300,60 +258,12 @@ components:
           type: string
         portOfDischarge:
           type: string
+        invoiceType:
+          $ref: '#/components/schemas/InvoiceType'
 
         # Item Details
         items:
-          type: array
-          minItems: 1
-          items:
-            type: object
-            required:
-              - itemNo
-              - description
-              - hsCode
-              - quantity
-              - unitPriceUsd
-            properties:
-              itemNo:
-                type: string
-              description:
-                type: string
-              hsCode:
-                type: string
-              quantity:
-                type: integer
-              unitPriceUsd:
-                type: number
-                format: double
-              currencyCurrentPrice:
-                type: number
-                format: double
-
-        # Packing Details
-        packingDetails:
-          type: array
-          items:
-            type: object
-            properties:
-              itemNo:
-                type: string
-              description:
-                type: string
-              totalQty:
-                type: integer
-              qtyPerCarton:
-                type: integer
-              noOfCartons:
-                type: integer
-              grossWeightKg:
-                type: number
-                format: double
-              netWeightKg:
-                type: number
-                format: double
-              woodenPallets:
-                type: integer
-
+          $ref: '#/components/schemas/NewInvoiceItems'
         # Bank Details
         beneficiaryName:
           type: string
@@ -390,7 +300,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         # Exporter
         exporterCompanyName:
           type: string
@@ -448,61 +358,10 @@ components:
           type: string
         portOfDischarge:
           type: string
-        currency:
-          type: string
 
         # Item Details
         items:
-          type: array
-          minItems: 1
-          items:
-            type: object
-            required:
-              - itemNo
-              - description
-              - hsCode
-              - quantity
-              - unitPriceUsd
-            properties:
-              itemNo:
-                type: string
-              description:
-                type: string
-              hsCode:
-                type: string
-              quantity:
-                type: integer
-              unitPriceUsd:
-                type: number
-                format: double
-              currencyCurrentPrice:
-                type: number
-                format: double
-
-        # Packing Details
-        packingDetails:
-          type: array
-          items:
-            type: object
-            properties:
-              itemNo:
-                type: string
-              description:
-                type: string
-              totalQty:
-                type: integer
-              qtyPerCarton:
-                type: integer
-              noOfCartons:
-                type: integer
-              grossWeightKg:
-                type: number
-                format: double
-              netWeightKg:
-                type: number
-                format: double
-              woodenPallets:
-                type: integer
+          $ref: '#/components/schemas/InvoiceItems'
         invoiceType:
           $ref: '#/components/schemas/InvoiceType'
         # Bank Details
@@ -537,15 +396,119 @@ components:
         rexNo:
           type: string
           nullable: true
+        createdAt:
+          type: string
+          format: date
     InvoiceType:
       type: string
       enum:
         - EXPORT
         - COMMERCIAL
         - PACKAGING_LIST
+    NewInvoiceItems:
+      type: array
+      minItems: 1
+      items:
+        type: object
+        required:
+          - itemNo
+          - description
+          - hsCode
+          - totalQuantity
+          - unitPriceUsd
+          - currency
+        properties:
+          itemNo:
+            type: string
+          partNo:
+            type: string
+          description:
+            type: string
+          hsCode:
+            type: string
+          totalQuantity:
+            type: integer
+          unitPriceUsd:
+            type: number
+            format: double
+          currencyCurrentPrice:
+            type: number
+            format: double
+          inrPrice:
+            type: number
+            format: double
+          currency:
+            $ref: '#/components/schemas/ItemCurrency'
+          qtyPerCarton:
+            type: integer
+          noOfCartons:
+            type: integer
+          grossWeightKg:
+            type: number
+            format: double
+          netWeightKg:
+            type: number
+            format: double
+          woodenPallets:
+            type: integer
+    ItemCurrency:
+      type: string
+      enum:
+        - USD
+        - EURO
+    InvoiceItems:
+      type: array
+      minItems: 1
+      items:
+        type: object
+        required:
+          - itemNo
+          - description
+          - hsCode
+          - totalQuantity
+          - unitPriceUsd
+          - currency
+        properties:
+          id:
+            type: string
+          itemNo:
+            type: string
+          partNo:
+            type: string
+          description:
+            type: string
+          hsCode:
+            type: string
+          totalQuantity:
+            type: integer
+          unitPriceUsd:
+            type: number
+            format: double
+          currencyCurrentPrice:
+            type: number
+            format: double
+          inrPrice:
+            type: number
+            format: double
+          currency:
+            $ref: '#/components/schemas/ItemCurrency'
+          qtyPerCarton:
+            type: integer
+          noOfCartons:
+            type: integer
+          grossWeightKg:
+            type: number
+            format: double
+          netWeightKg:
+            type: number
+            format: double
+          woodenPallets:
+            type: integer
     InvoiceInfo:
       type: object
       properties:
+        id:
+          type: integer
         invoiceNo:
           type: string
         createdAt:

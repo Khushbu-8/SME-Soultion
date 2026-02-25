@@ -11,12 +11,12 @@ const ItemCard = ({
   canRemove,
   disabled = false,
   currencyOptions = [
-    { value: "EUR", label: "EUR", iconText: "€" },
+    { value: "EURO", label: "EUR", iconText: "€" },
     { value: "USD", label: "USD", iconText: "$" },
   ],
 }) => {
   const currencyValue = item.currency || "";
-  const currencyIcon = currencyValue === "USD" ? "$" : "€";
+  const currencyIcon = currencyValue === "EURO" ? "€" : "$";
   const parsedQty = Number(item.itemQty);
   const parsedUnitPrice = Number(item.unitPrice);
   const parsedCurrencyRate = Number(item.currencyCurrentPrice);
