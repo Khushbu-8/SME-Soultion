@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Plus, ChevronRight, X } from "lucide-react";
 import SidebarLayout from "../../../components/SidebarLayout";
 import ConfirmationDialog from "../../../components/ConfirmationDialog";
+import StatsCard from "../../../components/StatsCard";
+import PageHeader from "../../../components/PageHeader";
+import PrimaryActionButton from "../../../components/PrimaryActionButton";
 import PartiesTable from "../../../components/Party/PartiesTable";
 import EditPartyDialog from "../../../components/Party/EditPartyDialog";
 import { partyApi } from "../../../services/apiService";
@@ -151,51 +154,25 @@ const PartyMaster = () => {
     <SidebarLayout>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-medium text-black mb-2">
-                Party Master
-              </h1>
-              <p className="text-gray-500 text-md ">
-                Centralised management of customers and vendors with GST,
-                contact, and role details.
-              </p>
-            </div>
-            <button
-              onClick={() => navigate("/masters/party/add")}
-              className="flex items-center gap-2 bg-white text-gray-800 border border-gray-900 px-6 py-2 rounded-lg hover:bg-gray-50 transition font-medium"
-            >
-              <Plus className="w-5 h-5" />
-              Add Party
-            </button>
-          </div>
+          <PageHeader
+            title="Party Master"
+            description="Centralised management of customers and vendors with GST, contact, and role details."
+            action={
+              <PrimaryActionButton
+                onClick={() => navigate("/masters/party/add")}
+                icon={Plus}
+              >
+                Add Party
+              </PrimaryActionButton>
+            }
+          />
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-3 gap-6 mb-8">
-          {/* Card 1 */}
-          <div className="bg-white px-3 py-2 rounded-lg border border-gray-300 h-[110px] flex flex-col justify-between">
-            <p className=" text-gray-500">Total Customers</p>
-            <p className="text-2xl font-medium text-black">
-              {stats.customers}
-            </p>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bg-white px-3 py-2 rounded-lg border border-gray-300 h-[110px] flex flex-col justify-between">
-            <p className=" text-gray-500">Total Vendors</p>
-            <p className="text-2xl font-medium text-black">
-              {stats.vendors}
-            </p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-white px-3 py-2 rounded-lg border border-gray-300 h-[110px] flex flex-col justify-between">
-            <p className=" text-gray-500">Total Parties</p>
-            <p className="text-2xl font-medium text-black">
-              {stats.total}
-            </p>
-          </div>
+          <StatsCard label="Total Customers" value={stats.customers} />
+          <StatsCard label="Total Vendors" value={stats.vendors} />
+          <StatsCard label="Total Parties" value={stats.total} />
         </div>
 
         {/* Search and Filter */}

@@ -7,6 +7,9 @@ import EditItemDialog from "../../../components/Item/EditItemDialog";
 import ViewItemDialog from "../../../components/Item/ViewItemDialog";
 import ItemsTable from "../../../components/Item/ItemsTable";
 import SearchFilter from "../../../components/SearchFilter";
+import StatsCard from "../../../components/StatsCard";
+import PageHeader from "../../../components/PageHeader";
+import PrimaryActionButton from "../../../components/PrimaryActionButton";
 import { itemApi, categoryApi } from "../../../services/apiService";
 import toast from "react-hot-toast";
 
@@ -194,40 +197,32 @@ const ItemMaster = () => {
     <SidebarLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-medium text-black mb-2">
-              Item Master
-            </h1>
-            <p className="text-gray-500 text-md">
-              Centralised management of all items with sizes, weights,
-              categories, and stock details.
-            </p>
-          </div>
-          <button
-            onClick={handleAddItem}
-            className="flex items-center gap-2 bg-white border border-gray-800 text-black px-4 py-2 rounded-lg hover:bg-gray-50 transition font-medium"
-          >
-            <Plus className="w-5 h-5" />
-            Add Item
-          </button>
-        </div>
+        <PageHeader
+          title="Item Master"
+          description="Centralised management of all items with sizes, weights, categories, and stock details."
+          action={
+            <PrimaryActionButton
+              onClick={handleAddItem}
+              icon={Plus}
+              className="border-gray-800 text-black px-4"
+            >
+              Add Item
+            </PrimaryActionButton>
+          }
+        />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-500 ">Total Items</p>
-            <p className="text-2xl font-medium text-black">
-              {stats.totalItems}
-            </p>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-500 ">Total Low Stock Items</p>
-            <p className="text-2xl font-medium text-black">
-              {stats.lowStockItems}
-            </p>
-          </div>
+          <StatsCard
+            label="Total Items"
+            value={stats.totalItems}
+            className="border-gray-200"
+          />
+          <StatsCard
+            label="Total Low Stock Items"
+            value={stats.lowStockItems}
+            className="border-gray-200"
+          />
         </div>
 
         {/* Search and Filter */}

@@ -84,11 +84,16 @@ const SidebarLayout = ({ children }) => {
       hasArrow: true,
       submenu: masterLinks,
     },
-    // {
-    //   to: "/inventory",
-    //   label: "Inventory",
-    //   icon: <Package className="w-5 h-5" />,
-    // },
+    {
+      to: "/order",
+      label: "Order",
+      icon: <ListTodo className="w-5 h-5" />,
+    },
+    {
+      to: "/inventory",
+      label: "Inventory",
+      icon: <Package className="w-5 h-5" />,
+    },
     {
       to: "/invoices",
       label: "Invoices",

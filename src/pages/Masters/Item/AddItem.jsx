@@ -7,6 +7,7 @@ import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import ViewItemDialog from "../../../components/Item/ViewItemDialog";
 import EditItemDialog from "../../../components/Item/EditItemDialog";
 import SearchFilter from "../../../components/SearchFilter";
+import PageHeader from "../../../components/PageHeader";
 import { itemApi, categoryApi } from "../../../services/apiService";
 import toast from "react-hot-toast";
 
@@ -351,22 +352,22 @@ const AddItem = () => {
   return (
     <SidebarLayout>
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between">
-          <div className="mb-8">
-            <h1 className="text-3xl font-medium text-gray-900">Add New Item</h1>
-            <p className="text-md text-gray-500">
-              Create and define item specifications including size, weight,
-              category, and stock thresholds.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/masters/item")}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 text-gray-600 hover:text-gray-900 hover:border-gray-400 hover:bg-gray-50 transition"
-            aria-label="Close and go back to invoices"
-          >
-            <X className="w-4 h-4" />
-          </button>
+        <div className="mb-8">
+          <PageHeader
+            title="Add New Item"
+            description="Create and define item specifications including size, weight, category, and stock thresholds."
+            descriptionClassName="text-md text-gray-500"
+            action={
+              <button
+                type="button"
+                onClick={() => navigate("/masters/item")}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 text-gray-600 hover:text-gray-900 hover:border-gray-400 hover:bg-gray-50 transition"
+                aria-label="Close and go back to invoices"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            }
+          />
         </div>
         {/* Header */}
 

@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import SidebarLayout from "../../components/SidebarLayout";
 import SearchFilter from "../../components/SearchFilter";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
+import StatsCard from "../../components/StatsCard";
+import PageHeader from "../../components/PageHeader";
+import PrimaryActionButton from "../../components/PrimaryActionButton";
 import { invoiceApi, exportApi } from "../../services/apiService";
 import toast from "react-hot-toast";
 
@@ -17,12 +20,16 @@ const InvoicesList = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedToDelete, setSelectedToDelete] = useState(null);
 
-   const getApiInvoiceType = (uiType) => {
+  const getApiInvoiceType = (uiType) => {
     switch (uiType) {
-      case "Export": return "EXPORT";
-      case "Commercial": return "COMMERCIAL";
-      case "Packing List": return "PACKAGING_LIST";
-      default: return undefined; // Send undefined to show all
+      case "Export":
+        return "EXPORT";
+      case "Commercial":
+        return "COMMERCIAL";
+      case "Packing List":
+        return "PACKAGING_LIST";
+      default:
+        return undefined; // Send undefined to show all
     }
   };
 
@@ -30,18 +37,18 @@ const InvoicesList = () => {
   const fetchInvoices = async (search = "", type = "") => {
     try {
       setLoading(true);
-      
+
       // Convert UI filter to API Enum
       const apiType = getApiInvoiceType(type);
 
       // Call API with search and type filters
       const response = await invoiceApi.getAllInvoice(
-        apiType,             // filterByType
+        apiType, // filterByType
         search || undefined, // search text
-        0,                   // page
-        100                  // size
+        0, // page
+        100, // size
       );
-      
+
       const invoiceData = response.data?.data || [];
 
       const mapped = invoiceData.map((inv) => ({
@@ -55,7 +62,7 @@ const InvoicesList = () => {
       setInvoices(mapped);
     } catch (err) {
       console.error(err);
-      toast.error('Failed to load invoices');
+      toast.error("Failed to load invoices");
       setInvoices([]);
     } finally {
       setLoading(false);
@@ -71,11 +78,6 @@ const InvoicesList = () => {
     return () => clearTimeout(timer);
   }, [searchTerm, typeFilter]);
 
-  
-
-
- 
-
   const openDeleteConfirm = (id, invoiceNo) => {
     setSelectedToDelete({ id, invoiceNo });
     setConfirmOpen(true);
@@ -84,93 +86,82 @@ const InvoicesList = () => {
   const handleConfirmDelete = async () => {
     try {
       const id = selectedToDelete?.id;
-     console.log(id);
-     
+      console.log(id);
+
       await invoiceApi.deleteInvoice(id);
-      toast.success('Invoice deleted');
+      toast.success("Invoice deleted");
       setConfirmOpen(false);
       setSelectedToDelete(null);
       await fetchInvoices();
     } catch (err) {
       console.error(err);
-      toast.error('Failed to delete invoice');
+      toast.error("Failed to delete invoice");
     }
   };
 
   const handleEditInvoice = async (id) => {
     try {
-      
       const resp = await invoiceApi.getInvoiceById(id);
       const invoice = resp.data;
-      navigate('/invoices/create', { state: { invoice, mode: 'edit' } });
+      navigate("/invoices/create", { state: { invoice, mode: "edit" } });
     } catch (err) {
       console.error(err);
-      toast.error('Failed to open editor');
+      toast.error("Failed to open editor");
     }
   };
 
   const handleViewInvoice = async (id) => {
     try {
-      
       const resp = await invoiceApi.getInvoiceById(id);
       const invoice = resp.data;
-      
-      navigate('/invoices/create', { state: { invoice, mode: 'view' } });
+
+      navigate("/invoices/create", { state: { invoice, mode: "view" } });
       console.log(invoice);
     } catch (err) {
       console.error(err);
-      toast.error('Failed to open viewer');
+      toast.error("Failed to open viewer");
     }
   };
 
   const handleDownload = async (id, invoiceType, invoiceNo) => {
     try {
-      
-      const resp = await exportApi.getInvoicePdf(id, invoiceType, { responseType: 'blob' });
+      const resp = await exportApi.getInvoicePdf(id, invoiceType, {
+        responseType: "blob",
+      });
       const blob = resp.data;
       const url = window.URL.createObjectURL(new Blob([blob]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `invoice-${invoiceNo || id}.pdf`);
+      link.setAttribute("download", `invoice-${invoiceNo || id}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
     } catch (err) {
       console.error(err);
-      toast.error('Failed to download PDF');
+      toast.error("Failed to download PDF");
     }
   };
-
 
   return (
     <SidebarLayout>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-medium text-black mb-2">Invoices</h1>
-              <p className="text-gray-500 text-md">
-                Centralised management of invoices with type, date, and download options.
-              </p>
-            </div>
-
-            <button
-              onClick={() => navigate("/invoices/create")}
-              className="flex items-center gap-2 bg-white border border-gray-900 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-50 transition font-medium"
-            >
-              <Plus className="w-5 h-5" />
-              Create Invoice
-            </button>
-          </div>
+          <PageHeader
+            title="Invoices"
+            description="Centralised management of invoices with type, date, and download options."
+            action={
+              <PrimaryActionButton
+                onClick={() => navigate("/invoices/create")}
+                icon={Plus}
+              >
+                Create Invoice
+              </PrimaryActionButton>
+            }
+          />
         </div>
-        
+
         <div className="mb-8">
-           <div className="bg-white px-3 py-2 rounded-lg border border-gray-300 h-[110px] flex flex-col justify-between">
-        <p className="text-gray-500">Total Invoices</p>
-            <p className="text-2xl font-medium text-black">
-              {invoices.length}
-            </p>
-          </div>
+          <StatsCard label="Total Invoices" value={invoices.length} />
         </div>
 
         <SearchFilter
@@ -186,12 +177,24 @@ const InvoicesList = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="px-6 py-4 text-center text-sm font-semibold">Invoice No</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Date</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Party Name</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Invoice Type</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Get Invoices</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">Action</th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Invoice No
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Date
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Party Name
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Invoice Type
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Get Invoices
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold">
+                  Action
+                </th>
               </tr>
             </thead>
 
@@ -218,7 +221,13 @@ const InvoicesList = () => {
                       </td>
                       <td className="px-6 py-4 text-center">
                         <button
-                          onClick={() => handleDownload(invoice.id, invoice.invoiceType, invoice.invoiceNo)}
+                          onClick={() =>
+                            handleDownload(
+                              invoice.id,
+                              invoice.invoiceType,
+                              invoice.invoiceNo,
+                            )
+                          }
                           className="inline-flex items-center gap-2 text-gray-500 hover:text-black text-sm"
                         >
                           Download
@@ -238,7 +247,9 @@ const InvoicesList = () => {
                         />
                         <Trash2
                           className="w-4 h-4 cursor-pointer text-red-600"
-                          onClick={() => openDeleteConfirm(invoice.id, invoice.invoiceNo)}
+                          onClick={() =>
+                            openDeleteConfirm(invoice.id, invoice.invoiceNo)
+                          }
                           title="Delete"
                         />
                       </td>

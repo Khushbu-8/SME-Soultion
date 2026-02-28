@@ -1,170 +1,144 @@
 import React, { useMemo, useState } from "react";
-import { SquarePen, Eye, Trash2 } from "lucide-react";
 import SidebarLayout from "../components/SidebarLayout";
 import SearchFilter from "../components/SearchFilter";
-import InventoryData from "../Data/inventorydata";
+import StatsCard from "../components/StatsCard";
+import PageHeader from "../components/PageHeader";
 
 const Inventory = () => {
+  const columns = useMemo(
+    () => [
+      "Item Name",
+      "Size",
+      "In MM",
+      "Dia.",
+      "Pc./Box",
+      "Bn/Carton",
+      "Plt/Carton",
+      "Carton Weight",
+      "8.8 Sdrn Len(g)",
+      "ANTIQ",
+      "Galv.",
+      "Z Blk.",
+      "Blk.",
+      "UNI Lang",
+      "MS-ANTIQ",
+      "PVC",
+      "PVC Blk",
+      "PVC Black",
+      "Rust Guard",
+      "Clear Lacq",
+    ],
+    [],
+  );
+  const initialRows = 10;
+  const [tableData, setTableData] = useState(() =>
+    Array.from({ length: initialRows }, () => Array(columns.length).fill("")),
+  );
+  const [editingCell, setEditingCell] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const typeOptions = ["Type", "Hex Bolt", "CSK", "Allen Key"];
 
-  const filteredItems = useMemo(() => {
-    return InventoryData.filter((item) => {
-      const matchesSearch =
-        item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.itemNo.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory =
-        !categoryFilter ||
-        item.category.toLowerCase().includes(categoryFilter.toLowerCase());
-      return matchesSearch && matchesCategory;
+  const filteredRows = useMemo(() => {
+    return tableData.filter((row) => {
+      const rowText = row.join(" ").toLowerCase();
+      const matchesSearch = !searchTerm || rowText.includes(searchTerm.toLowerCase());
+      const matchesType = !typeFilter || rowText.includes(typeFilter.toLowerCase());
+      return matchesSearch && matchesType;
     });
-  }, [searchTerm, categoryFilter]);
+  }, [searchTerm, tableData, typeFilter]);
 
-  const totals = useMemo(() => {
-    const lowStock = InventoryData.filter(
-      (item) => item.status === "Low Stock",
-    ).length;
-    const outOfStock = InventoryData.filter(
-      (item) => item.status === "Out of Stock",
-    ).length;
-    return {
-      total: InventoryData.length,
-      lowStock,
-      outOfStock,
-    };
-  }, []);
-
-  const getStatusStyles = (status) => {
-    if (status === "Low Stock") {
-      return "bg-amber-50 text-amber-700 border border-amber-200";
-    }
-    if (status === "Out of Stock") {
-      return "bg-red-50 text-red-700 border border-red-200";
-    }
-    return "bg-emerald-50 text-emerald-700 border border-emerald-200";
+  const updateCell = (rowIndex, colIndex, value) => {
+    setTableData((prev) =>
+      prev.map((row, rIdx) =>
+        rIdx === rowIndex
+          ? row.map((cell, cIdx) => (cIdx === colIndex ? value : cell))
+          : row,
+      ),
+    );
   };
 
   return (
     <SidebarLayout>
-      <div className="space-y-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold text-gray-900">
-              Inventory
-            </h1>
-            <p className="text-gray-500 mt-1 text-md">
-              Centralised management of all items with sizes, weights,
-              categories, and stock details.
-            </p>
+      <div className="max-w-7xl mx-auto">
+        <div className="">
+          <div className="mb-8">
+            <PageHeader
+              title="Item Management"
+              description="Add the items , size & packing system"
+            />
           </div>
+          
+        <div className="mb-8">
+          <StatsCard label="Total Items" value={26} />
         </div>
-
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white border border-gray-200 rounded-lg p-3 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-500">Total Items</p>
-            <p className="text-3xl font-semibold text-gray-900">
-              {totals.total}
-            </p>
+          <div className="mt-3">
+            <SearchFilter
+              searchQuery={searchTerm}
+              setSearchQuery={setSearchTerm}
+              typeFilter={typeFilter}
+              setTypeFilter={setTypeFilter}
+              filterOptions={typeOptions}
+              filterPlaceholder="Type"
+            />
           </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-3 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-500">Low Stock</p>
-            <p className="text-3xl font-semibold text-gray-900">
-              {totals.lowStock}
-            </p>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-3 h-[110px] flex flex-col justify-between">
-            <p className="text-gray-500">Out of Stock</p>
-            <p className="text-3xl font-semibold text-gray-900">
-              {totals.outOfStock}
-            </p>
-          </div>
-        </div>
 
-        <SearchFilter
-          className="flex gap-4"
-          searchQuery={searchTerm}
-          setSearchQuery={setSearchTerm}
-          typeFilter={categoryFilter}
-          setTypeFilter={setCategoryFilter}
-          filterOptions={["Category", "Fasteners", "Anchors", "Insert Nuts"]}
-          filterPlaceholder="Category"
-        />
-
-        <div className="bg-white rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                  Item No
-                </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                  Item Name
-                </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                  Category
-                </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                  Stock
-                </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-gray-200 hover:bg-gray-50"
-                >
-                  <td className="px-6 py-4 text-sm text-gray-900 text-center">
-                    {item.itemNo}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 text-center">
-                    {item.itemName}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 text-center">
-                    {item.category}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 text-center">
-                    {item.stock} {item.unit}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-center">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusStyles(
-                        item.status,
-                      )}`}
+          <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+            <div className="max-h-[460px] overflow-auto scrollbar-thin">
+            <table className="min-w-[1200px] w-full">
+              <thead>
+                <tr className="bg-gray-100 border-b border-gray-200">
+                  {columns.map((col) => (
+                    <th
+                      key={col}
+                      className="sticky top-0 z-10 whitespace-nowrap px-6 py-4 text-center text-sm font-semibold text-gray-900 border-r border-gray-200 last:border-r-0 bg-gray-100"
                     >
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm flex items-center justify-center gap-3">
-                    <button
-                      className="text-black hover:text-black transition"
-                      title="Edit"
-                    >
-                      <SquarePen className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="text-gray-700 hover:text-gray-900 transition"
-                      title="View"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-800 transition"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
+                      {col}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredRows.map((row, rowIndex) => (
+                  <tr key={`row-${rowIndex}`} className="border-b border-gray-200 hover:bg-gray-50">
+                    {row.map((value, colIndex) => {
+                      const isEditing = editingCell === `${rowIndex}-${colIndex}`;
+                      return (
+                        <td
+                          key={`${rowIndex}-${columns[colIndex]}`}
+                          className="h-10 min-w-[84px] px-3 py-3 text-center text-sm text-gray-500 border-r border-gray-200 last:border-r-0"
+                          onClick={() => setEditingCell(`${rowIndex}-${colIndex}`)}
+                        >
+                          {isEditing ? (
+                            <input
+                              autoFocus
+                              value={value}
+                              onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
+                              onBlur={() => setEditingCell(null)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.currentTarget.blur();
+                                }
+                              }}
+                              className="w-full rounded text-start text-sm focus:outline-none focus:ring-none focus:ring-gray-300"
+                            />
+                          ) : (
+                            <span className={value ? "text-gray-500" : "text-gray-300"}>
+                              {value || " "}
+                            </span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            </div>
+          </div>
+          {filteredRows.length === 0 && (
+            <p className="mt-2 text-xs text-gray-500">No matching rows.</p>
+          )}
         </div>
       </div>
     </SidebarLayout>

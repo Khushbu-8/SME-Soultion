@@ -11,6 +11,9 @@ import SidebarLayout from "../../../components/SidebarLayout";
 import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import AddCategoryDialog from "../../../components/Category/AddCategoryDialog";
 import SearchFilter from "../../../components/SearchFilter";
+import StatsCard from "../../../components/StatsCard";
+import PageHeader from "../../../components/PageHeader";
+import PrimaryActionButton from "../../../components/PrimaryActionButton";
 import { categoryApi, subCategoryApi } from "../../../services/apiService";
 import toast from "react-hot-toast";
 
@@ -240,41 +243,33 @@ const CategoryMaster = () => {
     <SidebarLayout>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-medium text-black mb-2">
-                Category Master
-              </h1>
-              <p className="text-gray-500 text-md">
-                Organise items into categories and subcategories for structured
-                inventory management.
-              </p>
-            </div>
-            <button
-              onClick={handleAddCategory}
-              className="flex items-center gap-2 bg-white text-gray-800 border border-black px-6 py-2 rounded-lg hover:bg-gray-50 transition font-medium"
-            >
-              <Plus className="w-5 h-5" />
-              Add Categories
-            </button>
-          </div>
+          <PageHeader
+            title="Category Master"
+            description="Organise items into categories and subcategories for structured inventory management."
+            action={
+              <PrimaryActionButton
+                onClick={handleAddCategory}
+                icon={Plus}
+                className="border-black"
+              >
+                Add Categories
+              </PrimaryActionButton>
+            }
+          />
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className="bg-white px-3 py-2 rounded-lg border border-gray-200 h-[110px] flex flex-col justify-between">
-            <h3 className="text-gray-500 ">Total Categories</h3>
-            <p className="text-2xl font-medium text-black">
-              {stats.totalCategories}
-            </p>
-          </div>
-
-          <div className="bg-white px-3 py-2 rounded-lg border border-gray-200 h-[110px] flex flex-col justify-between">
-            <h3 className="text-gray-500 ">Total Sub Categories</h3>
-            <p className="text-2xl font-medium text-black">
-              {stats.totalSubCategories}
-            </p>
-          </div>
+          <StatsCard
+            label="Total Categories"
+            value={stats.totalCategories}
+            className="border-gray-200"
+          />
+          <StatsCard
+            label="Total Sub Categories"
+            value={stats.totalSubCategories}
+            className="border-gray-200"
+          />
         </div>
 
         {/* Search and Filter */}

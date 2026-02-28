@@ -5,6 +5,7 @@ import SidebarLayout from "../../../components/SidebarLayout";
 import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import PartiesTable from "../../../components/Party/PartiesTable";
 import EditPartyDialog from "../../../components/Party/EditPartyDialog";
+import PageHeader from "../../../components/PageHeader";
 import { partyApi } from "../../../services/apiService";
 import toast from "react-hot-toast";
 
@@ -196,22 +197,21 @@ const AddParty = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
 
-        <div className="flex justify-between">
-          <div className="mb-6">
-            <h1 className="text-3xl font-medium text-black">Add New Party</h1>
-            <p className="text-md text-gray-500">
-              Add and manage customer or vendor information for smooth purchase
-              and sales operations.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/masters/party")}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 text-gray-600 hover:text-gray-900 hover:border-gray-400 hover:bg-gray-50 transition"
-            aria-label="Close and go back to invoices"
-          >
-            <X className="w-4 h-4" />
-          </button>
+        <div className="mb-6">
+          <PageHeader
+            title="Add New Party"
+            description="Add and manage customer or vendor information for smooth purchase and sales operations."
+            action={
+              <button
+                type="button"
+                onClick={() => navigate("/masters/party")}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 text-gray-600 hover:text-gray-900 hover:border-gray-400 hover:bg-gray-50 transition"
+                aria-label="Close and go back to invoices"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            }
+          />
         </div>
 
         {/* Form */}

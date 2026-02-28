@@ -8,7 +8,6 @@
 import axios from 'axios';
 import { Configuration } from '../api-clients/master';
 import { InvoiceApi, Configuration as InvoiceMgmtConfiguration } from '../api-clients/invoice-management';
-import { ExportApi, Configuration as ExportMgmtConfiguration } from '../api-clients/export-management';
 import { Configuration as UserMgmtConfiguration } from '../api-clients/user-management';
 import {
     CategoryApi,
@@ -143,16 +142,6 @@ const createInvoiceMgmtConfig = () => {
     });
 };
 
-const createExportMgmtConfig = () => {
-    return new ExportMgmtConfiguration({
-        basePath: config.API_BASE_URL,
-        accessToken: getAccessToken(),
-        baseOptions: {
-            adapter: axiosInstance.defaults.adapter,
-        },
-    });
-};
-
 // Initialize API clients
 let partyApi = new PartyApi(createApiConfig(), config.API_BASE_URL, axiosInstance);
 let categoryApi = new CategoryApi(createApiConfig(), config.API_BASE_URL, axiosInstance);
@@ -161,7 +150,7 @@ let itemApi = new ItemApi(createApiConfig(), config.API_BASE_URL, axiosInstance)
 let authApi = new AuthenticationApi(createUserMgmtConfig(), config.API_BASE_URL, axiosInstance);
 let userManagementApi = new UserManagementApi(createUserMgmtConfig(), config.API_BASE_URL, axiosInstance);
 let invoiceApi = new InvoiceApi(createInvoiceMgmtConfig(), config.API_BASE_URL, axiosInstance);
-let exportApi = new ExportApi(createExportMgmtConfig(), config.API_BASE_URL, axiosInstance);
+let exportApi = new InvoiceApi(createInvoiceMgmtConfig(), config.API_BASE_URL, axiosInstance);
 /**
  * Update all API clients with new token
  * Call this after login or token refresh
@@ -177,7 +166,7 @@ export const updateApiClients = () => {
     authApi = new AuthenticationApi(userConfig, config.API_BASE_URL, axiosInstance);
     userManagementApi = new UserManagementApi(userConfig, config.API_BASE_URL, axiosInstance);
     invoiceApi = new InvoiceApi(createInvoiceMgmtConfig(), config.API_BASE_URL, axiosInstance);
-    exportApi = new ExportApi(createExportMgmtConfig(), config.API_BASE_URL, axiosInstance);
+    exportApi = new InvoiceApi(createInvoiceMgmtConfig(), config.API_BASE_URL, axiosInstance);
 };
 
 // Export API clients
