@@ -1,102 +1,135 @@
-import React, { useMemo, useState } from "react";
-import { Plus, SquarePen, Copy, Eye, Trash2, ChevronDown } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Plus, SquarePen, Eye, Trash2, ChevronDown, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import SidebarLayout from "../../components/SidebarLayout";
 import SearchFilter from "../../components/SearchFilter";
 import StatsCard from "../../components/StatsCard";
 import PageHeader from "../../components/PageHeader";
 import PrimaryActionButton from "../../components/PrimaryActionButton";
+import toast from "react-hot-toast";
+
+const ORDER_STORAGE_KEY = "orderManagement.orders.v1";
+
+const DEFAULT_ORDERS = [
+  {
+    id: 1,
+    partyName: "Eneron Tech",
+    date: "25/02/2025",
+    size: "6 X 1.1/8 X 5/32 - 3,600",
+    qtyPc: "300",
+    qtyKg: "135 Kg",
+    boxPc: "135",
+    cartoon: "13",
+    dispatchDate: "25/02/2025",
+    dispatchPcs: "298",
+    pendingPc: "02",
+    plating: "S.S + 16",
+    platingStatus: true,
+    jobWork: "Job Work",
+  },
+  {
+    id: 2,
+    partyName: "Eneron Tech",
+    date: "25/02/2025",
+    size: "6 X 1.1/8 X 5/32 - 3,600",
+    qtyPc: "300",
+    qtyKg: "135 Kg",
+    boxPc: "135",
+    cartoon: "13",
+    dispatchDate: "25/02/2025",
+    dispatchPcs: "298",
+    pendingPc: "02",
+    plating: "S.S + 16",
+    platingStatus: true,
+    jobWork: "Job Work",
+  },
+  {
+    id: 3,
+    partyName: "Eneron Tech",
+    date: "25/02/2025",
+    size: "6 X 1.1/8 X 5/32 - 3,600",
+    qtyPc: "300",
+    qtyKg: "135 Kg",
+    boxPc: "135",
+    cartoon: "13",
+    dispatchDate: "25/02/2025",
+    dispatchPcs: "298",
+    pendingPc: "02",
+    plating: "S.S + 16",
+    platingStatus: true,
+    jobWork: "Job Work",
+  },
+  {
+    id: 4,
+    partyName: "Eneron Tech",
+    date: "25/02/2025",
+    size: "6 X 1.1/8 X 5/32 - 3,600",
+    qtyPc: "300",
+    qtyKg: "135 Kg",
+    boxPc: "135",
+    cartoon: "13",
+    dispatchDate: "25/02/2025",
+    dispatchPcs: "298",
+    pendingPc: "02",
+    plating: "S.S + 16",
+    platingStatus: true,
+    jobWork: "Job Work",
+  },
+  {
+    id: 5,
+    partyName: "Eneron Tech",
+    date: "25/02/2025",
+    size: "6 X 1.1/8 X 5/32 - 3,600",
+    qtyPc: "300",
+    qtyKg: "135 Kg",
+    boxPc: "135",
+    cartoon: "13",
+    dispatchDate: "25/02/2025",
+    dispatchPcs: "298",
+    pendingPc: "02",
+    plating: "S.S + 16",
+    platingStatus: true,
+    jobWork: "Job Work",
+  },
+];
+
+const getStoredOrders = () => {
+  try {
+    const raw = localStorage.getItem(ORDER_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const toNumeric = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
 
 const OrderManagement = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [viewOrder, setViewOrder] = useState(null);
+  const [editOrder, setEditOrder] = useState(null);
+  const [expandedGroups, setExpandedGroups] = useState({});
 
-  const orders = useMemo(
-    () => [
-      {
-        id: 1,
-        partyName: "Eneron Tech",
-        date: "25/02/2025",
-        size: '6 X 1.1/8 X 5/32 - 3,600',
-        qtyPc: "300",
-        qtyKg: "135 Kg",
-        boxPc: "135",
-        cartoon: "13",
-        dispatchDate: "25/02/2025",
-        dispatchPcs: "298",
-        pendingPc: "02",
-        plating: "S.S + 16",
-        platingStatus: true,
-        jobWork: "Job Work",
-      },
-      {
-        id: 2,
-        partyName: "Eneron Tech",
-        date: "25/02/2025",
-        size: '6 X 1.1/8 X 5/32 - 3,600',
-        qtyPc: "300",
-        qtyKg: "135 Kg",
-        boxPc: "135",
-        cartoon: "13",
-        dispatchDate: "25/02/2025",
-        dispatchPcs: "298",
-        pendingPc: "02",
-        plating: "S.S + 16",
-        platingStatus: true,
-        jobWork: "Job Work",
-      },
-      {
-        id: 3,
-        partyName: "Eneron Tech",
-        date: "25/02/2025",
-        size: '6 X 1.1/8 X 5/32 - 3,600',
-        qtyPc: "300",
-        qtyKg: "135 Kg",
-        boxPc: "135",
-        cartoon: "13",
-        dispatchDate: "25/02/2025",
-        dispatchPcs: "298",
-        pendingPc: "02",
-        plating: "S.S + 16",
-        platingStatus: true,
-        jobWork: "Job Work",
-      },
-      {
-        id: 4,
-        partyName: "Eneron Tech",
-        date: "25/02/2025",
-        size: '6 X 1.1/8 X 5/32 - 3,600',
-        qtyPc: "300",
-        qtyKg: "135 Kg",
-        boxPc: "135",
-        cartoon: "13",
-        dispatchDate: "25/02/2025",
-        dispatchPcs: "298",
-        pendingPc: "02",
-        plating: "S.S + 16",
-        platingStatus: true,
-        jobWork: "Job Work",
-      },
-      {
-        id: 5,
-        partyName: "Eneron Tech",
-        date: "25/02/2025",
-        size: '6 X 1.1/8 X 5/32 - 3,600',
-        qtyPc: "300",
-        qtyKg: "135 Kg",
-        boxPc: "135",
-        cartoon: "13",
-        dispatchDate: "25/02/2025",
-        dispatchPcs: "298",
-        pendingPc: "02",
-        plating: "S.S + 16",
-        platingStatus: true,
-        jobWork: "Job Work",
-      },
-    ],
-    [],
-  );
+  useEffect(() => {
+    const storedOrders = getStoredOrders();
+    if (storedOrders.length > 0) {
+      setOrders(storedOrders);
+      return;
+    }
+    setOrders(DEFAULT_ORDERS);
+  }, []);
+
+  const persistOrders = (nextOrders) => {
+    setOrders(nextOrders);
+    localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(nextOrders));
+  };
 
   const filteredOrders = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -110,6 +143,103 @@ const OrderManagement = () => {
       return matchesSearch && matchesType;
     });
   }, [orders, searchTerm, typeFilter]);
+
+  const groupedFilteredOrders = useMemo(() => {
+    const groups = new Map();
+    filteredOrders.forEach((order) => {
+      const groupKey = order.orderId ?? order.id;
+      if (!groups.has(groupKey)) {
+        groups.set(groupKey, []);
+      }
+      groups.get(groupKey).push(order);
+    });
+    return Array.from(groups.values());
+  }, [filteredOrders]);
+
+  const totalPendingOrders = useMemo(() => {
+    return orders.filter((order) => toNumeric(order.pendingPc) > 0).length;
+  }, [orders]);
+
+  const handleDelete = (orderId) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this order?");
+    if (!isConfirmed) return;
+    const nextOrders = orders.filter((order) => order.id !== orderId);
+    persistOrders(nextOrders);
+    toast.success("Order deleted");
+  };
+
+  const handleEditSave = () => {
+    if (!editOrder?.partyName?.trim()) {
+      toast.error("Party name is required");
+      return;
+    }
+    if (!editOrder?.size?.trim()) {
+      toast.error("Size is required");
+      return;
+    }
+
+    const nextOrders = orders.map((order) => (order.id === editOrder.id ? editOrder : order));
+    persistOrders(nextOrders);
+    setEditOrder(null);
+    toast.success("Order updated");
+  };
+
+  const togglePlatingStatus = (orderId) => {
+    const nextOrders = orders.map((order) =>
+      order.id === orderId
+        ? {
+            ...order,
+            platingStatus: !order.platingStatus,
+          }
+        : order,
+    );
+    persistOrders(nextOrders);
+  };
+
+  const toggleGroupExpand = (groupKey) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [groupKey]: !prev[groupKey],
+    }));
+  };
+
+  const renderOrderDetails = (order, isEditable = false) => {
+    const fields = [
+      ["Party Name", "partyName"],
+      ["Date", "date"],
+      ["Size", "size"],
+      ["Qty Pc", "qtyPc"],
+      ["Qty Kg", "qtyKg"],
+      ["Box/Pc", "boxPc"],
+      ["Cartoon", "cartoon"],
+      ["Dispatch Date", "dispatchDate"],
+      ["Dispatch Pcs", "dispatchPcs"],
+      ["Pending Pc", "pendingPc"],
+      ["Plating", "plating"],
+      ["Job Action", "jobWork"],
+    ];
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {fields.map(([label, key]) => (
+          <div key={key}>
+            <p className="text-xs text-gray-500 mb-1">{label}</p>
+            {isEditable ? (
+              <input
+                value={editOrder?.[key] ?? ""}
+                onChange={(e) => setEditOrder((prev) => ({ ...prev, [key]: e.target.value }))}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+              />
+            ) : (
+              <p className="text-sm text-gray-800 border border-gray-200 rounded-md px-3 py-2 bg-gray-50">
+                {order?.[key] || "-"}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <SidebarLayout>
@@ -132,13 +262,13 @@ const OrderManagement = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <StatsCard
             label="Total Order"
-            value={26}
+            value={orders.length}
             className="h-[90px] rounded-md"
            
           />
           <StatsCard
             label="Total Pending Order"
-            value={17}
+            value={totalPendingOrders}
             className="h-[90px] rounded-md"
           />
         </div>
@@ -177,48 +307,151 @@ const OrderManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredOrders.map((row) => (
-                  <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="px-3 py-4 text-sm text-gray-700 border-r border-gray-200 whitespace-nowrap">
-                      <div className="inline-flex items-center gap-1">
-                        <span>{row.partyName}</span>
-                        <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
-                      </div>
-                    </td>
-                    <td className="px-3 py-4 text-sm text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.date}</td>
-                    <td className="px-3 py-4 text-sm text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.size}</td>
-                    <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.qtyPc}</td>
-                    <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.qtyKg}</td>
-                    <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.boxPc}</td>
-                    <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.cartoon}</td>
-                    <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.dispatchDate}</td>
-                    <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.dispatchPcs}</td>
-                    <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.pendingPc}</td>
-                    <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.plating}</td>
-                    <td className="px-3 py-4 border-r border-gray-200">
-                      <div className="flex items-center justify-center">
-                        <span className="w-7 h-4 bg-emerald-600 rounded-full relative">
-                          <span className="w-3 h-3 bg-white rounded-full absolute right-0.5 top-0.5" />
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-4 text-sm text-center border-r border-gray-200 whitespace-nowrap">
-                      <span className="text-red-500">{row.jobWork}</span>
-                    </td>
-                    <td className="px-3 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <SquarePen className="w-4 h-4 text-gray-500 cursor-pointer" />
-                        <Eye className="w-4 h-4 text-gray-500 cursor-pointer" />
-                        <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" />
-                      </div>
+                {groupedFilteredOrders.flatMap((group) => {
+                  const groupKey = group[0]?.orderId ?? group[0]?.id;
+                  const isExpanded = Boolean(expandedGroups[groupKey]);
+                  const visibleRows = group.length > 1 && !isExpanded ? [group[0]] : group;
+
+                  return visibleRows.map((row, rowIndex) => {
+                    const showGroupedColumns = rowIndex === 0;
+                    const groupRowSpan = visibleRows.length;
+                    const isMultiItem = group.length > 1;
+
+                    return (
+                      <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
+                        {showGroupedColumns && (
+                          <td
+                            rowSpan={groupRowSpan}
+                            className="px-3 py-4 text-sm text-gray-700 border-r border-gray-200 whitespace-nowrap align-top"
+                          >
+                            <div className="inline-flex items-center gap-1 cursor-pointer">
+                              <span>{row.partyName}</span>
+                              {isMultiItem ? (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleGroupExpand(groupKey)}
+                                  className="inline-flex items-center cursor-pointer"
+                                  aria-label={isExpanded ? "Collapse items" : "Expand items"}
+                                >
+                                  <ChevronDown
+                                    className={`w-3.5 h-3.5 text-gray-500 transition-transform ${
+                                      isExpanded ? "rotate-180" : ""
+                                    }`}
+                                  />
+                                </button>
+                              ) : null}
+                            </div>
+                          </td>
+                        )}
+                        {showGroupedColumns && (
+                          <td
+                            rowSpan={groupRowSpan}
+                            className="px-3 py-4 text-sm text-gray-700 border-r border-gray-200 whitespace-nowrap align-top"
+                          >
+                            {row.date}
+                          </td>
+                        )}
+                        <td className="px-3 py-4 text-sm text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.size}</td>
+                        <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.qtyPc}</td>
+                        <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.qtyKg}</td>
+                        <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.boxPc}</td>
+                        <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.cartoon}</td>
+                        <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.dispatchDate}</td>
+                        <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.dispatchPcs}</td>
+                        <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.pendingPc}</td>
+                        <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.plating}</td>
+                        <td className="px-3 py-4 border-r border-gray-200">
+                          <div className="flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={() => togglePlatingStatus(row.id)}
+                              className={`w-7 h-4 rounded-full relative transition ${
+                                row.platingStatus ? "bg-emerald-600" : "bg-gray-300"
+                              }`}
+                              aria-label="Toggle plating status"
+                            >
+                              <span
+                                className={`w-3 h-3 bg-white rounded-full absolute top-0.5 transition ${
+                                  row.platingStatus ? "right-0.5" : "left-0.5"
+                                }`}
+                              />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-3 py-4 text-sm text-center border-r border-gray-200 whitespace-nowrap">
+                          <span className="text-red-500">{row.jobWork}</span>
+                        </td>
+                        <td className="px-3 py-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <button type="button" onClick={() => setEditOrder({ ...row })} aria-label="Edit order">
+                              <SquarePen className="w-4 h-4 text-gray-500 cursor-pointer" />
+                            </button>
+                            <button type="button" onClick={() => setViewOrder(row)} aria-label="View order">
+                              <Eye className="w-4 h-4 text-gray-500 cursor-pointer" />
+                            </button>
+                            <button type="button" onClick={() => handleDelete(row.id)} aria-label="Delete order">
+                              <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })}
+                {groupedFilteredOrders.length === 0 && (
+                  <tr>
+                    <td colSpan={14} className="px-3 py-6 text-sm text-center text-gray-500">
+                      No orders found.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
         </div>
       </div>
+      {viewOrder && (
+        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-3xl border border-gray-200">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-medium text-gray-900">View Order</h2>
+              <button type="button" onClick={() => setViewOrder(null)} aria-label="Close">
+                <X className="w-4 h-4 text-gray-600" />
+              </button>
+            </div>
+            <div className="p-5">{renderOrderDetails(viewOrder, false)}</div>
+          </div>
+        </div>
+      )}
+      {editOrder && (
+        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-3xl border border-gray-200">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-medium text-gray-900">Edit Order</h2>
+              <button type="button" onClick={() => setEditOrder(null)} aria-label="Close">
+                <X className="w-4 h-4 text-gray-600" />
+              </button>
+            </div>
+            <div className="p-5">{renderOrderDetails(editOrder, true)}</div>
+            <div className="px-5 py-4 border-t border-gray-200 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={handleEditSave}
+                className="px-8 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditOrder(null)}
+                className="px-8 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </SidebarLayout>
   );
 };

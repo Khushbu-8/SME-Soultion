@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 import SidebarLayout from "../../components/SidebarLayout";
 import PageHeader from "../../components/PageHeader";
 import { partyApi } from "../../services/apiService";
@@ -53,25 +54,21 @@ const OrderList = () => {
   return (
     <SidebarLayout>
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <PageHeader
-            title="Order Management"
-            description="Select a party to continue and create a new order."
-          />
-        </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="relative mb-4">
+         <div className="relative mb-4">
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+              className="w-full p-4 py-3 border bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
             />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           </div>
 
-          <div className="border border-gray-200 rounded-lg p-4 ">
+        <div className="">
+         
+          <div className="bg-white rounded-lg border border-gray-200 p-4 ">
             {loading ? (
               <p className="text-sm text-gray-500">Loading parties...</p>
             ) : filteredParties.length === 0 ? (

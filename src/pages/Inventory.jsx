@@ -33,6 +33,7 @@ const Inventory = () => {
   const [tableData, setTableData] = useState(() =>
     Array.from({ length: initialRows }, () => Array(columns.length).fill("")),
   );
+  const [selectedCell, setSelectedCell] = useState(null);
   const [editingCell, setEditingCell] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -57,13 +58,31 @@ const Inventory = () => {
     );
   };
 
+  const handleCellClick = (rowIndex, colIndex) => {
+    const cellId = `${rowIndex}-${colIndex}`;
+
+    if (editingCell === cellId) {
+      return;
+    }
+
+    if (selectedCell === cellId) {
+      setEditingCell(cellId);
+      return;
+    }
+
+    setSelectedCell(cellId);
+    setEditingCell(null);
+  };
+
   const handleSave = () => {
     setEditingCell(null);
+    setSelectedCell(null);
   };
 
   const handleCancel = () => {
     setTableData(Array.from({ length: initialRows }, () => Array(columns.length).fill("")));
     setEditingCell(null);
+    setSelectedCell(null);
   };
 
   return (
@@ -108,19 +127,24 @@ const Inventory = () => {
                 {filteredRows.map((row, rowIndex) => (
                   <tr key={`row-${rowIndex}`} className="border-b border-gray-200 hover:bg-gray-50">
                     {row.map((value, colIndex) => {
-                      const isEditing = editingCell === `${rowIndex}-${colIndex}`;
+                      const cellId = `${rowIndex}-${colIndex}`;
+                      const isEditing = editingCell === cellId;
+                      const isSelected = selectedCell === cellId;
                       return (
                         <td
                           key={`${rowIndex}-${columns[colIndex]}`}
-                          className="h-10 min-w-[84px] px-3 py-3 text-center text-sm text-gray-500 border-r border-gray-200 last:border-r-0"
-                          onClick={() => setEditingCell(`${rowIndex}-${colIndex}`)}
+                          className={`h-10 min-w-[84px] px-3 py-3 text-center text-sm text-gray-500 border-r border-gray-200 last:border-r-0 ${isSelected ? "ring-2 ring-gray-400 ring-inset" : ""}`}
+                          onClick={() => handleCellClick(rowIndex, colIndex)}
                         >
                           {isEditing ? (
                             <input
                               autoFocus
                               value={value}
                               onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
-                              onBlur={() => setEditingCell(null)}
+                              onBlur={() => {
+                                setEditingCell(null);
+                                setSelectedCell(cellId);
+                              }}
                               onKeyDown={(e) => {
                                 if (e.key === "Enter") {
                                   e.currentTarget.blur();

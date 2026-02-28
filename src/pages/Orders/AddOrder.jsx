@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SidebarLayout from "../../components/SidebarLayout";
-import { Calendar, Plus, Trash2, X } from "lucide-react";
+import { Calendar, X } from "lucide-react";
 import PageHeader from "../../components/PageHeader";
-import PrimaryActionButton from "../../components/PrimaryActionButton";
+import toast from "react-hot-toast";
+
+const ORDER_STORAGE_KEY = "orderManagement.orders.v1";
 
 const createEmptyItem = () => ({
   size: "",
@@ -13,6 +15,21 @@ const createEmptyItem = () => ({
   qtyKg: "",
   finish: "",
 });
+
+const formatDateToDisplay = (dateValue) => {
+  if (!dateValue) return "";
+  const parts = dateValue.split("-");
+  if (parts.length !== 3) return dateValue;
+  const [year, month, day] = parts;
+  return `${day}/${month}/${year}`;
+};
+
+const safeNumberText = (value) => {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "0";
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? String(parsed) : trimmed;
+};
 
 const AddOrder = () => {
   const navigate = useNavigate();
@@ -62,6 +79,63 @@ const AddOrder = () => {
         items: prev.items.filter((_, itemIndex) => itemIndex !== index),
       };
     });
+  };
+
+  const handleSave = () => {
+    const partyName = orderForm.partyName.trim();
+    if (!partyName) {
+      toast.error("Party name is required");
+      return;
+    }
+
+    const validItems = orderForm.items.filter((item) => {
+      return Object.values(item).some((value) => String(value || "").trim() !== "");
+    });
+
+    if (validItems.length === 0) {
+      toast.error("Add at least one item");
+      return;
+    }
+
+    const orderId = Date.now();
+    const orderDate = formatDateToDisplay(orderForm.poDate);
+    const mappedRows = validItems.map((item, index) => {
+      const qtyPc = safeNumberText(item.pcs);
+      const dispatchPcs = "0";
+      const pendingPc = safeNumberText(item.pcs);
+
+      return {
+        id: `${orderId}-${index}`,
+        orderId,
+        partyName,
+        date: orderDate,
+        size: item.size || "-",
+        qtyPc,
+        qtyKg: item.qtyKg || "0",
+        boxPc: item.boxPc || "0",
+        cartoon: item.cartoon || "0",
+        dispatchDate: "",
+        dispatchPcs,
+        pendingPc,
+        plating: item.finish || "-",
+        platingStatus: false,
+        jobWork: "Job Work",
+      };
+    });
+
+    let existingOrders = [];
+    try {
+      const raw = localStorage.getItem(ORDER_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      existingOrders = Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      existingOrders = [];
+    }
+
+    const nextOrders = [...existingOrders, ...mappedRows];
+    localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(nextOrders));
+    toast.success("Order saved successfully");
+    navigate("/order");
   };
 
   return (
@@ -244,6 +318,7 @@ const AddOrder = () => {
             <div className="flex items-center justify-center gap-4 mt-6">
               <button
                 type="button"
+                onClick={handleSave}
                 className="px-10 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm"
               >
                 Save
