@@ -6,6 +6,7 @@ import SearchFilter from "../../components/SearchFilter";
 import StatsCard from "../../components/StatsCard";
 import PageHeader from "../../components/PageHeader";
 import PrimaryActionButton from "../../components/PrimaryActionButton";
+import ConfirmationDialog from "../../components/ConfirmationDialog";
 import toast from "react-hot-toast";
 
 const ORDER_STORAGE_KEY = "orderManagement.orders.v1";
@@ -116,6 +117,7 @@ const OrderManagement = () => {
   const [viewOrder, setViewOrder] = useState(null);
   const [editOrder, setEditOrder] = useState(null);
   const [expandedGroups, setExpandedGroups] = useState({});
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
     const storedOrders = getStoredOrders();
@@ -160,11 +162,15 @@ const OrderManagement = () => {
     return orders.filter((order) => toNumeric(order.pendingPc) > 0).length;
   }, [orders]);
 
-  const handleDelete = (orderId) => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this order?");
-    if (!isConfirmed) return;
-    const nextOrders = orders.filter((order) => order.id !== orderId);
+  const requestDelete = (order) => {
+    setDeleteTarget(order);
+  };
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    const nextOrders = orders.filter((order) => order.id !== deleteTarget.id);
     persistOrders(nextOrders);
+    setDeleteTarget(null);
     toast.success("Order deleted");
   };
 
@@ -389,7 +395,7 @@ const OrderManagement = () => {
                             <button type="button" onClick={() => setViewOrder(row)} aria-label="View order">
                               <Eye className="w-4 h-4 text-gray-500 cursor-pointer" />
                             </button>
-                            <button type="button" onClick={() => handleDelete(row.id)} aria-label="Delete order">
+                            <button type="button" onClick={() => requestDelete(row)} aria-label="Delete order">
                               <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" />
                             </button>
                           </div>
@@ -452,6 +458,16 @@ const OrderManagement = () => {
           </div>
         </div>
       )}
+      <ConfirmationDialog
+        isOpen={Boolean(deleteTarget)}
+        title="Delete Order"
+        message={`Are you sure you want to delete ${deleteTarget?.partyName || "this order"}?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+      />
     </SidebarLayout>
   );
 };
