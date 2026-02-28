@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 import SidebarLayout from "../components/SidebarLayout";
 import SearchFilter from "../components/SearchFilter";
 import StatsCard from "../components/StatsCard";
-import PageHeader from "../components/PageHeader";
 
 const Inventory = () => {
   const columns = useMemo(
@@ -58,15 +57,22 @@ const Inventory = () => {
     );
   };
 
+  const handleSave = () => {
+    setEditingCell(null);
+  };
+
+  const handleCancel = () => {
+    setTableData(Array.from({ length: initialRows }, () => Array(columns.length).fill("")));
+    setEditingCell(null);
+  };
+
   return (
     <SidebarLayout>
       <div className="max-w-7xl mx-auto">
         <div className="">
           <div className="mb-8">
-            <PageHeader
-              title="Item Management"
-              description="Add the items , size & packing system"
-            />
+            <h1 className="text-3xl font-medium text-black mb-2">Item Management</h1>
+            <p className="text-gray-500 text-md">Add the items , size &amp; packing system</p>
           </div>
           
         <div className="mb-8">
@@ -139,6 +145,23 @@ const Inventory = () => {
           {filteredRows.length === 0 && (
             <p className="mt-2 text-xs text-gray-500">No matching rows.</p>
           )}
+
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <button
+              type="button"
+              onClick={handleSave}
+              className="px-10 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="px-10 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </SidebarLayout>
