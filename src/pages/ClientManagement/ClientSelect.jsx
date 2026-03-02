@@ -160,6 +160,7 @@ const ClientSelect = () => {
     try {
       const res = await clientInventoryApi.getInventoryByClient(
         clientId,
+        undefined, // sizeId
         undefined, // search
         0,         // page
         200        // size – fetch all at once
@@ -402,6 +403,11 @@ const ClientSelect = () => {
                   columns={CLIENT_TABLE_COLUMNS}
                   rows={filteredRows}
                   readOnlyCols={READ_ONLY_COLS}
+                  colWidths={{
+                    0: 'min-w-[160px]',  // Item Name
+                    1: 'min-w-[180px]',  // Size (Inch)
+                    2: 'min-w-[140px]',  // In MM
+                  }}
                   selectedCell={inlineSelectedCell}
                   editingCell={inlineEditingCell}
                   onCellClick={handleInlineCellClick}

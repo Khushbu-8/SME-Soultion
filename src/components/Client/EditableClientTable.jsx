@@ -16,6 +16,7 @@ const EditableClientTable = ({
   onCellBlur,
   onLastCellTab,
   readOnlyCols = [],          // array of column indices that are read-only
+  colWidths = {},             // { [colIndex]: 'min-w-[Xpx]' }
   tableMinWidth = "min-w-[1600px]",
   scrollHeightClass = "max-h-[560px]",
 }) => {
@@ -51,7 +52,7 @@ const EditableClientTable = ({
                   return (
                     <td
                       key={`${rowIndex}-${columns[colIndex]}`}
-                      className={`h-10 min-w-[84px] px-3 py-3 text-center text-sm border-r border-gray-200 last:border-r-0
+                      className={`h-10 ${colWidths[colIndex] ?? 'min-w-[84px]'} px-3 py-3 text-center text-sm border-r border-gray-200 last:border-r-0
                         ${isReadOnly ? "bg-gray-50 text-gray-400 select-none" : "text-gray-500 cursor-pointer"}
                         ${isSelected ? "ring-2 ring-gray-400 ring-inset" : ""}
                       `}

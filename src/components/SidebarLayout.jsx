@@ -66,7 +66,7 @@ const SidebarLayout = ({ children }) => {
     {
       to: "/masters/item",
       icon: <ListTodo className="w-4 h-4" />,
-      label: "Item Master",
+      label: "Inventory",
     },
   ];
 
@@ -91,7 +91,7 @@ const SidebarLayout = ({ children }) => {
     },
     {
       to: "/inventory",
-      label: "Inventory",
+      label: "Items",
       icon: <Package className="w-5 h-5" />,
     },
     {

@@ -30,6 +30,7 @@ paths:
       operationId: getInventoryByClient
       parameters:
         - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/sizeId'
         - $ref: '#/components/parameters/searchParam'
         - $ref: '#/components/parameters/pageParam'
         - $ref: '#/components/parameters/sizeParam'
@@ -155,6 +156,13 @@ components:
       name: clientId
       in: path
       required: true
+      schema:
+        type: integer
+        format: int64
+
+    sizeId:
+      name: sizeId
+      in: query
       schema:
         type: integer
         format: int64

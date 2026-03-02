@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import ReactDOM from "react-dom";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Eye } from "lucide-react";
 import SidebarLayout from "../components/SidebarLayout";
 import SearchFilter from "../components/SearchFilter";
 import StatsCard from "../components/StatsCard";
@@ -19,18 +19,18 @@ const columns = [
   { key: "boxPerCarton", label: "Box/Carton", type: "number" },
   { key: "pcsPerCarton", label: "Pcs/Carton", type: "number" },
   { key: "cartonWeight", label: "Carton Wt.", type: "number" },
-  { key: "sssatinlacq", label: "SS Satin Lacq", type: "number" },
-  { key: "antiq", label: "ANTIQ", type: "number" },
+  { key: "sssatinlacq", label: "S.S & Sartin Lacq", type: "number" },
+  { key: "antiq", label: "ANTQ", type: "number" },
   { key: "sidegold", label: "Side Gold", type: "number" },
-  { key: "zblack", label: "Z Blk.", type: "number" },
-  { key: "grblack", label: "GR Blk.", type: "number" },
-  { key: "mattss", label: "Matt SS", type: "number" },
-  { key: "mattantiq", label: "MS-ANTIQ", type: "number" },
+  { key: "zblack", label: "Z-Black.", type: "number" },
+  { key: "grblack", label: "Gr. Black.", type: "number" },
+  { key: "mattss", label: "Matt S.S", type: "number" },
+  { key: "mattantiq", label: "Matt ANTQ", type: "number" },
   { key: "pvdrose", label: "PVD Rose", type: "number" },
   { key: "pvdgold", label: "PVD Gold", type: "number" },
   { key: "pvdblack", label: "PVD Black", type: "number" },
   { key: "rosegold", label: "Rose Gold", type: "number" },
-  { key: "clearlacq", label: "Clear Lacq", type: "number" },
+  { key: "clearlacq", label: "Clear Lacq.", type: "number" },
 ];
 
 const numericFields = [
@@ -174,6 +174,7 @@ const Inventory = () => {
   const [typeFilter, setTypeFilter] = useState("");
 
   const [addItemDialog, setAddItemDialog] = useState(false);
+  const [viewItemsDialog, setViewItemsDialog] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [addingItem, setAddingItem] = useState(false);
 
@@ -665,13 +666,22 @@ const Inventory = () => {
             title="Item Management"
             description="Add the items, sizes & packing system"
             action={
-              <PrimaryActionButton
-                onClick={() => setAddItemDialog(true)}
-                icon={Plus}
-                className="border-gray-800 text-black px-4"
-              >
-                Add Item
-              </PrimaryActionButton>
+              <div className="flex items-center gap-2">
+                <PrimaryActionButton
+                  onClick={() => setViewItemsDialog(true)}
+                  icon={Eye}
+                  className="border-gray-800 text-black px-4"
+                >
+                  View Items
+                </PrimaryActionButton>
+                <PrimaryActionButton
+                  onClick={() => setAddItemDialog(true)}
+                  icon={Plus}
+                  className="border-gray-800 text-black px-4"
+                >
+                  Add Item
+                </PrimaryActionButton>
+              </div>
             }
           />
 
@@ -857,6 +867,49 @@ const Inventory = () => {
                 className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition font-medium text-sm disabled:opacity-50"
               >
                 {addingItem ? "Adding..." : "Add Item"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Items dialog — read-only list of all item blueprints */}
+      {viewItemsDialog && (
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden flex flex-col max-h-[80vh]">
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                All Items
+                <span className="ml-2 text-sm font-normal text-gray-400">({items.length})</span>
+              </h2>
+              <button
+                type="button"
+                onClick={() => setViewItemsDialog(false)}
+                className="text-gray-400 hover:text-gray-600 transition"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="overflow-y-auto flex-1 divide-y divide-gray-100">
+              {items.length === 0 ? (
+                <p className="px-6 py-8 text-sm text-center text-gray-400">No items found.</p>
+              ) : (
+                items.map((item, i) => (
+                  <div key={item.id} className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50">
+                    <span className="text-xs text-gray-400 w-6 text-right shrink-0">{i + 1}.</span>
+                    <span className="text-sm text-gray-800">{item.itemName || `Item #${item.id}`}</span>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setViewItemsDialog(false)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition font-medium text-sm"
+              >
+                Close
               </button>
             </div>
           </div>
