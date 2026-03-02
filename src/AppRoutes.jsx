@@ -16,6 +16,7 @@ import AddOrder from "./pages/Orders/AddOrder";
 import OrderManagement from "./pages/Orders/OrderManagement";
 import ClientSelect from "./pages/ClientManagement/ClientSelect";
 import ClientManagement from "./pages/ClientManagement/ClientManagement";
+import JobWork from "./pages/JobWork";
 
 const AppRoutes = () => {
 
@@ -116,6 +117,14 @@ const AppRoutes = () => {
       <Route
         path="/inventory"
         element={ <Inventory />}
+      />
+      <Route
+        path="/job-work"
+        element={
+          <ProtectedRoute>
+            <JobWork />
+          </ProtectedRoute>
+        }
       />
       <Route
         path="/client-management/select"

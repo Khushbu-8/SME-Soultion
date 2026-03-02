@@ -11,6 +11,7 @@ import {
   User,
   ListTodo,
   FileText,
+  BriefcaseBusiness,
 } from "lucide-react"; // icons
 
 import Navbar from "./navbar";
@@ -83,6 +84,11 @@ const SidebarLayout = ({ children }) => {
       icon: <Users className="w-5 h-5" />,
       hasArrow: true,
       submenu: masterLinks,
+    },
+    {
+      to: "/job-work",
+      label: "Job Work",
+      icon: <BriefcaseBusiness className="w-5 h-5" />,
     },
     {
       to: "/order",

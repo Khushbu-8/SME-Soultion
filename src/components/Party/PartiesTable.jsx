@@ -29,22 +29,22 @@ const PartiesTable = ({
         <table className="w-full">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">
-              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
+              <th className="px-6 py-4 text-center text-sm font-[550] text-black">
                 Party Name
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
+              <th className="px-6 py-4 text-center text-sm font-[550] text-black">
                 Type
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
+              <th className="px-6 py-4 text-center text-sm font-[550] text-black">
                 GSTIN
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
+              <th className="px-6 py-4 text-center text-sm font-[550] text-black">
                 Contact
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
+              <th className="px-6 py-4 text-center text-sm font-[550] text-black">
                 Email
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-black">
+              <th className="px-6 py-4 text-center text-sm font-[550] text-black">
                 Action
               </th>
             </tr>
@@ -59,7 +59,7 @@ const PartiesTable = ({
                 <td className="px-6 py-4 text-sm text-gray-900 text-center">
                   {party.name}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-500 text-center">
+                <td className="px-6 py-4 text-sm text-gray-500 text-center uppercase">
                   {party.type}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500 text-center">

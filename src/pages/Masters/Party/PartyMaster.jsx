@@ -11,6 +11,30 @@ import EditPartyDialog from "../../../components/Party/EditPartyDialog";
 import { partyApi } from "../../../services/apiService";
 import toast from 'react-hot-toast';
 
+const mapPartyTypeToLabel = (partyType) => {
+  switch (partyType) {
+    case "CUSTOMER":
+      return "Customer";
+    case "VENDOR":
+      return "Vendor";
+    case "BOTH":
+      return "Both";
+    default:
+      return partyType || "";
+  }
+};
+
+const mapPartyTypeToApi = (value) => {
+  if (!value) return "";
+  if (["CUSTOMER", "VENDOR", "BOTH"].includes(value)) return value;
+
+  const normalized = value.toLowerCase();
+  if (normalized === "customer") return "CUSTOMER";
+  if (normalized === "vendor") return "VENDOR";
+  if (normalized === "both") return "BOTH";
+  return "";
+};
+
 const PartyMaster = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,14 +77,19 @@ const PartyMaster = () => {
         phone: party.contactNo,
         contact: party.contactNo,
         gstin: party.gst,
-        type: party.partyType === 'CUSTOMER' ? 'Customer' : 'Vendor',
+        type: mapPartyTypeToLabel(party.partyType),
+        partyType: party.partyType,
       }));
       
       setParties(transformedParties);
       
       // Calculate stats
-      const customers = transformedParties.filter((p) => p.type === "Customer").length;
-      const vendors = transformedParties.filter((p) => p.type === "Vendor").length;
+      const customers = transformedParties.filter(
+        (p) => p.partyType === "CUSTOMER" || p.partyType === "BOTH"
+      ).length;
+      const vendors = transformedParties.filter(
+        (p) => p.partyType === "VENDOR" || p.partyType === "BOTH"
+      ).length;
       setStats({
         customers,
         vendors,
@@ -107,7 +136,7 @@ const PartyMaster = () => {
         email: formData.email,
         contactNo: formData.phone,
         gst: formData.gstin,
-        partyType: formData.type === 'Customer' ? 'CUSTOMER' : 'VENDOR',
+        partyType: mapPartyTypeToApi(formData.partyType || formData.type),
       };
       
       await partyApi.updateParty(editDialog.data.id, updateData);
