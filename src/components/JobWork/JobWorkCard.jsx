@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Eye, SquarePen, Trash2, Printer, ChevronDown, CircleCheck } from "lucide-react";
+import { SquarePen, Trash2, Printer, ChevronDown, CircleCheck } from "lucide-react";
 
 const JobWorkCard = ({
   job,
   onEdit,
-  onView,
   onDelete,
   onCompletionChange,
   onInHouseChange,
+  onReturnRecord,
 }) => {
   const [isCompletionOpen, setIsCompletionOpen] = useState(false);
   const [isInHouseOpen, setIsInHouseOpen] = useState(false);
@@ -16,7 +16,7 @@ const JobWorkCard = ({
   const inHouseValue = job.inHouseStatus || "In-House";
 
   const completionColorClass = {
-    Complete: "bg-[#b9e6c7] ",
+    Complete: "bg-[#D1FFE2] ",
     Pending: "bg-[#fde68a]",
     Reject: "bg-[#fecaca] ",
   }[completionValue];
@@ -31,9 +31,7 @@ const JobWorkCard = ({
               <button type="button" onClick={onEdit} aria-label="Edit job work">
                 <SquarePen className="w-4 h-4 text-gray-600" />
               </button>
-              <button type="button" onClick={onView} aria-label="View job work">
-                <Eye className="w-4 h-4 text-gray-600" />
-              </button>
+              
               <button type="button" onClick={onDelete} aria-label="Delete job work">
                 <Trash2 className="w-4 h-4 text-red-500" />
               </button>
@@ -152,7 +150,7 @@ const JobWorkCard = ({
               </button>
               {isInHouseOpen && (
                 <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                  {["In-House", "Outside", "Job Work"].map((option) => (
+                  {["In-House", "Outside"].map((option) => (
                     <button
                       key={option}
                       type="button"
@@ -171,6 +169,7 @@ const JobWorkCard = ({
 
             <button
               type="button"
+              onClick={onReturnRecord}
               className=" px-5 py-2 rounded-md bg-[#b9d8e9] text-black font-medium inline-flex items-center gap-2"
             >
               Return Record <CircleCheck className="w-4 h-4" />

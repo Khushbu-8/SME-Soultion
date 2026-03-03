@@ -10,6 +10,26 @@ import ConfirmationDialog from "../../components/ConfirmationDialog";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../../services/apiService";
 
+const ORDER_JOB_OVERRIDES_KEY = "orderJobWorkOverrides";
+
+const readOrderJobOverrides = () => {
+  try {
+    const raw = localStorage.getItem(ORDER_JOB_OVERRIDES_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw) || {};
+  } catch {
+    return {};
+  }
+};
+
+const writeOrderJobOverrides = (value) => {
+  try {
+    localStorage.setItem(ORDER_JOB_OVERRIDES_KEY, JSON.stringify(value));
+  } catch {
+    // Ignore storage write failures
+  }
+};
+
 // ─── Flatten API response into table rows ───────────────────────────────────
 const flattenOrders = (apiData) => {
   if (!Array.isArray(apiData)) return [];
@@ -24,7 +44,7 @@ const flattenOrders = (apiData) => {
         partyName:    partyResp.party?.name || "—",
         date:         order.orderDate || "—",
         size:         [item.itemSize?.sizeInInch, item.itemSize?.sizeInMm ? `(${item.itemSize.sizeInMm})` : ""].filter(Boolean).join(" ") || "—",
-        plating:      item.plating      ?? "—",
+        plating:      item.plating      ?? "_",
         qtyPc:        item.qtyPc        ?? "—",
         qtyKg:        item.qtyKg        ?? "—",
         boxPc:        item.pcPerBox     ?? "—",
@@ -66,6 +86,7 @@ const OrderManagement = () => {
   const [totalPages, setTotalPages]   = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading]         = useState(false);
+  const [orderJobOverrides, setOrderJobOverrides] = useState(() => readOrderJobOverrides());
 
   // ── Dialogs ───────────────────────────────────────────────────────────────
   const [viewOrder, setViewOrder]     = useState(null);
@@ -119,6 +140,16 @@ const OrderManagement = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, sortByFields, direction]);
 
+  useEffect(() => {
+    const reloadOverrides = () => setOrderJobOverrides(readOrderJobOverrides());
+    window.addEventListener("focus", reloadOverrides);
+    window.addEventListener("storage", reloadOverrides);
+    return () => {
+      window.removeEventListener("focus", reloadOverrides);
+      window.removeEventListener("storage", reloadOverrides);
+    };
+  }, []);
+
   // ── Client-side type filter (API has no platingType filter param) ─────────
   const filteredOrders = useMemo(() => {
     if (!typeFilter) return orders;
@@ -163,6 +194,51 @@ const OrderManagement = () => {
 
   const toggleGroupExpand = (groupKey) => {
     setExpandedGroups((prev) => ({ ...prev, [groupKey]: !prev[groupKey] }));
+  };
+
+  const getRowOverride = (row) => {
+    if (!row) return null;
+    return orderJobOverrides[`item-${row.id}`] || orderJobOverrides[`order-${row.orderId}`] || null;
+  };
+
+  const toggleJobUpdateStatus = (row) => {
+    if (!row) return;
+    const override = getRowOverride(row);
+    const nextStatus = !(override?.platingStatus ?? row.platingStatus ?? false);
+
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === row.id ? { ...order, platingStatus: nextStatus } : order
+      )
+    );
+
+    setOrderJobOverrides((prev) => {
+      const next = { ...prev };
+      if (row.id) {
+        const key = `item-${row.id}`;
+        next[key] = { ...(next[key] || {}), platingStatus: nextStatus };
+      }
+      if (row.orderId) {
+        const key = `order-${row.orderId}`;
+        next[key] = { ...(next[key] || {}), platingStatus: nextStatus };
+      }
+      writeOrderJobOverrides(next);
+      return next;
+    });
+  };
+
+  const handlePlatingMove = (row, jobWorkValue = row?.jobWork) => {
+    const platingTypeValue = String(jobWorkValue || "").trim().toLowerCase().replace(/[\s-]/g, "");
+    if (["outside", "inhouse", "", "-", "—"].includes(platingTypeValue) || jobWorkValue === "—") {
+      navigate("/job-work/move", {
+        state: { mode: "create", prefillOrderRow: { ...row, jobWork: jobWorkValue } },
+      });
+    }
+  };
+
+  const isPlatingMovable = (jobWorkValue) => {
+    const platingTypeValue = String(jobWorkValue || "").trim().toLowerCase().replace(/[\s-]/g, "");
+    return ["outside", "inhouse", "", "-", "—"].includes(platingTypeValue) || jobWorkValue === "—";
   };
 
   const convertToDateInput = (dateString) => {
@@ -279,8 +355,8 @@ const OrderManagement = () => {
             <table className="min-w-[1500px] w-full">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-200">
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Party Name</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Party Name</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">
                     <button
                       type="button"
                       onClick={() => {
@@ -294,25 +370,25 @@ const OrderManagement = () => {
                       <ChevronDown className={`w-3 h-3 transition-transform ${sortByFields === "createdAt" && direction === "ASC" ? "rotate-180" : ""}`} />
                     </button>
                   </th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Size</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Plating</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Qty. Pc</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Qty Kg</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Pc/Box.</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Box/Cartoon.</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Pc/Cartoon</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Sticker Qty.</th>
-                  <th colSpan={2} className="px-3 py-2 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Dispatch</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Pending Pc.</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Job Action</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Plating</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Job Work No</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Job Action</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-semibold whitespace-nowrap">Action</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Size</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Plating</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Qty. Pc</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Qty Kg</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Pc/Box.</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Box/Cartoon.</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Pc/Cartoon</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Sticker Qty.</th>
+                  <th colSpan={2} className="px-3 py-2 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Dispatch</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Pending Pc.</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Job Update</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Plating</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Job Work No</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Job Action</th>
+                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] whitespace-nowrap">Action</th>
                 </tr>
                 <tr className="bg-gray-100 border-b border-gray-200">
-                  <th className="px-3 py-2 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Date</th>
-                  <th className="px-3 py-2 text-center text-sm font-semibold border-r border-gray-200 whitespace-nowrap">Pcs.</th>
+                  <th className="px-3 py-2 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Date</th>
+                  <th className="px-3 py-2 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Pcs.</th>
                 </tr>
               </thead>
               <tbody>
@@ -338,6 +414,10 @@ const OrderManagement = () => {
                       const showGroupedColumns = rowIndex === 0;
                       const groupRowSpan = visibleRows.length;
                       const isMultiItem = group.length > 1;
+                      const rowOverride = getRowOverride(row);
+                      const effectivePlatingStatus = rowOverride?.platingStatus ?? row.platingStatus;
+                      const effectiveJobWork = rowOverride?.jobWork ?? row.jobWork;
+                      const effectiveJobWorkNo = rowOverride?.jobWorkNo ?? row.jobWorkNo;
 
                       return (
                         <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
@@ -373,20 +453,39 @@ const OrderManagement = () => {
                           <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.dispatchDate}</td>
                           <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.dispatchPcs}</td>
                           <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.pendingPc}</td>
-                          <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">
-                            <span className="text-red-500">{row.jobWork}</span>
-                          </td>
+                        
                           <td className="px-3 py-4 border-r border-gray-200">
                             <div className="flex items-center justify-center">
-                              <span className={`w-7 h-4 rounded-full relative inline-flex items-center ${row.platingStatus ? "bg-emerald-600" : "bg-gray-300"}`}>
-                                <span className={`w-3 h-3 bg-white rounded-full absolute top-0.5 ${row.platingStatus ? "right-0.5" : "left-0.5"}`} />
-                              </span>
+                              <button
+                                type="button"
+                                onClick={() => toggleJobUpdateStatus(row)}
+                                aria-label={effectivePlatingStatus ? "Disable job update" : "Enable job update"}
+                                className={`w-7 h-4 rounded-full relative inline-flex items-center ${effectivePlatingStatus ? "bg-emerald-600" : "bg-gray-300"}`}
+                              >
+                                <span className={`w-3 h-3 bg-white rounded-full absolute top-0.5 ${effectivePlatingStatus ? "right-0.5" : "left-0.5"}`} />
+                              </button>
                             </div>
                           </td>
-                          <td className="px-3 py-4 text-sm text-center border-r border-gray-200 whitespace-nowrap">{row.jobWorkNo}</td>
+                            <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => handlePlatingMove(row, effectiveJobWork)}
+                              disabled={!isPlatingMovable(effectiveJobWork)}
+                              className={`${
+                                String(effectiveJobWork || "").toLowerCase().replace(/[\s-]/g, "") === "outside"
+                                  ? "text-red-500"
+                                  : String(effectiveJobWork || "").toLowerCase().replace(/[\s-]/g, "") === "inhouse"
+                                    ? "text-emerald-700"
+                                    : "text-gray-700"
+                              } ${isPlatingMovable(effectiveJobWork) ? "cursor-pointer" : "cursor-default"}`}
+                            >
+                              {effectiveJobWork}
+                            </button>
+                          </td>
+                          <td className="px-3 py-4 text-sm text-center border-r border-gray-200 whitespace-nowrap">{effectiveJobWorkNo}</td>
                           <td className="px-3 py-4 text-sm text-center border-r border-gray-200 whitespace-nowrap">
-                            <button type="button" aria-label="View order" onClick={() => setViewOrder(row)}>
-                              <Eye className="w-4 h-4 text-gray-500 cursor-pointer" />
+                            <button type="button" aria-label="Open job work" onClick={() => navigate("/job-work")}>
+                              <Eye className="w-4 h-4 text-gray-700 cursor-pointer" />
                             </button>
                           </td>
                           <td className="px-3 py-4">

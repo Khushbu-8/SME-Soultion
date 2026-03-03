@@ -16,6 +16,7 @@ import OrderManagement from "./pages/Orders/OrderManagement";
 import ClientSelect from "./pages/ClientManagement/ClientSelect";
 import ClientManagement from "./pages/ClientManagement/ClientManagement";
 import JobWork from "./pages/JobWork";
+import MoveToJobWork from "./pages/MoveToJobWork";
 
 const AppRoutes = () => {
 
@@ -118,6 +119,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <JobWork />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/job-work/move"
+        element={
+          <ProtectedRoute>
+            <MoveToJobWork />
           </ProtectedRoute>
         }
       />

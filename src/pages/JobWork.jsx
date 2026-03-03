@@ -1,9 +1,14 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ChevronLeft } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import SidebarLayout from "../components/SidebarLayout";
 import SearchFilter from "../components/SearchFilter";
 import ConfirmationDialog from "../components/ConfirmationDialog";
 import JobWorkCard from "../components/JobWork/JobWorkCard";
 import JobWorkReturnDialog from "../components/JobWork/JobWorkReturnDialog";
+
+const JOB_WORK_STORAGE_KEY = "jobWorkCards";
+const ORDER_JOB_OVERRIDES_KEY = "orderJobWorkOverrides";
 
 const INITIAL_JOB_WORKS = [
   {
@@ -30,16 +35,73 @@ const INITIAL_JOB_WORKS = [
   },
 ];
 
+const readJsonStorage = (key, fallback) => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed ?? fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const writeJsonStorage = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Ignore storage write failures
+  }
+};
+
 const JobWork = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
-  const [jobWorks, setJobWorks] = useState(INITIAL_JOB_WORKS);
+  const [jobWorks, setJobWorks] = useState(() =>
+    readJsonStorage(JOB_WORK_STORAGE_KEY, INITIAL_JOB_WORKS),
+  );
   const [dialogState, setDialogState] = useState({
     isOpen: false,
     mode: "edit",
     job: null,
   });
   const [deleteTarget, setDeleteTarget] = useState(null);
+
+  const syncOrderOverrideFromJob = useCallback((job) => {
+    if (!job) return;
+    if (!job.sourceItemId && !job.sourceOrderId) return;
+    const overrides = readJsonStorage(ORDER_JOB_OVERRIDES_KEY, {});
+    const next = { ...overrides };
+    const payload = {
+      jobWork: job.inHouseStatus || "Job Work",
+      jobWorkNo: job.jobId || "—",
+      platingStatus: true,
+    };
+    if (job.sourceItemId) next[`item-${job.sourceItemId}`] = payload;
+    if (job.sourceOrderId) next[`order-${job.sourceOrderId}`] = payload;
+    writeJsonStorage(ORDER_JOB_OVERRIDES_KEY, next);
+  }, []);
+
+  useEffect(() => {
+    const savedPayload = location.state?.savedJobWork;
+    if (!savedPayload?.job) return;
+
+    syncOrderOverrideFromJob(savedPayload.job);
+    setJobWorks((prev) => {
+      if (savedPayload.mode === "edit") {
+        return prev.map((item) => (item.id === savedPayload.job.id ? savedPayload.job : item));
+      }
+      return [savedPayload.job, ...prev];
+    });
+
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.pathname, location.state, navigate, syncOrderOverrideFromJob]);
+
+  useEffect(() => {
+    writeJsonStorage(JOB_WORK_STORAGE_KEY, jobWorks);
+  }, [jobWorks]);
 
   const filteredJobs = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -92,19 +154,41 @@ const JobWork = () => {
 
   const handleConfirmDelete = () => {
     if (!deleteTarget) return;
+    if (deleteTarget.sourceItemId || deleteTarget.sourceOrderId) {
+      const overrides = readJsonStorage(ORDER_JOB_OVERRIDES_KEY, {});
+      if (deleteTarget.sourceItemId) delete overrides[`item-${deleteTarget.sourceItemId}`];
+      if (deleteTarget.sourceOrderId) delete overrides[`order-${deleteTarget.sourceOrderId}`];
+      writeJsonStorage(ORDER_JOB_OVERRIDES_KEY, overrides);
+    }
     setJobWorks((prev) => prev.filter((item) => item.id !== deleteTarget.id));
     setDeleteTarget(null);
   };
 
   const handleStatusChange = (jobId, key, value) => {
     setJobWorks((prev) =>
-      prev.map((item) => (item.id === jobId ? { ...item, [key]: value } : item)),
+      prev.map((item) => {
+        if (item.id !== jobId) return item;
+        const updatedItem = { ...item, [key]: value };
+        if (key === "inHouseStatus") syncOrderOverrideFromJob(updatedItem);
+        return updatedItem;
+      }),
     );
   };
 
   return (
     <SidebarLayout>
       <div className="max-w-7xl mx-auto">
+        <div className="mb-3">
+          <button
+            type="button"
+            onClick={() => navigate("/order")}
+            className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-black transition"
+            aria-label="Back to Order List"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Back to Order List</span>
+          </button>
+        </div>
         <SearchFilter
           searchQuery={searchTerm}
           setSearchQuery={setSearchTerm}
@@ -119,8 +203,8 @@ const JobWork = () => {
             <JobWorkCard
               key={job.id}
               job={job}
-              onEdit={() => handleOpenDialog(job, "edit")}
-              onView={() => handleOpenDialog(job, "view")}
+              onEdit={() => navigate("/job-work/move", { state: { mode: "edit", job } })}
+              onReturnRecord={() => handleOpenDialog(job, "edit")}
               onDelete={() => setDeleteTarget(job)}
               onCompletionChange={(value) =>
                 handleStatusChange(job.id, "completionStatus", value)

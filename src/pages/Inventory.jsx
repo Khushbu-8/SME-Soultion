@@ -945,15 +945,15 @@ const Inventory = () => {
                       {columns.map((col) => (
                         <th
                           key={col.key}
-                          className="sticky top-0 z-10 whitespace-nowrap px-6 py-4 text-center text-sm font-semibold text-gray-900 border-r border-gray-200 bg-gray-100"
+                          className="sticky top-0 z-10 whitespace-nowrap px-6 py-4 text-center text-sm font-[550] text-gray-900 border-r border-gray-200 bg-gray-100"
                         >
                           {col.label}
                         </th>
                       ))}
-                      <th className="sticky top-0 z-10 whitespace-nowrap px-3 py-4 text-center text-sm font-semibold text-gray-900 bg-gray-100 w-[60px] border-r border-gray-200">
+                      <th className="sticky top-0 z-10 whitespace-nowrap px-3 py-4 text-center text-sm font-[550] text-gray-900 bg-gray-100 w-[60px] border-r border-gray-200">
                         View
                       </th>
-                      <th className="sticky top-0 z-10 whitespace-nowrap px-3 py-4 text-center text-sm font-semibold text-gray-900 bg-gray-100 w-[80px]">
+                      <th className="sticky top-0 z-10 whitespace-nowrap px-3 py-4 text-center text-sm font-[550] text-gray-900 bg-gray-100 w-[80px]">
                         Actions
                       </th>
                     </tr>
