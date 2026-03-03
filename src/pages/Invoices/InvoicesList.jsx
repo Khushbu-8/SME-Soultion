@@ -177,22 +177,22 @@ const InvoicesList = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-[550]">
                   Invoice No
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-[550]">
                   Date
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-[550]">
                   Party Name
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-[550]">
                   Invoice Type
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-[550]">
                   Get Invoices
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold">
+                <th className="px-6 py-4 text-center text-sm font-[550]">
                   Action
                 </th>
               </tr>

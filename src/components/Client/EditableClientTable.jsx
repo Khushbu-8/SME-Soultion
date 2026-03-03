@@ -31,7 +31,7 @@ const EditableClientTable = ({
               {columns.map((col, colIndex) => (
                 <th
                   key={col}
-                  className={`sticky top-0 z-10 whitespace-nowrap px-6 py-4 text-center text-sm font-semibold border-r border-gray-200 last:border-r-0 bg-gray-100 ${
+                  className={`sticky top-0 z-10 whitespace-nowrap px-6 py-4 text-center text-sm font-[550] border-r border-gray-200 last:border-r-0 bg-gray-100 ${
                     readOnlySet.has(colIndex) ? "text-gray-400" : "text-gray-900"
                   }`}
                 >
