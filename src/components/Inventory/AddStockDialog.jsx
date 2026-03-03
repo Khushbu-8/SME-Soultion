@@ -80,7 +80,7 @@ const AddStockDialog = ({ open, onClose, row, onSaved }) => {
     const kgF = parseFloat(kg) || 0;
     const wpcF = parseFloat(wpc) || 0;
     const wpcKg = unit === "Gram" ? wpcF / 1000 : wpcF;
-    setTotalPc(kgF > 0 && wpcKg > 0 ? (kgF / wpcKg).toFixed(2) : "");
+    setTotalPc(kgF > 0 && wpcKg > 0 ? Math.floor(kgF / wpcKg).toString() : "");
     setStockDozenWeight(wpcKg > 0 ? (wpcKg * 12).toFixed(2) : "");
   };
 
@@ -127,7 +127,7 @@ const AddStockDialog = ({ open, onClose, row, onSaved }) => {
         sizeId: numericSizeId,
         itemKg: parseFloat(itemKg) || 0,
         weightPerPc: parseFloat(weightPerPc) || 0,
-        totalPc: parseFloat(totalPc) || 0,
+        totalPc: parseInt(totalPc, 10) || 0,
         lowStockWarning: parseFloat(lowStockWarning) || 0,
         stockStatus: "IN_STOCK",
       };
