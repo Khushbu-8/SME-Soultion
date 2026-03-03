@@ -982,7 +982,7 @@ const Inventory = () => {
                                 type="button"
                                 onClick={() => handleAddStockRow(row)}
                                 title="View stock details"
-                                className="p-1 text-gray-600 hover:bg-gray-100 rounded transition"
+                                className="p-1 text-gray-500 hover:bg-gray-100 rounded transition"
                               >
                                 <Eye className="w-4 h-4" />
                               </button>
