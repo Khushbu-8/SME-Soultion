@@ -69,6 +69,49 @@ const toNumeric = (value) => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
+const splitHeaderLabel = (label, maxChars = 8) => {
+  const tokens = String(label || "")
+    .replace(/\//g, " / ")
+    .trim()
+    .split(/\s+/)
+    .filter((token) => token !== "/");
+
+  const lines = [];
+  let current = "";
+
+  tokens.forEach((token) => {
+    if (!current) {
+      current = token;
+      return;
+    }
+    const next = `${current} ${token}`;
+    if (next.length <= maxChars) {
+      current = next;
+    } else {
+      lines.push(current);
+      current = token;
+    }
+  });
+
+  if (current) lines.push(current);
+  return lines.length ? lines : [String(label || "")];
+};
+
+const renderHeaderLabel = (label, keyPrefix = "header") => (
+  <span className="inline-flex flex-col items-center leading-tight">
+    {splitHeaderLabel(label).map((line, idx) => (
+      <span key={`${keyPrefix}-${idx}`}>{line}</span>
+    ))}
+  </span>
+);
+
+const splitSizeDisplay = (value) => {
+  const text = String(value ?? "—").trim();
+  const match = text.match(/^(.*?)(\s*\([^()]+\))$/);
+  if (!match) return { main: text, sub: "" };
+  return { main: match[1].trim(), sub: match[2].trim() };
+};
+
 // ─── Component ──────────────────────────────────────────────────────────────
 const OrderManagement = () => {
   const navigate = useNavigate();
@@ -172,10 +215,21 @@ const OrderManagement = () => {
     return Array.from(groups.values());
   }, [filteredOrders]);
 
+  const totalFilteredOrders = useMemo(() => {
+    const orderIds = new Set(filteredOrders.map((o) => o.orderId ?? o.id));
+    return orderIds.size;
+  }, [filteredOrders]);
+
   const totalPendingOrders = useMemo(
-    () => orders.filter((o) => toNumeric(o.pendingPc) > 0).length,
-    [orders]
+    () => filteredOrders.filter((o) => toNumeric(o.pendingPc) > 0).length,
+    [filteredOrders]
   );
+
+  const totalPice = useMemo(
+    () => filteredOrders.reduce((sum, o) => sum + toNumeric(o.qtyPc), 0),
+    [filteredOrders]
+  );
+
 
   // ── Actions ───────────────────────────────────────────────────────────────
   const requestDelete = (order) => setDeleteTarget(order);
@@ -357,14 +411,10 @@ const OrderManagement = () => {
             description="Simplifying Order Processing from Start to Delivery"
             action={
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => navigate("/job-work")}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition"
-                >
-                  <BriefcaseBusiness className="w-4 h-4" />
+                
+                <PrimaryActionButton onClick={() => navigate("/job-work")} icon={BriefcaseBusiness}>
                   All Job Works
-                </button>
+                </PrimaryActionButton>
                 <PrimaryActionButton onClick={() => navigate("/order/select")} icon={Plus}>
                   Add Order
                 </PrimaryActionButton>
@@ -373,9 +423,10 @@ const OrderManagement = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <StatsCard label="Total Order" value={totalElements} className="h-[90px] rounded-md" />
+        <div className="grid grid-cols-3 gap-6 mb-8">
+          <StatsCard label="Total Order" value={totalFilteredOrders} className="h-[90px] rounded-md" />
           <StatsCard label="Total Pending Order" value={totalPendingOrders} className="h-[90px] rounded-md" />
+          <StatsCard label="Total Pice" value={totalPice} className="h-[90px] rounded-md" />
         </div>
 
         <SearchFilter
@@ -389,11 +440,11 @@ const OrderManagement = () => {
 
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="max-h-[520px] overflow-auto scrollbar-thin">
-            <table className="min-w-[1500px] w-full">
+            <table className="w-max min-w-full table-auto">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-200">
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Party Name</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Party Name", "party-name")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">
                     <button
                       type="button"
                       onClick={() => {
@@ -403,29 +454,29 @@ const OrderManagement = () => {
                       }}
                       className="flex items-center gap-1 mx-auto"
                     >
-                      Date
+                      {renderHeaderLabel("Date", "date")}
                       <ChevronDown className={`w-3 h-3 transition-transform ${sortByFields === "createdAt" && direction === "ASC" ? "rotate-180" : ""}`} />
                     </button>
                   </th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Size</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Plating</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Qty. Pc</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Qty Kg</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Pc/Box.</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Box/Cartoon.</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Pc/Cartoon</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Sticker Qty.</th>
-                  <th colSpan={2} className="px-3 py-2 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Dispatch</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Pending Pc.</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Job Update</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Plating</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Job Work No</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Job Action</th>
-                  <th rowSpan={2} className="px-3 py-4 text-center text-sm font-[550] whitespace-nowrap">Action</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Size", "size")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Plating", "plating")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Qty. Pc", "qty-pc")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Qty Kg", "qty-kg")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Pc/Box.", "pc-box")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Box/Cartoon.", "box-cartoon")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Pc/Cartoon", "pc-cartoon")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Sticker Qty.", "sticker-qty")}</th>
+                  <th colSpan={2} className="px-3 py-2 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Dispatch", "dispatch")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Pending Pc.", "pending-pc")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Job Update", "job-update")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Plating", "plating-action")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Job Work No", "job-work-no")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Job Action", "job-action")}</th>
+                  <th rowSpan={2} className="px-3 py-3 text-center text-sm font-[550] whitespace-normal">{renderHeaderLabel("Action", "action")}</th>
                 </tr>
                 <tr className="bg-gray-100 border-b border-gray-200">
-                  <th className="px-3 py-2 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Date</th>
-                  <th className="px-3 py-2 text-center text-sm font-[550] border-r border-gray-200 whitespace-nowrap">Pcs.</th>
+                  <th className="px-3 py-2 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Date", "dispatch-date")}</th>
+                  <th className="px-3 py-2 text-center text-sm font-[550] border-r border-gray-200 whitespace-normal">{renderHeaderLabel("Pcs.", "dispatch-pcs")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -451,6 +502,7 @@ const OrderManagement = () => {
                       const showGroupedColumns = rowIndex === 0;
                       const groupRowSpan = visibleRows.length;
                       const isMultiItem = group.length > 1;
+                      const sizeParts = splitSizeDisplay(row.size);
                       const rowOverride = getRowOverride(row);
                       const effectivePlatingStatus = rowOverride?.platingStatus ?? row.platingStatus;
                       const effectiveJobWork = rowOverride?.jobWork ?? row.jobWork;
@@ -480,7 +532,12 @@ const OrderManagement = () => {
                               {row.date}
                             </td>
                           )}
-                          <td className="px-3 py-4 text-sm text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.size}</td>
+                          <td className="px-3 py-4 text-sm text-gray-700 border-r border-gray-200 whitespace-normal">
+                            <span className="inline-flex flex-col leading-tight">
+                              <span className="whitespace-nowrap">{sizeParts.main}</span>
+                              {sizeParts.sub ? <span className="whitespace-nowrap text-center">{sizeParts.sub}</span> : null}
+                            </span>
+                          </td>
                           <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.plating}</td>
                           <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.qtyPc}</td>
                           <td className="px-3 py-4 text-sm text-center text-gray-700 border-r border-gray-200 whitespace-nowrap">{row.qtyKg}</td>

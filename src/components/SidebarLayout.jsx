@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Menu,
   X,
   LayoutDashboard,
   Users,
@@ -17,8 +16,18 @@ import {
 import Navbar from "./navbar";
 import logo from "../assets/logo.png";
 
+const SIDEBAR_STATE_KEY = "sidebar:isOpen";
+
 const SidebarLayout = ({ children }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(() => {
+    try {
+      const raw = localStorage.getItem(SIDEBAR_STATE_KEY);
+      if (raw == null) return true;
+      return raw === "true";
+    } catch {
+      return true;
+    }
+  });
   const location = useLocation();
   const isMastersActive = location.pathname.startsWith("/masters") || location.pathname.startsWith("/inventory");
   const [mastersOpen, setMastersOpen] = useState(false);
@@ -51,6 +60,14 @@ const SidebarLayout = ({ children }) => {
   useEffect(() => {
     return () => clearTimeout(closeTimer.current);
   }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_STATE_KEY, String(isOpen));
+    } catch {
+      // Ignore storage write failures
+    }
+  }, [isOpen]);
 
   // Masters submenu links
   const masterLinks = [
@@ -124,19 +141,22 @@ const SidebarLayout = ({ children }) => {
         {/* Sidebar - Fixed on left */}
         <aside
           className={`${
-            isOpen ? "block" : "hidden"
-          } md:block w-72 bg-white border-r border-gray-200 text-gray-800 fixed md:relative h-full z-20 overflow-y-auto scrollbar-hide`}
+            isOpen
+              ? "translate-x-0 md:w-72 border-r border-gray-200 pointer-events-auto"
+              : "-translate-x-full md:translate-x-0 md:w-0 md:border-r-0 md:overflow-hidden pointer-events-none md:pointer-events-none"
+          } w-72 bg-white text-gray-800 fixed md:relative h-full z-30 md:z-20 overflow-y-auto scrollbar-hide transition-all duration-300 ease-in-out`}
         >
-          {/* Close icon for mobile */}
-          <div className="md:hidden flex justify-end p-4 border-b border-gray-200">
-            <button onClick={() => setIsOpen(false)} className="text-gray-800">
-              <X className="w-6 h-6 cursor-pointer" />
+          {/* Sidebar header */}
+          <div className="px-4 py-4 border-b border-gray-200 flex items-center justify-between">
+            <img src={logo} alt="ISHITA Logo" className="h-10 w-auto" />
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="text-gray-700 hover:text-black transition"
+              aria-label="Close sidebar"
+            >
+              <X className="w-5 h-5 cursor-pointer" />
             </button>
-          </div>
-
-          {/* Logo Section */}
-          <div className="px-5 py-3 border-b border-gray-200 hidden md:flex md:justify-center">
-            <img src={logo} alt="ISHITA Logo" className="h-12 w-auto" />
           </div>
 
           {/* Sidebar Links */}
@@ -178,7 +198,6 @@ const SidebarLayout = ({ children }) => {
                     return (
                   <Link
                     to={link.to}
-                    onClick={() => setIsOpen(false)}
                     className={`flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 ${
                       isActive
                         ? "bg-white text-gray-900 font-semibold border border-black ml-2"
@@ -213,7 +232,6 @@ const SidebarLayout = ({ children }) => {
               to={sublink.to}
               onClick={() => {
                 setMastersOpen(false);
-                setIsOpen(false);
               }}
               className={`flex items-center px-4 py-2.5 transition-colors text-sm ${
                 location.pathname === sublink.to
@@ -231,17 +249,7 @@ const SidebarLayout = ({ children }) => {
 
         {/* Main content */}
         <main className="flex-1 w-full overflow-y-auto scrollbar-hide">
-          {/* Mobile menu toggle */}
-          <div className="md:hidden flex justify-start items-center p-4 bg-white border-b border-gray-200">
-            <button
-              onClick={() => setIsOpen(true)}
-              className="text-gray-800 focus:outline-none"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-          </div>
-
-          <Navbar />
+          <Navbar showSidebarMenu={!isOpen} onOpenSidebar={() => setIsOpen(true)} />
           <div className="p-6 bg-gray-50/60">{children}</div>
         </main>
 
