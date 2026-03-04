@@ -17,6 +17,7 @@ import ClientSelect from "./pages/ClientManagement/ClientSelect";
 import ClientManagement from "./pages/ClientManagement/ClientManagement";
 import JobWork from "./pages/JobWork";
 import MoveToJobWork from "./pages/MoveToJobWork";
+import PackingInvoice from "./pages/PackingInvoice";
 
 const AppRoutes = () => {
 
@@ -103,6 +104,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Inventory />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/packing-invoice"
+        element={
+          <ProtectedRoute>
+            <PackingInvoice />
           </ProtectedRoute>
         }
       />

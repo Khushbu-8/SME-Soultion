@@ -79,6 +79,11 @@ const SidebarLayout = ({ children }) => {
       icon: <LayoutDashboard className="w-5 h-5" />,
     },
     {
+      to: "/packing-invoice",
+      label: "Packing Invoice",
+      icon: <Package className="w-5 h-5" />,
+    },
+    {
       to: "/masters",
       label: "Masters",
       icon: <Users className="w-5 h-5" />,
