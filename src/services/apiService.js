@@ -27,6 +27,14 @@ import {
     OrderDispatchApi,
 } from '../api-clients/order-management';
 import {
+    Configuration as PackingInvoiceMgmtConfiguration,
+    PackingInvoiceApi,
+} from '../api-clients/packing-invoice-management';
+import {
+    Configuration as ExportMgmtConfiguration,
+    ExportApi,
+} from '../api-clients/export-management';
+import {
     CategoryApi,
     ItemApi,
     PartyApi,
@@ -188,6 +196,26 @@ const createOrderMgmtConfig = () => {
     });
 };
 
+const createPackingInvoiceMgmtConfig = () => {
+    return new PackingInvoiceMgmtConfiguration({
+        basePath: config.API_BASE_URL,
+        accessToken: getAccessToken(),
+        baseOptions: {
+            adapter: axiosInstance.defaults.adapter,
+        },
+    });
+};
+
+const createExportMgmtConfig = () => {
+    return new ExportMgmtConfiguration({
+        basePath: config.API_BASE_URL,
+        accessToken: getAccessToken(),
+        baseOptions: {
+            adapter: axiosInstance.defaults.adapter,
+        },
+    });
+};
+
 // Initialize API clients
 let partyApi = new PartyApi(createApiConfig(), config.API_BASE_URL, axiosInstance);
 let categoryApi = new CategoryApi(createApiConfig(), config.API_BASE_URL, axiosInstance);
@@ -205,6 +233,8 @@ let jobWorkApi = new JobWorkApi(createOrderMgmtConfig(), config.API_BASE_URL, ax
 let jobWorkReturnApi = new JobWorkReturnApi(createOrderMgmtConfig(), config.API_BASE_URL, axiosInstance);
 let orderApi = new OrderApi(createOrderMgmtConfig(), config.API_BASE_URL, axiosInstance);
 let orderDispatchApi = new OrderDispatchApi(createOrderMgmtConfig(), config.API_BASE_URL, axiosInstance);
+let packingInvoiceApi = new PackingInvoiceApi(createPackingInvoiceMgmtConfig(), config.API_BASE_URL, axiosInstance);
+let packingInvoiceExportApi = new ExportApi(createExportMgmtConfig(), config.API_BASE_URL, axiosInstance);
 /**
  * Update all API clients with new token
  * Call this after login or token refresh
@@ -229,6 +259,8 @@ export const updateApiClients = () => {
     jobWorkReturnApi = new JobWorkReturnApi(createOrderMgmtConfig(), config.API_BASE_URL, axiosInstance);
     orderApi = new OrderApi(createOrderMgmtConfig(), config.API_BASE_URL, axiosInstance);
     orderDispatchApi = new OrderDispatchApi(createOrderMgmtConfig(), config.API_BASE_URL, axiosInstance);
+    packingInvoiceApi = new PackingInvoiceApi(createPackingInvoiceMgmtConfig(), config.API_BASE_URL, axiosInstance);
+    packingInvoiceExportApi = new ExportApi(createExportMgmtConfig(), config.API_BASE_URL, axiosInstance);
 };
 
 // Export API clients
@@ -249,6 +281,8 @@ export {
     jobWorkReturnApi,
     orderApi,
     orderDispatchApi,
+    packingInvoiceApi,
+    packingInvoiceExportApi,
 };
 
 // Export a default object with all APIs
@@ -269,4 +303,6 @@ export default {
     jobWorkReturn: jobWorkReturnApi,
     order: orderApi,
     orderDispatch: orderDispatchApi,
+    packingInvoice: packingInvoiceApi,
+    packingInvoiceExport: packingInvoiceExportApi,
 };

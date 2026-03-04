@@ -76,7 +76,38 @@ const MoveToJobWork = () => {
     return "Job Work";
   }, [mode, editJob, sourceOrderRow]);
 
+  // Fetch job work data from API when editing by ID
   useEffect(() => {
+    if (mode === "edit" && editJobWorkId && editOrderItemId && !editJob) {
+      const fetchJobWork = async () => {
+        try {
+          const res = await jobWorkApi.getJobWorkById(Number(editOrderItemId), Number(editJobWorkId));
+          const jw = res.data;
+          const sizeLabel = [
+            jw.size?.sizeInInch,
+            jw.size?.sizeInMm ? `(${jw.size.sizeInMm})` : null,
+          ].filter(Boolean).join(" ");
+          setFormData({
+            partyName: jw.party?.name || "",
+            partyId: jw.party?.id || "",
+            date: normalizeDateForInput(jw.jobDate),
+            size: sizeLabel || "",
+            sizeId: jw.size?.id || "",
+            qtyPc: jw.qtyPc != null ? String(jw.qtyPc) : "",
+            qtyKg: jw.qtyKg != null ? String(jw.qtyKg) : "",
+            finish: jw.finish || "",
+            element: jw.elementCount != null ? String(jw.elementCount) : "",
+            elementType: jw.elementType === "DRUM" ? "Drum" : "Peti",
+            stickerQty: jw.stickerQty != null ? String(jw.stickerQty) : "",
+          });
+        } catch (err) {
+          toast.error(err?.response?.data?.message || "Failed to load job work data");
+        }
+      };
+      fetchJobWork();
+      return;
+    }
+
     if (mode === "edit" && editJob) {
       const elementParts = extractElementParts(
         editJob.itemElementInput || editJob.itemElement,
@@ -128,7 +159,7 @@ const MoveToJobWork = () => {
     }
 
     setFormData(EMPTY_FORM);
-  }, [mode, editJob, sourceOrderRow]);
+  }, [mode, editJob, sourceOrderRow, editJobWorkId, editOrderItemId]);
 
   const handleChange = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));

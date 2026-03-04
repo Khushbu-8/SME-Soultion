@@ -1,91 +1,102 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Calendar, Download, Plus } from "lucide-react";
 import SidebarLayout from "../components/SidebarLayout";
 import PageHeader from "../components/PageHeader";
 import StatsCard from "../components/StatsCard";
 import SearchFilter from "../components/SearchFilter";
-
-const partyOptions = ["Elite", "Marco", "Forum", "Maxin"];
-const sizeOptions = [
-  "6 X 1.1/8 X 5/32 - 3.600",
-  "7 X 1.1/8 X 5/32 - 3.500",
-  "6 X 1.2/8 X 5/32 - 3.200",
-];
-
-const initialRows = [
-  {
-    id: 1,
-    date: "2026-03-02",
-    invoiceId: "01",
-    party: "Elite",
-    cartoonNo: "01",
-    acDozWeight: "4.300",
-    size: "6 X 1.1/8 X 5/32 - 3.600",
-    finish: "S.S + 16",
-    box: "10",
-    pc: "6",
-    totalPc: "60",
-    scrap: "500",
-    labour: "150",
-    rsKg: "650",
-    boxWeight: "2.16",
-    boxWeightAccDozWeight: "4.320",
-    billCalDozWeight: "4.300",
-    ratePc: "232.91",
-    totalRs: "13975",
-    totalKg: "21.6",
-    asPerDozWeight: "21.5",
-    loss: "0.100",
-  },
-  {
-    id: 2,
-    date: "",
-    invoiceId: "",
-    party: "",
-    cartoonNo: "",
-    acDozWeight: "",
-    size: "",
-    finish: "",
-    box: "",
-    pc: "",
-    totalPc: "",
-    scrap: "",
-    labour: "",
-    rsKg: "",
-    boxWeight: "",
-    boxWeightAccDozWeight: "",
-    billCalDozWeight: "",
-    ratePc: "",
-    totalRs: "",
-    totalKg: "",
-    asPerDozWeight: "",
-    loss: "",
-  },
-];
+import {
+  packingInvoiceApi,
+  partyApi,
+  itemBlueprintApi,
+  sizeApi,
+  axiosInstance,
+} from "../services/apiService";
+import toast from "react-hot-toast";
 
 const columns = [
   { key: "date", label: "Date", type: "date" },
   { key: "invoiceId", label: "Invoice ID", type: "text" },
   { key: "party", label: "Party", type: "party-select" },
   { key: "cartoonNo", label: "Cartoon No.", type: "text" },
-  { key: "acDozWeight", label: "Ac. Doz Weight", type: "number" },
+  { key: "acDozWeight", label: "Ac. Doz Weight", type: "auto" },
   { key: "size", label: "Size", type: "size-select" },
   { key: "finish", label: "Finish", type: "text" },
   { key: "box", label: "Box", type: "number" },
   { key: "pc", label: "Pc.", type: "number" },
-  { key: "totalPc", label: "Total Pc", type: "number" },
+  { key: "totalPc", label: "Total Pc", type: "auto" },
   { key: "scrap", label: "Scrap.", type: "number" },
   { key: "labour", label: "Laboure", type: "number" },
-  { key: "rsKg", label: "Rs/Kg", type: "number" },
+  { key: "rsKg", label: "Rs/Kg", type: "auto" },
   { key: "boxWeight", label: "Box Weight", type: "number" },
-  { key: "boxWeightAccDozWeight", label: "Box Weight / Ac. Doz Weight", type: "number" },
-  { key: "billCalDozWeight", label: "Bill Cal. Doz Weight", type: "number" },
-  { key: "ratePc", label: "Rate/Pc.", type: "number" },
-  { key: "totalRs", label: "Total Rs.", type: "number" },
-  { key: "totalKg", label: "Total Kg.", type: "number" },
-  { key: "asPerDozWeight", label: "As. Per Doz Weight", type: "number" },
-  { key: "loss", label: "Loss", type: "number" },
+  { key: "boxWeightAccDozWeight", label: "Box Weight / Ac. Doz Weight", type: "auto" },
+  { key: "billCalDozWeight", label: "Bill Cal. Doz Weight", type: "auto" },
+  { key: "ratePc", label: "Rate/Pc.", type: "auto" },
+  { key: "totalRs", label: "Total Rs.", type: "auto" },
+  { key: "totalKg", label: "Total Kg.", type: "auto" },
+  { key: "asPerDozWeight", label: "As. Per Doz Weight", type: "auto" },
+  { key: "loss", label: "Loss", type: "auto" },
 ];
+
+// Recalculate all auto fields for a row
+// Formulas verified against Excel row 16:
+//   H=G*F  K=I+J  M=L/G*12  O=N*K/12  P=O*H  Q=L*F  R=C/12*H  S=Q-R
+const recalcRow = (row) => {
+  const num = (v) => {
+    if (v === "" || v == null) return 0;
+    const n = parseFloat(v);
+    return isNaN(n) ? 0 : n;
+  };
+  const fmt = (v) => (v === 0 ? "" : parseFloat(v.toFixed(4)));
+
+  const box = num(row.box);                 // F - Box
+  const pc = num(row.pc);                   // G - Pcs
+  const scrap = num(row.scrap);             // I - Scrap
+  const labour = num(row.labour);           // J - Labour
+  const boxWeight = num(row.boxWeight);     // L - Box Weight
+  const acDozWeight = num(row.acDozWeight); // C - Actual Doz Weight (from size)
+
+  // H: Total Pc = Box * Pcs
+  const totalPc = box * pc;
+
+  // K: Rs/Kg = Scrap + Labour
+  const rsKg = scrap + labour;
+
+  // M: Box according Doz Weight = BoxWeight / Pcs * 12
+  const boxWeightAccDozWeight = pc > 0 ? (boxWeight / pc) * 12 : 0;
+
+  // N: Bill Cal. Doz Weight = Ac. Doz Weight (auto from size)
+  const billCalDozWeight = acDozWeight;
+
+  // O: Rate/Pc = BillCalDozWeight * RsKg / 12
+  const ratePc = (billCalDozWeight * rsKg) / 12;
+
+  // P: Total Rs = RatePc * TotalPc
+  const totalRs = ratePc * totalPc;
+
+  // Q: Total Kgs = BoxWeight * Box
+  const totalKg = boxWeight * box;
+
+  // R: As Per Doz Weight = AcDozWeight / 12 * TotalPc
+  //    (verified: 4.300 / 12 * 60 = 21.5)
+  const asPerDozWeight = (acDozWeight / 12) * totalPc;
+
+  // S: Loss = TotalKgs - AsPerDozWeight
+  //    (verified: 21.6 - 21.5 = 0.100)
+  const loss = totalKg - asPerDozWeight;
+
+  return {
+    ...row,
+    totalPc: fmt(totalPc),
+    rsKg: fmt(rsKg),
+    boxWeightAccDozWeight: fmt(boxWeightAccDozWeight),
+    billCalDozWeight: fmt(billCalDozWeight),
+    ratePc: fmt(ratePc),
+    totalRs: fmt(totalRs),
+    totalKg: fmt(totalKg),
+    asPerDozWeight: fmt(asPerDozWeight),
+    loss: fmt(loss),
+  };
+};
 
 const formatDate = (value) => {
   if (!value) return "";
@@ -94,8 +105,47 @@ const formatDate = (value) => {
   return `${day}/${month}/${year}`;
 };
 
+// Map API response to a flat row matching the original table structure
+const apiToRow = (inv) => {
+  const item = inv.items?.[0] || {};
+  const sizeObj = item.size;
+  const sizeLabel = sizeObj
+    ? `${sizeObj.sizeInInch || ""}${sizeObj.dozenWeight ? " - " + sizeObj.dozenWeight : ""}`
+    : "";
+  return {
+    id: inv.id,
+    _isNew: false,
+    _partyId: inv.party?.id || null,
+    _sizeId: sizeObj?.id || null,
+    date: inv.invoiceDate || "",
+    invoiceId: inv.invoiceNo || "",
+    party: inv.party?.name || "",
+    cartoonNo: inv.cartoonNo || "",
+    acDozWeight: sizeObj?.dozenWeight ?? "",
+    size: sizeLabel,
+    finish: item.finish ?? "",
+    box: item.box ?? "",
+    pc: item.pc ?? "",
+    totalPc: item.totalPc ?? "",
+    scrap: item.scrap ?? "",
+    labour: item.laboure ?? "",
+    rsKg: item.rsKg ?? "",
+    boxWeight: item.boxWeight ?? "",
+    boxWeightAccDozWeight: item.boxWeightAcDocWeight ?? "",
+    billCalDozWeight: item.billCalDocWeight ?? "",
+    ratePc: item.ratePc ?? "",
+    totalRs: item.totalRs ?? "",
+    totalKg: item.totalKg ?? "",
+    asPerDozWeight: item.asPerDocWeight ?? "",
+    loss: item.loss ?? "",
+  };
+};
+
 const createRow = (id) => ({
   id,
+  _isNew: true,
+  _partyId: null,
+  _sizeId: null,
   date: "",
   invoiceId: "",
   party: "",
@@ -119,24 +169,117 @@ const createRow = (id) => ({
   loss: "",
 });
 
+const rowToPayload = (row) => {
+  const parseNum = (v) => {
+    if (v === "" || v == null) return undefined;
+    const n = parseFloat(v);
+    return isNaN(n) ? undefined : n;
+  };
+  return {
+    invoiceDate: row.date || new Date().toISOString().split("T")[0],
+    partyId: row._partyId,
+    items: [
+      {
+        sizeId: row._sizeId,
+        finish: row.finish || undefined,
+        box: parseNum(row.box),
+        pc: parseNum(row.pc),
+        totalPc: parseNum(row.totalPc),
+        scrap: parseNum(row.scrap),
+        laboure: parseNum(row.labour),
+        rsKg: parseNum(row.rsKg),
+        boxWeight: parseNum(row.boxWeight),
+        boxWeightAcDocWeight: parseNum(row.boxWeightAccDozWeight),
+        billCalDocWeight: parseNum(row.billCalDozWeight),
+        ratePc: parseNum(row.ratePc),
+        totalRs: parseNum(row.totalRs),
+        totalKg: parseNum(row.totalKg),
+        asPerDocWeight: parseNum(row.asPerDozWeight),
+        loss: parseNum(row.loss),
+      },
+    ],
+  };
+};
+
 const PackingInvoice = () => {
-  const [rows, setRows] = useState(initialRows);
-  const [savedRows, setSavedRows] = useState(initialRows);
+  const [rows, setRows] = useState([]);
+  const [savedRows, setSavedRows] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [selectedCell, setSelectedCell] = useState(null);
   const [editingCell, setEditingCell] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [downloadingId, setDownloadingId] = useState(null);
+
+  // Dropdown data from API
+  const [partyOptions, setPartyOptions] = useState([]);
+  const [sizeOptions, setSizeOptions] = useState([]);
 
   const todayIso = new Date().toISOString().split("T")[0];
+
+  // Load parties and sizes from API
+  useEffect(() => {
+    const loadDropdowns = async () => {
+      try {
+        const [partiesRes, itemsRes] = await Promise.all([
+          partyApi.getAllParties(),
+          itemBlueprintApi.getAllItems(),
+        ]);
+        const partiesList = Array.isArray(partiesRes.data) ? partiesRes.data : [];
+        setPartyOptions(partiesList);
+
+        const items = Array.isArray(itemsRes.data) ? itemsRes.data : [];
+        const sizesPromises = items.map((item) =>
+          sizeApi
+            .getSizesByItemId(item.id)
+            .then((res) => (Array.isArray(res.data) ? res.data : []))
+            .catch(() => [])
+        );
+        const sizesArrays = await Promise.all(sizesPromises);
+        setSizeOptions(sizesArrays.flat());
+      } catch {
+        toast.error("Failed to load dropdown data");
+      }
+    };
+    loadDropdowns();
+  }, []);
+
+  // Load packing invoices from API
+  const loadInvoices = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await packingInvoiceApi.getAllPackingInvoices(
+        undefined,
+        undefined,
+        undefined,
+        0,
+        200
+      );
+      const data = res.data;
+      const invoices = Array.isArray(data?.data) ? data.data : [];
+      const mapped = invoices.map(apiToRow);
+      setRows(mapped);
+      setSavedRows(mapped);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to load packing invoices");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadInvoices();
+  }, [loadInvoices]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
       const matchesSearch =
         !searchQuery ||
-        row.invoiceId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.party.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.size.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.finish.toLowerCase().includes(searchQuery.toLowerCase());
+        (row.invoiceId || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (row.party || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (row.size || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (row.finish || "").toLowerCase().includes(searchQuery.toLowerCase());
       const matchesType = !typeFilter || row.finish === typeFilter;
       return matchesSearch && matchesType;
     });
@@ -156,7 +299,9 @@ const PackingInvoice = () => {
 
   const updateCell = (rowId, key, value) => {
     setRows((prev) =>
-      prev.map((row) => (row.id === rowId ? { ...row, [key]: value } : row)),
+      prev.map((row) =>
+        row.id === rowId ? recalcRow({ ...row, [key]: value }) : row
+      ),
     );
   };
 
@@ -164,12 +309,53 @@ const PackingInvoice = () => {
     setRows((prev) => [...prev, createRow(Date.now())]);
   };
 
-  const handleSaveAll = () => {
-    setSavedRows(rows);
+  // Save all changed rows to API
+  const handleSaveAll = async () => {
+    // Find rows that changed
+    const changedRows = rows.filter((row, idx) => {
+      const saved = savedRows[idx];
+      return !saved || JSON.stringify(row) !== JSON.stringify(saved);
+    });
+
+    if (changedRows.length === 0) return;
+
+    // Validate required fields
+    for (const row of changedRows) {
+      if (!row._partyId) {
+        toast.error(`Please select a party for all rows`);
+        return;
+      }
+      if (!row._sizeId) {
+        toast.error(`Please select a size for all rows`);
+        return;
+      }
+      if (!row.date) {
+        toast.error(`Please select a date for all rows`);
+        return;
+      }
+    }
+
+    setSaving(true);
+    try {
+      for (const row of changedRows) {
+        const payload = rowToPayload(row);
+        if (row._isNew) {
+          await packingInvoiceApi.createPackingInvoice(payload);
+        } else {
+          await packingInvoiceApi.updatePackingInvoice(row.id, payload);
+        }
+      }
+      toast.success("Saved successfully!");
+      await loadInvoices();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to save");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleRefresh = () => {
-    setRows(savedRows);
+    loadInvoices();
     setSelectedCell(null);
     setEditingCell(null);
   };
@@ -202,6 +388,73 @@ const PackingInvoice = () => {
     }
   };
 
+  // Handle party select — store both name (for display) and id (for API)
+  const handlePartySelect = (rowId, partyName) => {
+    const party = partyOptions.find((p) => p.name === partyName);
+    setRows((prev) =>
+      prev.map((row) =>
+        row.id === rowId
+          ? { ...row, party: partyName, _partyId: party ? party.id : null }
+          : row
+      )
+    );
+  };
+
+  // Handle size select — store both label (for display) and id (for API), then recalc
+  const handleSizeSelect = (rowId, sizeLabel) => {
+    const size = sizeOptions.find((s) => {
+      const label = `${s.sizeInInch || ""}${s.dozenWeight ? " - " + s.dozenWeight : ""}`;
+      return label === sizeLabel;
+    });
+    setRows((prev) =>
+      prev.map((row) =>
+        row.id === rowId
+          ? recalcRow({
+              ...row,
+              size: sizeLabel,
+              _sizeId: size ? size.id : null,
+              acDozWeight: size?.dozenWeight ?? row.acDozWeight,
+            })
+          : row
+      )
+    );
+  };
+
+  // Download PDF via export API
+  const handleDownload = async (row) => {
+    if (row._isNew || !row.id) {
+      toast.error("Please save the invoice first");
+      return;
+    }
+    setDownloadingId(row.id);
+    try {
+      const res = await axiosInstance.get(
+        `/api/v1/packing-invoices/${row.id}/pdf`,
+        {
+          responseType: "blob",
+          headers: { Accept: "application/pdf,application/json" },
+        }
+      );
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `packing-invoice-${row.invoiceId || row.id}.pdf`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("PDF downloaded!");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to download PDF");
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   const renderCellValue = (row, col) => {
     if (col.key === "date") {
       return row.date ? (
@@ -224,6 +477,10 @@ const PackingInvoice = () => {
     cellId,
     autoFocusEnabled = true,
   ) => {
+    if (col.type === "auto") {
+      return <span className="text-sm text-gray-500">{row[col.key] || ""}</span>;
+    }
+
     if (col.type === "date") {
       return (
         <input
@@ -243,15 +500,15 @@ const PackingInvoice = () => {
         <select
           autoFocus={autoFocusEnabled}
           value={row[col.key]}
-          onChange={(e) => updateCell(row.id, col.key, e.target.value)}
+          onChange={(e) => handlePartySelect(row.id, e.target.value)}
           onKeyDown={(e) => handleLastCellTab(e, rowIndex, colIndex, totalRows)}
           onBlur={() => handleCellBlur(cellId)}
           className="w-full bg-transparent text-center text-sm focus:outline-none"
         >
           <option value="">Select Party Name</option>
-          {partyOptions.map((option) => (
-            <option key={option} value={option}>
-              {option}
+          {partyOptions.map((p) => (
+            <option key={p.id} value={p.name}>
+              {p.name}
             </option>
           ))}
         </select>
@@ -263,17 +520,20 @@ const PackingInvoice = () => {
         <select
           autoFocus={autoFocusEnabled}
           value={row[col.key]}
-          onChange={(e) => updateCell(row.id, col.key, e.target.value)}
+          onChange={(e) => handleSizeSelect(row.id, e.target.value)}
           onKeyDown={(e) => handleLastCellTab(e, rowIndex, colIndex, totalRows)}
           onBlur={() => handleCellBlur(cellId)}
           className="w-full bg-transparent text-center text-sm focus:outline-none"
         >
           <option value="">Select Size</option>
-          {sizeOptions.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
+          {sizeOptions.map((s) => {
+            const label = `${s.sizeInInch || ""}${s.dozenWeight ? " - " + s.dozenWeight : ""}`;
+            return (
+              <option key={s.id} value={label}>
+                {label}
+              </option>
+            );
+          })}
         </select>
       );
     }
@@ -335,47 +595,61 @@ const PackingInvoice = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.map((row, rowIndex) => (
-                  <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
-                    {columns.map((col, colIndex) => {
-                      const cellId = `${row.id}-${col.key}`;
-                      const isSelected = selectedCell === cellId;
-                      const isEditing = editingCell === cellId;
-                      const isAlwaysDropdown =
-                        col.type === "party-select" || col.type === "size-select";
-                      return (
-                        <td
-                          key={cellId}
-                          onClick={() => handleCellClick(cellId)}
-                          className={`h-10 px-2 py-1 text-center border-r text-sm text-bllack border-gray-200 cursor-pointer ${
-                            col.key === "size" ? "min-w-[220px]" : "min-w-[90px]"
-                          } ${isSelected ? "ring-2 ring-gray-400 ring-inset" : ""}`}
-                        >
-                          {isEditing || isAlwaysDropdown
-                            ? renderEditableCell(
-                                row,
-                                col,
-                                rowIndex,
-                                colIndex,
-                                filteredRows.length,
-                                cellId,
-                                isEditing,
-                              )
-                            : renderCellValue(row, col)}
-                        </td>
-                      );
-                    })}
-                    <td className="h-12 px-3 py-1 text-center">
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-2 px-3 py-1 text-sm border border-gray-300 rounded bg-gray-100 hover:bg-gray-200"
-                      >
-                        Download
-                        <Download className="w-4 h-4" />
-                      </button>
+                {loading ? (
+                  <tr>
+                    <td
+                      colSpan={columns.length + 1}
+                      className="h-32 text-center text-sm text-gray-400"
+                    >
+                      Loading...
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredRows.map((row, rowIndex) => (
+                    <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
+                      {columns.map((col, colIndex) => {
+                        const cellId = `${row.id}-${col.key}`;
+                        const isSelected = selectedCell === cellId;
+                        const isEditing = editingCell === cellId;
+                        const isAlwaysDropdown =
+                          col.type === "party-select" || col.type === "size-select";
+                        const isAuto = col.type === "auto";
+                        return (
+                          <td
+                            key={cellId}
+                            onClick={() => !isAuto && handleCellClick(cellId)}
+                            className={`h-10 px-2 py-1 text-center border-r text-sm text-bllack border-gray-200 ${isAuto ? "" : "cursor-pointer"} ${
+                              col.key === "size" ? "min-w-[220px]" : "min-w-[90px]"
+                            } ${isSelected ? "ring-2 ring-gray-400 ring-inset" : ""}`}
+                          >
+                            {isEditing || isAlwaysDropdown
+                              ? renderEditableCell(
+                                  row,
+                                  col,
+                                  rowIndex,
+                                  colIndex,
+                                  filteredRows.length,
+                                  cellId,
+                                  isEditing,
+                                )
+                              : renderCellValue(row, col)}
+                          </td>
+                        );
+                      })}
+                      <td className="h-12 px-3 py-1 text-center">
+                        <button
+                          type="button"
+                          disabled={downloadingId === row.id || row._isNew}
+                          onClick={() => handleDownload(row)}
+                          className="inline-flex items-center gap-2 px-3 py-1 text-sm border border-gray-300 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {downloadingId === row.id ? "Downloading..." : "Download"}
+                          <Download className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -389,14 +663,14 @@ const PackingInvoice = () => {
             <button
               type="button"
               onClick={handleSaveAll}
-              disabled={!hasChanges}
+              disabled={!hasChanges || saving}
               className={`px-10 py-2 rounded-lg transition text-sm font-medium ${
-                hasChanges
+                hasChanges && !saving
                   ? "bg-gray-900 text-white hover:bg-gray-800"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
-              Save
+              {saving ? "Saving..." : "Save"}
             </button>
             <button
               type="button"

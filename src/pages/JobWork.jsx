@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ChevronLeft,
   Printer,
   SquarePen,
   Trash2,
   CircleCheck,
   ChevronDown,
   RefreshCw,
-  Search,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SidebarLayout from "../components/SidebarLayout";
+import PageHeader from "../components/PageHeader";
+import SearchFilter from "../components/SearchFilter";
 import ConfirmationDialog from "../components/ConfirmationDialog";
 import { jobWorkApi, jobWorkReturnApi, axiosInstance } from "../services/apiService";
 import toast from "react-hot-toast";
@@ -310,14 +310,14 @@ const JobWorkCardItem = ({ jw, onStatusChange, onTypeChange, onReturnRecord, onE
           <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-gray-500">
             <span>{jw.party?.name || "—"}</span>
             <span className="w-1 h-1 rounded-full bg-gray-400 inline-block" />
-            <span>Finish: <span className="text-black">{fmt(jw.finish)}</span></span>
+            <span>Finish: <span className="font-bold text-black">{fmt(jw.finish)}</span></span>
             <span className="w-1 h-1 rounded-full bg-gray-400 inline-block" />
-            <span>Sticker Qty: <span className="text-black">{fmt(jw.stickerQty)}</span></span>
+            <span>Sticker Qty: <span className="font-bold text-black">{fmt(jw.stickerQty)}</span></span>
           </div>
         </div>
         <div className="text-right text-sm text-gray-500 flex-shrink-0">
-          <p>Date: {fmtDate(jw.jobDate)}</p>
-          <p>Created: {fmtDate(jw.createdAt)}</p>
+          <p>Date: <span className="font-bold">{fmtDate(jw.jobDate)}</span></p>
+          <p>Created: <span className="font-bold">{fmtDate(jw.createdAt)}</span></p>
         </div>
       </div>
 
@@ -344,11 +344,11 @@ const JobWorkCardItem = ({ jw, onStatusChange, onTypeChange, onReturnRecord, onE
             <span>Size</span><span className="text-center">Element</span><span className="text-right">Kg</span>
           </div>
           <div className="grid grid-cols-3 text-sm text-gray-700">
-            <span>{sizeLabel}</span>
-            <span className="text-center">{elementLabel}</span>
-            <span className="text-right">{fmt(jw.qtyKg)} Kg</span>
+            <span className="font-bold">{sizeLabel}</span>
+            <span className="text-center font-bold">{elementLabel}</span>
+            <span className="text-right font-bold">{fmt(jw.qtyKg)} Kg</span>
           </div>
-          <div className="mt-2 text-xs text-gray-500">Qty Pc: <span className="text-black">{fmt(jw.qtyPc)}</span></div>
+          <div className="mt-2 text-xs text-gray-500">Qty Pc: <span className="font-bold text-black">{fmt(jw.qtyPc)}</span></div>
         </div>
 
         {/* Return panel */}
@@ -374,9 +374,9 @@ const JobWorkCardItem = ({ jw, onStatusChange, onTypeChange, onReturnRecord, onE
                 <span>Element</span><span className="text-center">Return Kg</span><span className="text-right">Ghati</span>
               </div>
               <div className="grid grid-cols-3 text-sm text-gray-700">
-                <span>{returnElementLabel}</span>
-                <span className="text-center">{fmt(ret.returnKg)} Kg</span>
-                <span className="text-right">{fmt(ret.ghati)}</span>
+                <span className="font-bold">{returnElementLabel}</span>
+                <span className="text-center font-bold">{fmt(ret.returnKg)} Kg</span>
+                <span className="text-right font-bold">{fmt(ret.ghati)}</span>
               </div>
             </>
           ) : (
@@ -409,6 +409,7 @@ const JobWork = () => {
   const [jobWorks,     setJobWorks]     = useState([]);
   const [loading,      setLoading]      = useState(true);
   const [searchTerm,   setSearchTerm]   = useState("");
+  const [typeFilter,   setTypeFilter]   = useState("");
   const [returnTarget, setReturnTarget] = useState(null); // jw object for return dialog
   const [deleteTarget, setDeleteTarget] = useState(null); // jw object for confirm delete
   const [deleting,     setDeleting]     = useState(false);
@@ -493,74 +494,84 @@ const JobWork = () => {
 
   // ── Filter ────────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
+    let filteredList = jobWorks;
+    
+    // Apply type filter
+    if (typeFilter) {
+      filteredList = filteredList.filter(jw => {
+        if (typeFilter === "IN_HOUSE") {
+          return jw.jobWorkType === "INHOUSE";
+        } else if (typeFilter === "JOB_WORK") {
+          return jw.jobWorkType === "JOB_WORK";
+        }
+        return true;
+      });
+    }
+    
+    // Apply search filter
     const q = searchTerm.trim().toLowerCase();
-    if (!q) return jobWorks;
-    return jobWorks.filter(jw => {
-      const sizeLabel = [jw.size?.sizeInInch, jw.size?.sizeInMm].filter(Boolean).join(" ").toLowerCase();
-      return (
-        (jw.party?.name || "").toLowerCase().includes(q) ||
-        (jw.finish || "").toLowerCase().includes(q) ||
-        sizeLabel.includes(q) ||
-        String(jw.id).includes(q)
-      );
-    });
-  }, [jobWorks, searchTerm]);
+    if (q) {
+      filteredList = filteredList.filter(jw => {
+        const sizeLabel = [jw.size?.sizeInInch, jw.size?.sizeInMm].filter(Boolean).join(" ").toLowerCase();
+        return (
+          (jw.party?.name || "").toLowerCase().includes(q) ||
+          (jw.finish || "").toLowerCase().includes(q) ||
+          sizeLabel.includes(q) ||
+          String(jw.id).includes(q)
+        );
+      });
+    }
+    
+    return filteredList;
+  }, [jobWorks, searchTerm, typeFilter]);
 
   // ── Header context info ───────────────────────────────────────────────────
   const contextBanner = orderRow ? (
     <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 mb-4 flex flex-wrap items-center gap-4 text-sm">
-      <div><span className="text-gray-400 mr-1">Party:</span><span className="font-medium text-black">{orderRow.partyName}</span></div>
-      <div><span className="text-gray-400 mr-1">Size:</span><span className="font-medium text-black">{orderRow.size}</span></div>
-      <div><span className="text-gray-400 mr-1">Plating:</span><span className="font-medium text-black">{orderRow.plating}</span></div>
-      <div><span className="text-gray-400 mr-1">Qty Pc:</span><span className="font-medium text-black">{orderRow.qtyPc}</span></div>
-      <div><span className="text-gray-400 mr-1">Order Item ID:</span><span className="font-medium text-black">#{orderRow.id}</span></div>
+      <div><span className="text-gray-400 mr-1">Party:</span><span className="font-bold text-black">{orderRow.partyName}</span></div>
+      <div><span className="text-gray-400 mr-1">Size:</span><span className="font-bold text-black">{orderRow.size}</span></div>
+      <div><span className="text-gray-400 mr-1">Plating:</span><span className="font-bold text-black">{orderRow.plating}</span></div>
+      <div><span className="text-gray-400 mr-1">Qty Pc:</span><span className="font-bold text-black">{orderRow.qtyPc}</span></div>
+      <div><span className="text-gray-400 mr-1">Order Item ID:</span><span className="font-bold text-black">#{orderRow.id}</span></div>
     </div>
   ) : null;
 
   return (
     <SidebarLayout>
       <div className="max-w-7xl mx-auto">
-        {/* Back button */}
-        <div className="mb-4 flex items-center justify-between">
-          <button type="button" onClick={() => navigate("/order")}
-            className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-black transition">
-            <ChevronLeft className="w-4 h-4" />
-            Back to Orders
-          </button>
-          <div className="flex items-center gap-3">
-            <button type="button" onClick={loadJobWorks}
-              disabled={loading}
-              className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-black transition disabled:opacity-50">
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-              Refresh
-            </button>
-          </div>
-        </div>
-
-        {/* Page title */}
-        <div className="mb-4">
-          <h1 className="text-xl font-semibold text-black">
-            {orderRow ? "Job Works for Order Item" : "All Job Works"}
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {orderRow
+        {/* Page Header */}
+        <div className="mb-6">
+          <PageHeader
+            title={orderRow ? "Job Works for Order Item" : "All Job Works"}
+            description={orderRow
               ? `Viewing job work records for order item #${orderRow.id}`
               : "Viewing all job work records across all orders"}
-          </p>
+            action={
+              <button
+                type="button"
+                onClick={loadJobWorks}
+                disabled={loading}
+                className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-black transition disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+                Refresh
+              </button>
+            }
+          />
         </div>
 
         {/* Context banner (when coming from a specific order row) */}
         {contextBanner}
 
-        {/* Search bar */}
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by party, size, finish…"
-            className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-500 outline-none placeholder:text-gray-400"
+        {/* Search and Filter */}
+        <div className="mb-6">
+          <SearchFilter
+            searchQuery={searchTerm}
+            setSearchQuery={setSearchTerm}
+            typeFilter={typeFilter}
+            setTypeFilter={setTypeFilter}
+            filterOptions={["IN_HOUSE", "JOB_WORK"]}
+            filterPlaceholder="Type"
           />
         </div>
 
