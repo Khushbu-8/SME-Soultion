@@ -13,6 +13,7 @@ import SidebarLayout from "../components/SidebarLayout";
 import PageHeader from "../components/PageHeader";
 import SearchFilter from "../components/SearchFilter";
 import ConfirmationDialog from "../components/ConfirmationDialog";
+import StatsCard from "../components/StatsCard";
 import { jobWorkApi, jobWorkReturnApi, axiosInstance } from "../services/apiService";
 import toast from "react-hot-toast";
 
@@ -659,6 +660,15 @@ const JobWork = () => {
     return filteredList;
   }, [jobWorks, searchTerm, typeFilter]);
 
+  const stats = useMemo(
+    () => ({
+      totalJobWorks: filtered.length,
+      completedJobWorks: filtered.filter((jw) => jw.status === "COMPLETE").length,
+      pendingJobWorks: filtered.filter((jw) => jw.status === "PENDING").length,
+    }),
+    [filtered]
+  );
+
   // ── Header context info ───────────────────────────────────────────────────
   const contextBanner = orderRow ? (
     <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 mb-4 flex flex-wrap items-center gap-4 text-sm">
@@ -688,6 +698,11 @@ const JobWork = () => {
         {/* Context banner (when coming from a specific order row) */}
         {contextBanner}
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <StatsCard label="Total Job Works" value={stats.totalJobWorks} className="h-[90px] rounded-md" />
+          <StatsCard label="Completed Job Works" value={stats.completedJobWorks} className="h-[90px] rounded-md" />
+          <StatsCard label="Pending Job Works" value={stats.pendingJobWorks} className="h-[90px] rounded-md" />
+        </div>
         {/* Search and Filter */}
         <div className="mb-6">
           <SearchFilter

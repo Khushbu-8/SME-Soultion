@@ -36,6 +36,34 @@ const columns = [
   { key: "clearlacq", label: "Clear Lacq.", type: "number" },
 ];
 
+const splitHeaderLabel = (label, maxChars = 8) => {
+  const tokens = String(label || "")
+    .replace(/\//g, " / ")
+    .trim()
+    .split(/\s+/)
+    .filter((token) => token !== "/");
+
+  const lines = [];
+  let current = "";
+
+  tokens.forEach((token) => {
+    if (!current) {
+      current = token;
+      return;
+    }
+    const next = `${current} ${token}`;
+    if (next.length <= maxChars) {
+      current = next;
+    } else {
+      lines.push(current);
+      current = token;
+    }
+  });
+
+  if (current) lines.push(current);
+  return lines.length ? lines : [String(label || "")];
+};
+
 const numericFields = [
   "pcsPerBox", "boxPerCarton", "pcsPerCarton", "cartonWeight",
   "sssatinlacq", "antiq", "sidegold", "zblack", "grblack",
@@ -939,22 +967,34 @@ const Inventory = () => {
           ) : (
             <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
               <div className="max-h-[460px] overflow-auto scrollbar-thin">
-                <table className="min-w-[1400px] w-full">
+                <table className="w-max min-w-full table-auto">
                   <thead>
                     <tr className="bg-gray-100 border-b border-gray-200">
                       {columns.map((col) => (
                         <th
                           key={col.key}
-                          className="sticky top-0 z-10 whitespace-nowrap px-6 py-4 text-center text-sm font-[550] text-gray-900 border-r border-gray-200 bg-gray-100"
+                          className="sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] text-gray-900 border-r border-gray-200 bg-gray-100"
                         >
-                          {col.label}
+                          <span className="inline-flex flex-col items-center leading-tight">
+                            {splitHeaderLabel(col.label).map((line, idx) => (
+                              <span key={`${col.key}-${idx}`}>{line}</span>
+                            ))}
+                          </span>
                         </th>
                       ))}
-                      <th className="sticky top-0 z-10 whitespace-nowrap px-3 py-4 text-center text-sm font-[550] text-gray-900 bg-gray-100 w-[60px] border-r border-gray-200">
-                        View
+                      <th className="sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] text-gray-900 bg-gray-100 min-w-[70px] border-r border-gray-200">
+                        <span className="inline-flex flex-col items-center leading-tight">
+                          {splitHeaderLabel("View").map((line, idx) => (
+                            <span key={`view-${idx}`}>{line}</span>
+                          ))}
+                        </span>
                       </th>
-                      <th className="sticky top-0 z-10 whitespace-nowrap px-3 py-4 text-center text-sm font-[550] text-gray-900 bg-gray-100 w-[80px]">
-                        Actions
+                      <th className="sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] text-gray-900 bg-gray-100 min-w-[86px]">
+                        <span className="inline-flex flex-col items-center leading-tight">
+                          {splitHeaderLabel("Actions").map((line, idx) => (
+                            <span key={`actions-${idx}`}>{line}</span>
+                          ))}
+                        </span>
                       </th>
                     </tr>
                   </thead>

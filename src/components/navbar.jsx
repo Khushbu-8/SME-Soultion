@@ -1,12 +1,14 @@
 // src/components/Navbar.jsx
 import React, { useState } from "react";
-import { Bell, Search, User, LogOut } from "lucide-react";
+import { Menu, User, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ConfirmationDialog from "./ConfirmationDialog";
 
-const Navbar = () => {
+const Navbar = ({ showSidebarMenu = false, onOpenSidebar = () => {} }) => {
   const { user, logout } = useAuth();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogoutClick = () => {
     setShowLogoutDialog(true);
@@ -25,8 +27,18 @@ const Navbar = () => {
     <>
       <nav className="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 hidden md:block">
         <div className="flex items-center justify-between">
-          {/* Search Bar */}
-          <div className="flex-1 max-w-md"></div>
+          <div className="flex items-center gap-3 min-h-[40px]">
+            {showSidebarMenu ? (
+              <button
+                type="button"
+                onClick={onOpenSidebar}
+                className="inline-flex items-center gap-2 text-gray-800 hover:text-black transition cursor-pointer"
+                aria-label="Open sidebar"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            ) : null}
+          </div>
 
           {/* Right Section */}
 

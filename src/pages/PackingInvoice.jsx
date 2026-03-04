@@ -20,7 +20,7 @@ const columns = [
   { key: "cartoonNo", label: "Cartoon No.", type: "text" },
   { key: "acDozWeight", label: "Ac. Doz Weight", type: "auto" },
   { key: "size", label: "Size", type: "size-select" },
-  { key: "finish", label: "Finish", type: "text" },
+  { key: "finish", label: "Finish", type: "finish-select" },
   { key: "box", label: "Box", type: "number" },
   { key: "pc", label: "Pc.", type: "number" },
   { key: "totalPc", label: "Total Pc", type: "auto" },
@@ -36,6 +36,54 @@ const columns = [
   { key: "asPerDozWeight", label: "As. Per Doz Weight", type: "auto" },
   { key: "loss", label: "Loss", type: "auto" },
 ];
+
+const FINISH_OPTIONS = [
+  "S.S & Sartin Lacq",
+  "ANTQ",
+  "Side Gold",
+  "Matt ANTQ",
+  "PVD Rose",
+  "PVD Gold",
+  "PVD Black",
+  "Rose Gold",
+  "Clear Lacq.",
+];
+
+const getColumnWidthClass = (key) => {
+  if (key === "party") return "min-w-[160px]";
+  if (key === "size") return "min-w-[150px]";
+  if (key === "date") return "min-w-[110px]";
+  if (key === "cartoonNo") return "min-w-[95px]";
+  return "min-w-[72px]";
+};
+
+const splitHeaderLabel = (label, maxChars = 8) => {
+  const tokens = String(label || "")
+    .replace(/\//g, " / ")
+    .trim()
+    .split(/\s+/)
+    .filter((token) => token !== "/");
+
+  const lines = [];
+  let current = "";
+
+  tokens.forEach((token) => {
+    if (!current) {
+      current = token;
+      return;
+    }
+    const next = `${current} ${token}`;
+    if (next.length <= maxChars) {
+      current = next;
+    } else {
+      lines.push(current);
+      current = token;
+    }
+  });
+
+  if (current) lines.push(current);
+  return lines.length ? lines : [String(label || "")];
+};
 
 // Recalculate all auto fields for a row
 // Formulas verified against Excel row 16:
@@ -97,6 +145,18 @@ const recalcRow = (row) => {
     loss: fmt(loss),
   };
 };
+
+const calculatedKeys = new Set([
+  "totalPc",
+  "rsKg",
+  "boxWeightAccDozWeight",
+  "billCalDozWeight",
+  "ratePc",
+  "totalRs",
+  "totalKg",
+  "asPerDozWeight",
+  "loss",
+]);
 
 const formatDate = (value) => {
   if (!value) return "";
@@ -299,9 +359,11 @@ const PackingInvoice = () => {
 
   const updateCell = (rowId, key, value) => {
     setRows((prev) =>
-      prev.map((row) =>
-        row.id === rowId ? recalcRow({ ...row, [key]: value }) : row
-      ),
+      prev.map((row) => {
+        if (row.id !== rowId) return row;
+        const nextRow = { ...row, [key]: value };
+        return calculatedKeys.has(key) ? nextRow : recalcRow(nextRow);
+      }),
     );
   };
 
@@ -477,10 +539,6 @@ const PackingInvoice = () => {
     cellId,
     autoFocusEnabled = true,
   ) => {
-    if (col.type === "auto") {
-      return <span className="text-sm text-gray-500">{row[col.key] || ""}</span>;
-    }
-
     if (col.type === "date") {
       return (
         <input
@@ -538,11 +596,31 @@ const PackingInvoice = () => {
       );
     }
 
+    if (col.type === "finish-select") {
+      return (
+        <select
+          autoFocus={autoFocusEnabled}
+          value={row[col.key] || ""}
+          onChange={(e) => updateCell(row.id, col.key, e.target.value)}
+          onKeyDown={(e) => handleLastCellTab(e, rowIndex, colIndex, totalRows)}
+          onBlur={() => handleCellBlur(cellId)}
+          className="w-full bg-transparent text-center text-sm focus:outline-none"
+        >
+          <option value="">Select Finish</option>
+          {FINISH_OPTIONS.map((finish) => (
+            <option key={finish} value={finish}>
+              {finish}
+            </option>
+          ))}
+        </select>
+      );
+    }
+
     return (
       <input
         autoFocus={autoFocusEnabled}
-        type={col.type === "number" ? "number" : "text"}
-        step={col.type === "number" ? "any" : undefined}
+        type={col.type === "number" || col.type === "auto" ? "number" : "text"}
+        step={col.type === "number" || col.type === "auto" ? "any" : undefined}
         value={row[col.key]}
         onChange={(e) => updateCell(row.id, col.key, e.target.value)}
         onKeyDown={(e) => handleLastCellTab(e, rowIndex, colIndex, totalRows)}
@@ -576,20 +654,24 @@ const PackingInvoice = () => {
 
         <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
           <div className="max-h-[460px] overflow-auto scrollbar-thin">
-            <table className="min-w-[1400px] w-full">
+            <table className="w-max min-w-full table-auto">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-200">
                   {columns.map((col) => (
                     <th
                       key={col.key}
-                      className={`sticky top-0 z-10 whitespace-nowrap px-6 py-4 text-center text-sm font-[550] text-gray-900 border-r border-gray-200 bg-gray-100 ${
-                        col.key === "size" ? "min-w-[220px]" : "min-w-[90px]"
-                      }`}
+                      className={`sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] text-gray-900 border-r border-gray-200 bg-gray-100 ${getColumnWidthClass(
+                        col.key
+                      )}`}
                     >
-                      {col.label}
+                      <span className="inline-flex flex-col items-center leading-tight">
+                        {splitHeaderLabel(col.label).map((line, idx) => (
+                          <span key={`${col.key}-${idx}`}>{line}</span>
+                        ))}
+                      </span>
                     </th>
                   ))}
-                  <th className="sticky top-0 z-10 whitespace-nowrap px-3 py-4 text-center text-sm font-[550] text-gray-900 bg-gray-100 w-[60px] border-r border-gray-200">
+                  <th className="sticky top-0 z-10 whitespace-nowrap px-3 py-3 text-center text-sm font-[550] text-gray-900 bg-gray-100 min-w-[92px] border-r border-gray-200">
                     Action
                   </th>
                 </tr>
@@ -612,14 +694,15 @@ const PackingInvoice = () => {
                         const isSelected = selectedCell === cellId;
                         const isEditing = editingCell === cellId;
                         const isAlwaysDropdown =
-                          col.type === "party-select" || col.type === "size-select";
-                        const isAuto = col.type === "auto";
+                          col.type === "party-select" ||
+                          col.type === "size-select" ||
+                          col.type === "finish-select";
                         return (
                           <td
                             key={cellId}
-                            onClick={() => !isAuto && handleCellClick(cellId)}
-                            className={`h-10 px-2 py-1 text-center border-r text-sm text-bllack border-gray-200 ${isAuto ? "" : "cursor-pointer"} ${
-                              col.key === "size" ? "min-w-[220px]" : "min-w-[90px]"
+                            onClick={() => handleCellClick(cellId)}
+                            className={`h-10 px-2 py-1 text-center border-r text-sm text-bllack border-gray-200 cursor-pointer ${
+                              getColumnWidthClass(col.key)
                             } ${isSelected ? "ring-2 ring-gray-400 ring-inset" : ""}`}
                           >
                             {isEditing || isAlwaysDropdown

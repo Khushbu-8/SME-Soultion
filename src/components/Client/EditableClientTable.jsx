@@ -1,5 +1,33 @@
 import React from "react";
 
+const splitHeaderLabel = (label, maxChars = 8) => {
+  const tokens = String(label || "")
+    .replace(/\//g, " / ")
+    .trim()
+    .split(/\s+/)
+    .filter((token) => token !== "/");
+
+  const lines = [];
+  let current = "";
+
+  tokens.forEach((token) => {
+    if (!current) {
+      current = token;
+      return;
+    }
+    const next = `${current} ${token}`;
+    if (next.length <= maxChars) {
+      current = next;
+    } else {
+      lines.push(current);
+      current = token;
+    }
+  });
+
+  if (current) lines.push(current);
+  return lines.length ? lines : [String(label || "")];
+};
+
 /**
  * EditableClientTable
  *
@@ -17,7 +45,7 @@ const EditableClientTable = ({
   onLastCellTab,
   readOnlyCols = [],          // array of column indices that are read-only
   colWidths = {},             // { [colIndex]: 'min-w-[Xpx]' }
-  tableMinWidth = "min-w-[1600px]",
+  tableMinWidth = "",
   scrollHeightClass = "max-h-[560px]",
 }) => {
   const readOnlySet = new Set(readOnlyCols);
@@ -25,17 +53,21 @@ const EditableClientTable = ({
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
       <div className={`${scrollHeightClass} overflow-auto scrollbar-thin`}>
-        <table className={`${tableMinWidth} w-full`}>
+        <table className={`w-max min-w-full table-auto ${tableMinWidth}`.trim()}>
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">
               {columns.map((col, colIndex) => (
                 <th
                   key={col}
-                  className={`sticky top-0 z-10 whitespace-nowrap px-6 py-4 text-center text-sm font-[550] border-r border-gray-200 last:border-r-0 bg-gray-100 ${
+                  className={`sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] border-r border-gray-200 last:border-r-0 bg-gray-100 ${
                     readOnlySet.has(colIndex) ? "text-gray-400" : "text-gray-900"
                   }`}
                 >
-                  {col}
+                  <span className="inline-flex flex-col items-center leading-tight">
+                    {splitHeaderLabel(col).map((line, idx) => (
+                      <span key={`${col}-${idx}`}>{line}</span>
+                    ))}
+                  </span>
                 </th>
               ))}
             </tr>
