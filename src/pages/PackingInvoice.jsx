@@ -207,7 +207,7 @@ const PackingInvoice = () => {
       return row.date ? (
         formatDate(row.date)
       ) : (
-        <span className="inline-flex items-center justify-center text-gray-500">
+        <span className="inline-flex items-center justify-center text-black">
           <Calendar className="w-4 h-4" />
         </span>
       );
@@ -347,7 +347,7 @@ const PackingInvoice = () => {
                         <td
                           key={cellId}
                           onClick={() => handleCellClick(cellId)}
-                          className={`h-10 px-2 py-1 text-center border-r border-gray-200 cursor-pointer ${
+                          className={`h-10 px-2 py-1 text-center border-r text-sm text-bllack border-gray-200 cursor-pointer ${
                             col.key === "size" ? "min-w-[220px]" : "min-w-[90px]"
                           } ${isSelected ? "ring-2 ring-gray-400 ring-inset" : ""}`}
                         >
