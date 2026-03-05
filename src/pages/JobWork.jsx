@@ -139,7 +139,7 @@ const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
   const returns = jobWork.jobWorkReturns || [];
   const alreadyReturnedKg = round3(returns
     .filter(r => r.id !== editingReturn?.id)
-    .reduce((sum, r) => sum + (r.returnKg || 0), 0));
+    .reduce((sum, r) => sum + (r.returnKg || 0) + (r.ghati || 0), 0));
   const alreadyReturnedElements = returns
     .filter(r => r.id !== editingReturn?.id)
     .reduce((sum, r) => sum + (r.returnElementCount || 0), 0);
@@ -151,16 +151,18 @@ const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
   const handleSave = async () => {
     const kg = parseFloat(form.returnKg);
     if (!form.returnKg || isNaN(kg) || kg <= 0) { toast.error("Return Kg is required and must be greater than 0"); return; }
-    if (sentKg > 0 && round3(kg) > availableKg) { toast.error(`Return Kg (${kg}) exceeds remaining (${availableKg} Kg)`); return; }
-    const ghatiVal = form.ghati ? parseFloat(form.ghati) : undefined;
-    if (ghatiVal !== undefined && (isNaN(ghatiVal) || ghatiVal < 0)) { toast.error("Ghati must be a valid non-negative number"); return; }
+    const ghatiVal = form.ghati ? parseFloat(form.ghati) : 0;
+    const newContribution = round3(kg + (isNaN(ghatiVal) ? 0 : ghatiVal));
+    if (sentKg > 0 && newContribution > availableKg) { toast.error(`Return Kg + Ghati (${newContribution}) exceeds remaining (${availableKg} Kg)`); return; }
+    const ghatiPayload = form.ghati ? parseFloat(form.ghati) : undefined;
+    if (ghatiPayload !== undefined && (isNaN(ghatiPayload) || ghatiPayload < 0)) { toast.error("Ghati must be a valid non-negative number"); return; }
     const elemCount = form.returnElementCount ? parseFloat(form.returnElementCount) : undefined;
     if (elemCount !== undefined && (isNaN(elemCount) || elemCount < 0 || !Number.isInteger(elemCount))) { toast.error("Return Element Count must be a valid non-negative integer"); return; }
     setSaving(true);
     try {
       const payload = {
         returnKg:           kg,
-        ghati:              ghatiVal,
+        ghati:              ghatiPayload,
         returnElementCount: elemCount,
         elementType:        form.elementType,
         jobReturnDate:      form.jobReturnDate || undefined,
@@ -198,7 +200,7 @@ const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
               placeholder="Enter Kg"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 outline-none placeholder:text-sm placeholder:text-gray-400" />
             {sentKg > 0 && (
-              <p className="mt-1 text-xs text-gray-400">Remaining: <span className="font-medium text-gray-600">{availableKg} Kg</span> of {sentKg} Kg</p>
+              <p className="mt-1 text-xs text-gray-400">Remaining (incl. Ghati): <span className="font-medium text-gray-600">{availableKg} Kg</span> of {sentKg} Kg</p>
             )}
           </div>
           <div>
@@ -326,10 +328,11 @@ const JobWorkCardItem = ({ jw, onStatusChange, onTypeChange, onReturnRecord, onE
   const round3 = (n) => Math.round(n * 1000) / 1000;
   const totalReturnKg = round3(returns.reduce((sum, r) => sum + (r.returnKg || 0), 0));
   const totalGhati = round3(returns.reduce((sum, r) => sum + (r.ghati || 0), 0));
+  const totalReturnWithGhati = round3(totalReturnKg + totalGhati);
   const totalReturnElements = returns.reduce((sum, r) => sum + (r.returnElementCount || 0), 0);
   const sentKg = jw.qtyKg || 0;
-  const remainingKg = round3(Math.max(0, sentKg - totalReturnKg));
-  const isFullyReturned = sentKg > 0 && totalReturnKg >= sentKg;
+  const remainingKg = round3(Math.max(0, sentKg - totalReturnWithGhati));
+  const isFullyReturned = sentKg > 0 && totalReturnWithGhati >= sentKg;
   const isCompleted = jw.status === "COMPLETE";
 
   return (
@@ -610,7 +613,7 @@ const JobWork = () => {
         const res = await jobWorkApi.getJobWorkById(returnTarget.orderItemId, returnTarget.id);
         const freshJw = res.data;
         const returns = freshJw?.jobWorkReturns || [];
-        const totalReturned = Math.round(returns.reduce((sum, r) => sum + (r.returnKg || 0), 0) * 1000) / 1000;
+        const totalReturned = Math.round(returns.reduce((sum, r) => sum + (r.returnKg || 0) + (r.ghati || 0), 0) * 1000) / 1000;
         const sentKg = freshJw?.qtyKg || 0;
         if (sentKg > 0 && totalReturned >= sentKg && freshJw?.status !== "COMPLETE") {
           await jobWorkApi.updateJobWorkStatus(returnTarget.orderItemId, returnTarget.id, { status: "COMPLETE" });

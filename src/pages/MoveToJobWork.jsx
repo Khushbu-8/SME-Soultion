@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SidebarLayout from "../components/SidebarLayout";
 import PageHeader from "../components/PageHeader";
 import toast from "react-hot-toast";
-import { jobWorkApi } from "../services/apiService";
+import { jobWorkApi, partyApi } from "../services/apiService";
 
 const EMPTY_FORM = {
   partyName: "",
@@ -58,6 +58,22 @@ const MoveToJobWork = () => {
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [isElementTypeOpen, setIsElementTypeOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [parties, setParties] = useState([]);
+  const [isPartyOpen, setIsPartyOpen] = useState(false);
+  const [partySearch, setPartySearch] = useState("");
+  const partyRef = useRef(null);
+
+  // Close party dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (partyRef.current && !partyRef.current.contains(e.target)) {
+        setIsPartyOpen(false);
+        setPartySearch("");
+      }
+    };
+    if (isPartyOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isPartyOpen]);
 
   const mode = location.state?.mode === "edit" ? "edit" : "create";
   const editJob = location.state?.job || null;
@@ -65,6 +81,27 @@ const MoveToJobWork = () => {
   // jobWorkId / orderItemId passed from new JobWork.jsx edit flow
   const editJobWorkId  = location.state?.jobWorkId   || null;
   const editOrderItemId = location.state?.orderItemId || null;
+
+  // Fetch parties for dropdown
+  useEffect(() => {
+    const fetchParties = async () => {
+      try {
+        const res = await partyApi.getAllParties();
+        const data = res.data;
+        const list = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+        setParties(list);
+      } catch {
+        // silent — party dropdown will just be empty
+      }
+    };
+    fetchParties();
+  }, []);
+
+  const filteredParties = useMemo(() => {
+    const q = partySearch.trim().toLowerCase();
+    if (!q) return parties;
+    return parties.filter(p => (p.name || "").toLowerCase().includes(q));
+  }, [parties, partySearch]);
 
   const inHouseStatus = useMemo(() => {
     if (mode === "edit") return editJob?.inHouseStatus || "In-House";
@@ -179,6 +216,7 @@ const MoveToJobWork = () => {
     // Try to save via API if we have the required IDs
     const orderItemId = sourceOrderRow?.id || editOrderItemId || editJob?.sourceItemId;
     const partyId = formData.partyId || sourceOrderRow?.partyId;
+    if (!partyId) { toast.error("Please select a party"); return; }
     const sizeId = formData.sizeId || sourceOrderRow?.sizeId;
 
     if (orderItemId && partyId && sizeId) {
@@ -303,16 +341,54 @@ const MoveToJobWork = () => {
           className="bg-white rounded-lg shadow p-6 mb-8"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
+            <div className="relative" ref={partyRef}>
               <label className="block text-md font-medium text-black mb-2">
                 Party Name*
               </label>
-              <input
-                value={formData.partyName}
-                onChange={(e) => handleChange("partyName", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition placeholder:text-sm placeholder:text-gray-500"
-                placeholder="Enter Party Name"
-              />
+              <div
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-500 focus-within:border-transparent outline-none transition cursor-pointer flex items-center justify-between"
+                onClick={() => setIsPartyOpen(prev => !prev)}
+              >
+                <span className={formData.partyName ? "text-black" : "text-sm text-gray-500"}>
+                  {formData.partyName || "Select Party"}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isPartyOpen ? "rotate-180" : ""}`} />
+              </div>
+              {isPartyOpen && (
+                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                  <div className="px-3 py-2 border-b border-gray-100">
+                    <input
+                      type="text"
+                      value={partySearch}
+                      onChange={(e) => setPartySearch(e.target.value)}
+                      placeholder="Search party..."
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-gray-500 outline-none"
+                      onClick={(e) => e.stopPropagation()}
+                      autoFocus
+                    />
+                  </div>
+                  <div className="max-h-48 overflow-y-auto">
+                    {filteredParties.length === 0 ? (
+                      <p className="px-4 py-2 text-sm text-gray-400">No parties found</p>
+                    ) : (
+                      filteredParties.map(p => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => {
+                            setFormData(prev => ({ ...prev, partyName: p.name, partyId: p.id }));
+                            setIsPartyOpen(false);
+                            setPartySearch("");
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${formData.partyId === p.id ? "font-semibold bg-gray-50" : ""}`}
+                        >
+                          {p.name}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-md font-medium text-black mb-2">Date</label>

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { X, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
-import { jobWorkApi } from "../../services/apiService";
+import { jobWorkApi, partyApi } from "../../services/apiService";
 
 const FINISH_OPTIONS = [
   "S.S & Sartin Lacq",
@@ -50,10 +50,48 @@ const JobWorkPopup = ({ isOpen, orderRow, onClose, onSaved }) => {
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [isElementTypeOpen, setIsElementTypeOpen] = useState(false);
+  const [parties, setParties] = useState([]);
+  const [isPartyOpen, setIsPartyOpen] = useState(false);
+  const [partySearch, setPartySearch] = useState("");
+  const partyRef = useRef(null);
+
+  // Fetch parties for dropdown
+  useEffect(() => {
+    if (!isOpen) return;
+    const fetchParties = async () => {
+      try {
+        const res = await partyApi.getAllParties();
+        const data = res.data;
+        const list = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+        setParties(list);
+      } catch { /* silent */ }
+    };
+    fetchParties();
+  }, [isOpen]);
+
+  // Close party dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (partyRef.current && !partyRef.current.contains(e.target)) {
+        setIsPartyOpen(false);
+        setPartySearch("");
+      }
+    };
+    if (isPartyOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isPartyOpen]);
+
+  const filteredParties = useMemo(() => {
+    const q = partySearch.trim().toLowerCase();
+    if (!q) return parties;
+    return parties.filter(p => (p.name || "").toLowerCase().includes(q));
+  }, [parties, partySearch]);
 
   useEffect(() => {
     if (!isOpen) return;
     setIsElementTypeOpen(false);
+    setIsPartyOpen(false);
+    setPartySearch("");
 
     if (orderRow) {
       const platingRaw = String(orderRow.jobWork || "").trim().toLowerCase().replace(/[\s-]/g, "");
@@ -140,12 +178,55 @@ const JobWorkPopup = ({ isOpen, orderRow, onClose, onSaved }) => {
 
         {/* Body */}
         <div className="px-8 py-6 overflow-y-auto flex-1">
-          {/* Auto-filled info banner */}
+          {/* Party + Size banner */}
           <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 mb-6">
             <div className="grid grid-cols-2 gap-4">
-              <div>
+              <div className="relative" ref={partyRef}>
                 <p className="text-xs text-gray-500 mb-1">Party Name</p>
-                <p className="text-sm font-medium text-black">{formData.partyName || "—"}</p>
+                <div
+                  className="flex items-center justify-between px-3 py-1.5 border border-gray-300 rounded-lg bg-white cursor-pointer hover:border-gray-400 transition"
+                  onClick={() => setIsPartyOpen(prev => !prev)}
+                >
+                  <span className={`text-sm ${formData.partyName ? "font-medium text-black" : "text-gray-400"}`}>
+                    {formData.partyName || "Select Party"}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isPartyOpen ? "rotate-180" : ""}`} />
+                </div>
+                {isPartyOpen && (
+                  <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                    <div className="px-3 py-2 border-b border-gray-100">
+                      <input
+                        type="text"
+                        value={partySearch}
+                        onChange={(e) => setPartySearch(e.target.value)}
+                        placeholder="Search party..."
+                        className="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-gray-500 outline-none"
+                        onClick={(e) => e.stopPropagation()}
+                        autoFocus
+                      />
+                    </div>
+                    <div className="max-h-48 overflow-y-auto">
+                      {filteredParties.length === 0 ? (
+                        <p className="px-4 py-2 text-sm text-gray-400">No parties found</p>
+                      ) : (
+                        filteredParties.map(p => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({ ...prev, partyName: p.name, partyId: p.id }));
+                              setIsPartyOpen(false);
+                              setPartySearch("");
+                            }}
+                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${formData.partyId === p.id ? "font-semibold bg-gray-50" : ""}`}
+                          >
+                            {p.name}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-1">Size</p>
