@@ -9,6 +9,7 @@ import {
   partyApi,
   itemBlueprintApi,
   sizeApi,
+  clientInventoryApi,
   axiosInstance,
 } from "../services/apiService";
 import toast from "react-hot-toast";
@@ -19,13 +20,14 @@ const columns = [
   { key: "party", label: "Party", type: "party-select" },
   { key: "cartoonNo", label: "Cartoon No.", type: "text" },
   { key: "acDozWeight", label: "Ac. Doz Weight", type: "auto" },
+  { key: "itemName", label: "Item Name", type: "item-select" },
   { key: "size", label: "Size", type: "size-select" },
   { key: "finish", label: "Finish", type: "finish-select" },
   { key: "box", label: "Box", type: "number" },
   { key: "pc", label: "Pc.", type: "number" },
   { key: "totalPc", label: "Total Pc", type: "auto" },
   { key: "scrap", label: "Scrap.", type: "number" },
-  { key: "labour", label: "Laboure", type: "number" },
+  { key: "labour", label: "Laboure", type: "auto" },
   { key: "rsKg", label: "Rs/Kg", type: "auto" },
   { key: "boxWeight", label: "Box Weight", type: "number" },
   { key: "boxWeightAccDozWeight", label: "Box Weight / Ac. Doz Weight", type: "auto" },
@@ -37,21 +39,31 @@ const columns = [
   { key: "loss", label: "Loss", type: "auto" },
 ];
 
-const FINISH_OPTIONS = [
-  "S.S & Sartin Lacq",
-  "ANTQ",
-  "Side Gold",
-  "Matt ANTQ",
-  "PVD Rose",
-  "PVD Gold",
-  "PVD Black",
-  "Rose Gold",
-  "Clear Lacq.",
-];
+// Map client inventory API field keys to display labels
+const FINISH_KEY_TO_LABEL = {
+  sssatinlacq: "S.S & Sartin Lacq",
+  antiq: "ANTQ",
+  sidegold: "Side Gold",
+  zblack: "Z Black",
+  grblack: "GR Black",
+  mattss: "Matt SS",
+  mattantiq: "Matt ANTQ",
+  pvdrose: "PVD Rose",
+  pvdgold: "PVD Gold",
+  pvdblack: "PVD Black",
+  rosegold: "Rose Gold",
+  clearlacq: "Clear Lacq.",
+};
+
+const FINISH_LABEL_TO_KEY = Object.fromEntries(
+  Object.entries(FINISH_KEY_TO_LABEL).map(([k, v]) => [v, k])
+);
 
 const getColumnWidthClass = (key) => {
   if (key === "party") return "min-w-[160px]";
+  if (key === "itemName") return "min-w-[150px]";
   if (key === "size") return "min-w-[150px]";
+  if (key === "finish") return "min-w-[150px]";
   if (key === "date") return "min-w-[110px]";
   if (key === "cartoonNo") return "min-w-[95px]";
   return "min-w-[72px]";
@@ -177,11 +189,14 @@ const apiToRow = (inv) => {
     _isNew: false,
     _partyId: inv.party?.id || null,
     _sizeId: sizeObj?.id || null,
+    _itemId: null, // populated from sizeToItem reverse lookup
+    _clientInventory: null, // fetched on demand
     date: inv.invoiceDate || "",
     invoiceId: inv.invoiceNo || "",
     party: inv.party?.name || "",
     cartoonNo: inv.cartoonNo || "",
     acDozWeight: sizeObj?.dozenWeight ?? "",
+    itemName: "", // populated from sizeToItem reverse lookup
     size: sizeLabel,
     finish: item.finish ?? "",
     box: item.box ?? "",
@@ -206,11 +221,14 @@ const createRow = (id) => ({
   _isNew: true,
   _partyId: null,
   _sizeId: null,
+  _itemId: null,
+  _clientInventory: null,
   date: "",
   invoiceId: "",
   party: "",
   cartoonNo: "",
   acDozWeight: "",
+  itemName: "",
   size: "",
   finish: "",
   box: "",
@@ -274,11 +292,13 @@ const PackingInvoice = () => {
 
   // Dropdown data from API
   const [partyOptions, setPartyOptions] = useState([]);
-  const [sizeOptions, setSizeOptions] = useState([]);
+  const [itemOptions, setItemOptions] = useState([]);
+  const [sizesByItem, setSizesByItem] = useState({}); // { itemId: [sizes] }
+  const [sizeToItem, setSizeToItem] = useState({}); // { sizeId: { id, name } } reverse lookup
 
   const todayIso = new Date().toISOString().split("T")[0];
 
-  // Load parties and sizes from API
+  // Load parties, items, and all sizes from API
   useEffect(() => {
     const loadDropdowns = async () => {
       try {
@@ -290,19 +310,47 @@ const PackingInvoice = () => {
         setPartyOptions(partiesList);
 
         const items = Array.isArray(itemsRes.data) ? itemsRes.data : [];
-        const sizesPromises = items.map((item) =>
-          sizeApi
-            .getSizesByItemId(item.id)
-            .then((res) => (Array.isArray(res.data) ? res.data : []))
-            .catch(() => [])
+        setItemOptions(items);
+
+        // Preload all sizes per item and build reverse lookup
+        const sizesMap = {};
+        const reverseMap = {};
+        await Promise.all(
+          items.map(async (item) => {
+            try {
+              const res = await sizeApi.getSizesByItemId(item.id);
+              const sizes = Array.isArray(res.data) ? res.data : [];
+              sizesMap[item.id] = sizes;
+              sizes.forEach((s) => { reverseMap[s.id] = { id: item.id, name: item.itemName }; });
+            } catch { /* skip */ }
+          })
         );
-        const sizesArrays = await Promise.all(sizesPromises);
-        setSizeOptions(sizesArrays.flat());
+        setSizesByItem(sizesMap);
+        setSizeToItem(reverseMap);
       } catch {
         toast.error("Failed to load dropdown data");
       }
     };
     loadDropdowns();
+  }, []);
+
+  // Fetch client inventory when party + size are selected
+  const fetchClientInventory = useCallback(async (partyId, sizeId, rowId) => {
+    if (!partyId || !sizeId) return;
+    try {
+      const res = await clientInventoryApi.getInventoryByClient(partyId, sizeId);
+      const data = res.data?.data || res.data;
+      const inventory = Array.isArray(data) ? data[0] : data;
+      if (inventory) {
+        setRows((prev) =>
+          prev.map((row) =>
+            row.id === rowId ? { ...row, _clientInventory: inventory } : row
+          )
+        );
+      }
+    } catch {
+      // silently fail — inventory may not exist for this combination
+    }
   }, []);
 
   // Load packing invoices from API
@@ -331,6 +379,22 @@ const PackingInvoice = () => {
   useEffect(() => {
     loadInvoices();
   }, [loadInvoices]);
+
+  // Enrich existing rows with item info from reverse lookup once sizeToItem is ready
+  useEffect(() => {
+    if (Object.keys(sizeToItem).length === 0) return;
+    setRows((prev) => {
+      let changed = false;
+      const updated = prev.map((row) => {
+        if (row._itemId || !row._sizeId) return row;
+        const itemInfo = sizeToItem[row._sizeId];
+        if (!itemInfo) return row;
+        changed = true;
+        return { ...row, _itemId: itemInfo.id, itemName: itemInfo.name };
+      });
+      return changed ? updated : prev;
+    });
+  }, [sizeToItem]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -451,34 +515,83 @@ const PackingInvoice = () => {
   };
 
   // Handle party select — store both name (for display) and id (for API)
+  // Also re-fetch inventory if size is already selected
   const handlePartySelect = (rowId, partyName) => {
     const party = partyOptions.find((p) => p.name === partyName);
     setRows((prev) =>
-      prev.map((row) =>
-        row.id === rowId
-          ? { ...row, party: partyName, _partyId: party ? party.id : null }
-          : row
-      )
+      prev.map((row) => {
+        if (row.id !== rowId) return row;
+        const updated = { ...row, party: partyName, _partyId: party ? party.id : null, _clientInventory: null, finish: "", labour: "" };
+        return recalcRow(updated);
+      })
+    );
+    // Fetch inventory if size already selected
+    if (party?.id) {
+      const row = rows.find((r) => r.id === rowId);
+      if (row?._sizeId) fetchClientInventory(party.id, row._sizeId, rowId);
+    }
+  };
+
+  // Handle item select — store item id and name, reset size/finish/labour
+  const handleItemSelect = (rowId, itemName) => {
+    const item = itemOptions.find((i) => i.itemName === itemName);
+    setRows((prev) =>
+      prev.map((row) => {
+        if (row.id !== rowId) return row;
+        return recalcRow({
+          ...row,
+          itemName,
+          _itemId: item ? item.id : null,
+          size: "",
+          _sizeId: null,
+          acDozWeight: "",
+          finish: "",
+          labour: "",
+          _clientInventory: null,
+        });
+      })
     );
   };
 
   // Handle size select — store both label (for display) and id (for API), then recalc
+  // Also fetch client inventory for the party + size combination
   const handleSizeSelect = (rowId, sizeLabel) => {
-    const size = sizeOptions.find((s) => {
+    const row = rows.find((r) => r.id === rowId);
+    const itemSizes = row?._itemId ? (sizesByItem[row._itemId] || []) : [];
+    const size = itemSizes.find((s) => {
       const label = `${s.sizeInInch || ""}${s.dozenWeight ? " - " + s.dozenWeight : ""}`;
       return label === sizeLabel;
     });
     setRows((prev) =>
-      prev.map((row) =>
-        row.id === rowId
+      prev.map((r) =>
+        r.id === rowId
           ? recalcRow({
-              ...row,
+              ...r,
               size: sizeLabel,
               _sizeId: size ? size.id : null,
-              acDozWeight: size?.dozenWeight ?? row.acDozWeight,
+              acDozWeight: size?.dozenWeight ?? r.acDozWeight,
+              finish: "",
+              labour: "",
+              _clientInventory: null,
             })
-          : row
+          : r
       )
+    );
+    // Fetch client inventory
+    if (row?._partyId && size?.id) {
+      fetchClientInventory(row._partyId, size.id, rowId);
+    }
+  };
+
+  // Handle finish select — look up the labour value from client inventory
+  const handleFinishSelect = (rowId, finishLabel) => {
+    setRows((prev) =>
+      prev.map((row) => {
+        if (row.id !== rowId) return row;
+        const finishKey = FINISH_LABEL_TO_KEY[finishLabel];
+        const labourValue = finishKey && row._clientInventory ? (row._clientInventory[finishKey] ?? "") : "";
+        return recalcRow({ ...row, finish: finishLabel, labour: labourValue });
+      })
     );
   };
 
@@ -573,7 +686,28 @@ const PackingInvoice = () => {
       );
     }
 
+    if (col.type === "item-select") {
+      return (
+        <select
+          autoFocus={autoFocusEnabled}
+          value={row[col.key] || ""}
+          onChange={(e) => handleItemSelect(row.id, e.target.value)}
+          onKeyDown={(e) => handleLastCellTab(e, rowIndex, colIndex, totalRows)}
+          onBlur={() => handleCellBlur(cellId)}
+          className="w-full bg-transparent text-center text-sm focus:outline-none"
+        >
+          <option value="">Select Item</option>
+          {itemOptions.map((item) => (
+            <option key={item.id} value={item.itemName}>
+              {item.itemName}
+            </option>
+          ))}
+        </select>
+      );
+    }
+
     if (col.type === "size-select") {
+      const itemSizes = row._itemId ? (sizesByItem[row._itemId] || []) : [];
       return (
         <select
           autoFocus={autoFocusEnabled}
@@ -583,8 +717,8 @@ const PackingInvoice = () => {
           onBlur={() => handleCellBlur(cellId)}
           className="w-full bg-transparent text-center text-sm focus:outline-none"
         >
-          <option value="">Select Size</option>
-          {sizeOptions.map((s) => {
+          <option value="">{row._itemId ? "Select Size" : "Select Item first"}</option>
+          {itemSizes.map((s) => {
             const label = `${s.sizeInInch || ""}${s.dozenWeight ? " - " + s.dozenWeight : ""}`;
             return (
               <option key={s.id} value={label}>
@@ -597,17 +731,24 @@ const PackingInvoice = () => {
     }
 
     if (col.type === "finish-select") {
+      // Build finish options from client inventory — only show finishes that have a value
+      const inventory = row._clientInventory;
+      const finishOptions = inventory
+        ? Object.entries(FINISH_KEY_TO_LABEL)
+            .filter(([key]) => inventory[key] != null && inventory[key] !== 0)
+            .map(([, label]) => label)
+        : Object.values(FINISH_KEY_TO_LABEL);
       return (
         <select
           autoFocus={autoFocusEnabled}
           value={row[col.key] || ""}
-          onChange={(e) => updateCell(row.id, col.key, e.target.value)}
+          onChange={(e) => handleFinishSelect(row.id, e.target.value)}
           onKeyDown={(e) => handleLastCellTab(e, rowIndex, colIndex, totalRows)}
           onBlur={() => handleCellBlur(cellId)}
           className="w-full bg-transparent text-center text-sm focus:outline-none"
         >
-          <option value="">Select Finish</option>
-          {FINISH_OPTIONS.map((finish) => (
+          <option value="">{row._clientInventory ? "Select Finish" : "Select Party & Size first"}</option>
+          {finishOptions.map((finish) => (
             <option key={finish} value={finish}>
               {finish}
             </option>
@@ -695,6 +836,7 @@ const PackingInvoice = () => {
                         const isEditing = editingCell === cellId;
                         const isAlwaysDropdown =
                           col.type === "party-select" ||
+                          col.type === "item-select" ||
                           col.type === "size-select" ||
                           col.type === "finish-select";
                         return (

@@ -112,7 +112,7 @@ const fmtDate = (s) => {
 
 // ── Return Record Dialog ─────────────────────────────────────────────────────
 const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
-  const [form, setForm] = useState({ returnKg: "", ghati: "", returnElementCount: "", elementType: "PETI" });
+  const [form, setForm] = useState({ returnKg: "", ghati: "", returnElementCount: "", elementType: "PETI", jobReturnDate: "" });
   const [saving, setSaving] = useState(false);
   const [isTypeOpen, setIsTypeOpen] = useState(false);
 
@@ -125,9 +125,10 @@ const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
         ghati:              String(editingReturn.ghati ?? ""),
         returnElementCount: String(editingReturn.returnElementCount ?? ""),
         elementType:        editingReturn.elementType || "PETI",
+        jobReturnDate:      editingReturn.jobReturnDate ? editingReturn.jobReturnDate.substring(0, 10) : "",
       });
     } else {
-      setForm({ returnKg: "", ghati: "", returnElementCount: "", elementType: "PETI" });
+      setForm({ returnKg: "", ghati: "", returnElementCount: "", elementType: "PETI", jobReturnDate: "" });
     }
   }, [isOpen, editingReturn]);
 
@@ -161,6 +162,7 @@ const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
         ghati:              ghatiVal,
         returnElementCount: elemCount,
         elementType:        form.elementType,
+        jobReturnDate:      form.jobReturnDate || undefined,
       };
       if (editingReturn?.id) {
         await jobWorkReturnApi.updateJobWorkReturn(jobWork.orderItemId, jobWork.id, editingReturn.id, payload);
@@ -231,6 +233,12 @@ const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
                 )}
               </div>
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-black mb-1">Return Date</label>
+            <input type="date" value={form.jobReturnDate}
+              onChange={(e) => setForm(p => ({ ...p, jobReturnDate: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 outline-none text-sm text-gray-700" />
           </div>
           <div className="pt-4 flex items-center justify-center gap-4">
             <button type="button" onClick={handleSave} disabled={saving}
@@ -426,7 +434,9 @@ const JobWorkCardItem = ({ jw, onStatusChange, onTypeChange, onReturnRecord, onE
                   {returns.map((ret) => (
                     <div key={ret.id} className="border border-gray-200 rounded-lg bg-white p-3">
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs text-gray-400">{fmtDate(ret.createdAt)}</span>
+                        <span className="text-xs text-gray-400">
+                          {ret.jobReturnDate ? <>Return: <span className="font-medium text-gray-600">{fmtDate(ret.jobReturnDate)}</span></> : fmtDate(ret.createdAt)}
+                        </span>
                         <div className="flex items-center gap-2">
                           <button type="button" onClick={() => onEditReturn(ret)} aria-label="Edit return"
                             className="text-gray-400 hover:text-gray-700 transition">
