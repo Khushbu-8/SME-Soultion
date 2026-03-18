@@ -972,24 +972,27 @@ const Inventory = () => {
                   <thead>
                     <tr className="bg-gray-100 border-b border-gray-200">
                       {columns.map((col) => (
-                        <th
-                          key={col.key}
-                          className="sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] text-gray-900 border-r border-gray-200 bg-gray-100"
-                        >
-                          <span className="inline-flex flex-col items-center leading-tight">
-                            {splitHeaderLabel(col.label).map((line, idx) => (
-                              <span key={`${col.key}-${idx}`}>{line}</span>
-                            ))}
-                          </span>
-                        </th>
+                        <React.Fragment key={col.key}>
+                          {col.key === "stockStatus" && (
+                            <th className="sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] text-gray-900 bg-gray-100 min-w-[70px] border-r border-gray-200">
+                              <span className="inline-flex flex-col items-center leading-tight">
+                                {splitHeaderLabel("View").map((line, idx) => (
+                                  <span key={`view-${idx}`}>{line}</span>
+                                ))}
+                              </span>
+                            </th>
+                          )}
+                          <th
+                            className="sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] text-gray-900 border-r border-gray-200 bg-gray-100"
+                          >
+                            <span className="inline-flex flex-col items-center leading-tight">
+                              {splitHeaderLabel(col.label).map((line, idx) => (
+                                <span key={`${col.key}-${idx}`}>{line}</span>
+                              ))}
+                            </span>
+                          </th>
+                        </React.Fragment>
                       ))}
-                      <th className="sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] text-gray-900 bg-gray-100 min-w-[70px] border-r border-gray-200">
-                        <span className="inline-flex flex-col items-center leading-tight">
-                          {splitHeaderLabel("View").map((line, idx) => (
-                            <span key={`view-${idx}`}>{line}</span>
-                          ))}
-                        </span>
-                      </th>
                       <th className="sticky top-0 z-10 whitespace-normal px-3 py-3 text-center text-sm font-[550] text-gray-900 bg-gray-100 min-w-[86px]">
                         <span className="inline-flex flex-col items-center leading-tight">
                           {splitHeaderLabel("Actions").map((line, idx) => (
@@ -1013,22 +1016,25 @@ const Inventory = () => {
                               : "hover:bg-gray-50"
                           }`}
                         >
-                          {columns.map((col, colIndex) =>
-                            renderCell(row, originalIndex, col, colIndex)
-                          )}
-                          {/* Stock column — view/update stock for this row */}
-                          <td className="h-10 px-2 py-1 text-center w-[60px] border-r border-gray-200">
-                            {!row._isNew && !row._editing && row._itemId && (
-                              <button
-                                type="button"
-                                onClick={() => handleAddStockRow(row)}
-                                title="View stock details"
-                                className="p-1 text-gray-500 hover:bg-gray-100 rounded transition"
-                              >
-                                <Eye className="w-4 h-4" />
-                              </button>
-                            )}
-                          </td>
+                                                    {columns.map((col, colIndex) => (
+                            <React.Fragment key={`${col.key}-${originalIndex}`}>
+                              {col.key === "stockStatus" && (
+                                <td className="h-10 px-2 py-1 text-center w-[60px] border-r border-gray-200">
+                                  {!row._isNew && !row._editing && row._itemId && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAddStockRow(row)}
+                                      title="View stock details"
+                                      className="p-1 text-gray-500 hover:bg-gray-100 rounded transition"
+                                    >
+                                      <Eye className="w-4 h-4" />
+                                    </button>
+                                  )}
+                                </td>
+                              )}
+                              {renderCell(row, originalIndex, col, colIndex)}
+                            </React.Fragment>
+                          ))}
                           {/* Actions column at the end */}
                           <td className="h-10 px-2 py-1 text-center w-[80px]">
                             <div className="flex items-center justify-center gap-1">
@@ -1564,3 +1570,4 @@ const Inventory = () => {
 };
 
 export default Inventory;
+

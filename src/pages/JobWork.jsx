@@ -113,7 +113,14 @@ const fmtDate = (s) => {
 
 // ── Return Record Dialog ─────────────────────────────────────────────────────
 const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
-  const [form, setForm] = useState({ returnKg: "", ghati: "", returnElementCount: "", elementType: "PETI", jobReturnDate: "" });
+  const [form, setForm] = useState({
+    returnKg: "",
+    ghati: "",
+    returnElementCount: "",
+    elementType: "PETI",
+    elementWeightGm: "900",
+    jobReturnDate: "",
+  });
   const [saving, setSaving] = useState(false);
   const [isTypeOpen, setIsTypeOpen] = useState(false);
 
@@ -126,10 +133,18 @@ const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
         ghati:              String(editingReturn.ghati ?? ""),
         returnElementCount: String(editingReturn.returnElementCount ?? ""),
         elementType:        editingReturn.elementType || "PETI",
+        elementWeightGm:    (editingReturn.elementType || "PETI") === "PETI" ? "900" : "",
         jobReturnDate:      editingReturn.jobReturnDate ? editingReturn.jobReturnDate.substring(0, 10) : "",
       });
     } else {
-      setForm({ returnKg: "", ghati: "", returnElementCount: "", elementType: "PETI", jobReturnDate: "" });
+      setForm({
+        returnKg: "",
+        ghati: "",
+        returnElementCount: "",
+        elementType: "PETI",
+        elementWeightGm: "900",
+        jobReturnDate: "",
+      });
     }
   }, [isOpen, editingReturn]);
 
@@ -227,7 +242,14 @@ const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
                   <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
                     {["PETI", "DRUM"].map(opt => (
                       <button key={opt} type="button"
-                        onClick={() => { setForm(p => ({ ...p, elementType: opt })); setIsTypeOpen(false); }}
+                        onClick={() => {
+                          setForm(p => ({
+                            ...p,
+                            elementType: opt,
+                            elementWeightGm: opt === "PETI" ? "900" : "",
+                          }));
+                          setIsTypeOpen(false);
+                        }}
                         className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100">
                         {opt === "PETI" ? "Peti" : "Drum"}
                       </button>
@@ -235,6 +257,15 @@ const ReturnDialog = ({ isOpen, jobWork, editingReturn, onClose, onSaved }) => {
                   </div>
                 )}
               </div>
+              <input
+                type="number"
+                step="1"
+                min="0"
+                value={form.elementWeightGm}
+                onChange={(e) => setForm(p => ({ ...p, elementWeightGm: e.target.value }))}
+                placeholder={form.elementType === "PETI" ? "900" : "Enter gm"}
+                className="w-28 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 outline-none text-sm"
+              />
             </div>
           </div>
           <div>

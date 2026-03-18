@@ -123,6 +123,8 @@ const JobWorkPopup = ({ isOpen, orderRow, onClose, onSaved }) => {
 
   if (!isOpen) return null;
 
+  const isOutsideJobWork = formData.jobWorkType === "OUTSIDE";
+
   const handleChange = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
@@ -184,15 +186,22 @@ const JobWorkPopup = ({ isOpen, orderRow, onClose, onSaved }) => {
               <div className="relative" ref={partyRef}>
                 <p className="text-xs text-gray-500 mb-1">Party Name</p>
                 <div
-                  className="flex items-center justify-between px-3 py-1.5 border border-gray-300 rounded-lg bg-white cursor-pointer hover:border-gray-400 transition"
-                  onClick={() => setIsPartyOpen(prev => !prev)}
+                  className={`flex items-center justify-between px-3 py-1.5 border rounded-lg transition ${
+                    isOutsideJobWork
+                      ? "border-gray-300 bg-white cursor-pointer hover:border-gray-400"
+                      : "border-gray-200 bg-gray-50 cursor-not-allowed"
+                  }`}
+                  onClick={() => {
+                    if (!isOutsideJobWork) return;
+                    setIsPartyOpen(prev => !prev);
+                  }}
                 >
                   <span className={`text-sm ${formData.partyName ? "font-medium text-black" : "text-gray-400"}`}>
                     {formData.partyName || "Select Party"}
                   </span>
                   <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isPartyOpen ? "rotate-180" : ""}`} />
                 </div>
-                {isPartyOpen && (
+                {isPartyOpen && isOutsideJobWork && (
                   <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
                     <div className="px-3 py-2 border-b border-gray-100">
                       <input
@@ -284,7 +293,8 @@ const JobWorkPopup = ({ isOpen, orderRow, onClose, onSaved }) => {
               <select
                 value={formData.finish}
                 onChange={(e) => handleChange("finish", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition bg-white"
+                disabled
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none transition bg-gray-50 text-gray-500 cursor-not-allowed"
               >
                 <option value="">Select finish…</option>
                 {FINISH_OPTIONS.map((f) => (
@@ -369,7 +379,14 @@ const JobWorkPopup = ({ isOpen, orderRow, onClose, onSaved }) => {
               <label className="block text-md font-medium text-black mb-2">Job Work Type</label>
               <select
                 value={formData.jobWorkType}
-                onChange={(e) => handleChange("jobWorkType", e.target.value)}
+                onChange={(e) => {
+                  const nextType = e.target.value;
+                  handleChange("jobWorkType", nextType);
+                  if (nextType !== "OUTSIDE") {
+                    setIsPartyOpen(false);
+                    setPartySearch("");
+                  }
+                }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition bg-white"
               >
                 {JOB_TYPE_OPTIONS.map((opt) => (

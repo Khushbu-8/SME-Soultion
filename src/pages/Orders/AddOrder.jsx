@@ -213,18 +213,20 @@ const AddOrder = () => {
       const m = res.data?.data?.[0] ?? null;
       const rawPcPerBox      = m?.pcsPerBox    != null ? String(m.pcsPerBox)    : "";
       const rawBoxPerCartoon = m?.boxPerCarton != null ? String(m.boxPerCarton) : "";
+      const derived = computeDerived(
+        currentQtyPc,
+        rawPcPerBox,
+        rawBoxPerCartoon,
+        size.dozenWeight
+      );
       updateItem(index, {
         clientInventoryLoading: false,
         rawPcPerBox,
         rawBoxPerCartoon,
         pcPerCartoon: m?.pcsPerCarton != null ? String(m.pcsPerCarton) : "",
         // Re-derive using qtyPc that was entered BEFORE size change
-        ...computeDerived(
-          currentQtyPc,
-          rawPcPerBox,
-          rawBoxPerCartoon,
-          size.dozenWeight
-        ),
+        ...derived,
+        stickerQty: derived.pcPerBox,
       });
     } catch {
       updateItem(index, { clientInventoryLoading: false });
@@ -402,14 +404,16 @@ const AddOrder = () => {
                       value={item.qtyPc}
                       onChange={(e) => {
                         const qtyPc = e.target.value;
+                        const derived = computeDerived(
+                          qtyPc,
+                          item.rawPcPerBox,
+                          item.rawBoxPerCartoon,
+                          item.selectedSize?.dozenWeight
+                        );
                         updateItem(index, {
                           qtyPc,
-                          ...computeDerived(
-                            qtyPc,
-                            item.rawPcPerBox,
-                            item.rawBoxPerCartoon,
-                            item.selectedSize?.dozenWeight
-                          ),
+                          ...derived,
+                          stickerQty: derived.pcPerBox,
                         });
                       }}
                       placeholder="Enter Pc."

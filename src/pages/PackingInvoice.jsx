@@ -432,6 +432,37 @@ const PackingInvoice = () => {
     );
   };
 
+  const handleDateChange = (rowId, dateValue) => {
+    setRows((prev) => {
+      const rowIndex = prev.findIndex((row) => row.id === rowId);
+      if (rowIndex < 0) return prev;
+
+      const currentRow = prev[rowIndex];
+      const previousRow = rowIndex > 0 ? prev[rowIndex - 1] : null;
+      const shouldAutofillFromPrevious =
+        currentRow._isNew &&
+        !currentRow.date &&
+        dateValue &&
+        previousRow &&
+        previousRow.date === dateValue;
+
+      let nextRow = { ...currentRow, date: dateValue };
+
+      if (shouldAutofillFromPrevious) {
+        const { id: _prevId, _isNew: _prevIsNew, ...copyData } = previousRow;
+        nextRow = {
+          ...nextRow,
+          ...copyData,
+          date: dateValue,
+        };
+      }
+
+      nextRow = recalcRow(nextRow);
+
+      return prev.map((row, idx) => (idx === rowIndex ? nextRow : row));
+    });
+  };
+
   const handleAddRow = () => {
     setRows((prev) => [...prev, createRow(Date.now())]);
   };
@@ -659,7 +690,7 @@ const PackingInvoice = () => {
           autoFocus={autoFocusEnabled}
           type="date"
           value={row.date}
-          onChange={(e) => updateCell(row.id, col.key, e.target.value)}
+          onChange={(e) => handleDateChange(row.id, e.target.value)}
           onKeyDown={(e) => handleLastCellTab(e, rowIndex, colIndex, totalRows)}
           onBlur={() => handleCellBlur(cellId)}
           className="w-full bg-transparent text-center text-sm focus:outline-none"
