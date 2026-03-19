@@ -382,7 +382,7 @@ const AddOrder = () => {
                         const sz = item.sizes.find((s) => String(s.id) === e.target.value);
                         if (sz) handleSelectSize(index, sz, item.qtyPc);
                       }}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-md focus:outline-none focus:ring-1 focus:ring-gray-400 bg-white disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
+                      className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-md focus:outline-none focus:ring-1 focus:ring-gray-400 bg-white disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
                     >
                       <option value="">
                         {!item.selectedItem ? "Select item first" : item.sizesLoading ? "Loading…" : "Select size…"}
@@ -440,7 +440,7 @@ const AddOrder = () => {
                     <select
                       value={item.finish}
                       onChange={(e) => updateItem(index, { finish: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-md focus:outline-none focus:ring-1 focus:ring-gray-400 bg-white"
+                      className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-md focus:outline-none focus:ring-1 focus:ring-gray-400 bg-white"
                     >
                       <option value="">Select finish…</option>
                       {FINISH_OPTIONS.map((f) => (
@@ -451,7 +451,7 @@ const AddOrder = () => {
 
                   {/* Box Pc — auto */}
                   <div>
-                    <Label>Box Pc.</Label>
+                    <Label>Box Qty.</Label>
                     <AutoInput value={item.pcPerBox} loading={item.clientInventoryLoading} />
                   </div>
 

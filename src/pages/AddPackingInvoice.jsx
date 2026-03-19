@@ -506,7 +506,7 @@ const AddPackingInvoice = () => {
         <select
           value={form.party}
           onChange={(e) => handlePartySelect(e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-400"
+          className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-400"
         >
           <option value="">Select Party</option>
           {partyOptions.map((p) => (
@@ -523,7 +523,7 @@ const AddPackingInvoice = () => {
         <select
           value={form.itemName}
           onChange={(e) => handleItemSelect(e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-400"
+          className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-400"
         >
           <option value="">Select Item</option>
           {itemOptions.map((item) => (
@@ -541,7 +541,7 @@ const AddPackingInvoice = () => {
         <select
           value={form.size}
           onChange={(e) => handleSizeSelect(e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-400"
+          className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-400"
         >
           <option value="">
             {form._itemId ? "Select Size" : "Select Item first"}
@@ -563,7 +563,7 @@ const AddPackingInvoice = () => {
         <select
           value={form.finish}
           onChange={(e) => handleFinishSelect(e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-400"
+          className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-400"
         >
           <option value="">
             {form._clientInventory
